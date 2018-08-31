@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Enrolled",
+    "reportId": 9080
+  },
+  {
+    "name": "Discontinued Prior to Randomization",
+    "reportId": 9082
+  },
+  {
+    "name": "Randomized",
+    "reportId": 9081
+  }
+]

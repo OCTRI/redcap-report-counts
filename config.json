@@ -1,0 +1,24 @@
+{
+  "name": "Consort Report",
+  "namespace": "Octri\\ConsortReport",
+  "description": "A REDCap module for generating consort diagrams.",
+  "authors": [
+    {
+      "name": "Weldon Sams",
+      "email": "sams@ohsu.edu",
+      "institution": "OHSU"
+    }
+  ],
+  "permissions": [
+    "select_data"
+  ],
+  "links": {
+    "project": [
+      {
+        "name": "Consort Report",
+        "icon": "brick",
+        "url": "index.php"
+      }
+    ]
+  }
+}
