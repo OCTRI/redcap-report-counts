@@ -8,24 +8,11 @@ import ConsortReport from './components/ConsortReport';
  * Main method that will render a consort diagram.
  */
 export function run(urlsJsonString) {
-  const urls = JSON.parse(urlsJsonString);
   new Vue({
     el: '.consort-report-container',
     components: { ConsortReport },
     render(createElement) {
-      return createElement(ConsortReport, {
-        props: {
-          pid: this.pid
-        }
-      });
-    },
-    data: {
-      pid
-    },
-    provide() {
-      return {
-        urls
-      };
+      return createElement(ConsortReport, { });
     }
   });
 }
