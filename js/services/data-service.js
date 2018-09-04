@@ -47,19 +47,18 @@ export default function createDataService(assetUrls) {
         .then(data => {
           const reportConfigArray = data;
           const emptyConfig = Boolean(reportConfigArray && reportConfigArray.length < 1);
-          let reportConfig = emptyConfig ? [] : reportConfigArray;
-          return { reportConfig };
+          return { reportConfig: emptyConfig ? [] : reportConfigArray };
         });
     },
 
     /**
-     * Gets total number of records for report.
+     * Get a report summary that includes the total number of records for a report.
      *
      * @param {Number} reportId - the report id.
      * @return {Promise} A promise that resolves to an object with the following keys:
      *   - count: The total number of records for a report.
      */
-    getReportCount(reportId) {
+    getReportSummary(reportId) {
       return axios.post(this.reportDataUrl, qs.stringify({ reportId: reportId }))
         .then(this._extractData);
     },

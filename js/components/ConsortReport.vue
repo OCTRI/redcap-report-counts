@@ -7,14 +7,14 @@
         </ul>
       </div>
 
-      <ReportCount v-for="report in reportConfig"
+      <ReportSummary v-for="report in reportConfig"
                    :report-name="report.name"
                    :report-id="report.reportId" />
   </div>
 </template>
 
 <script>
-import ReportCount from './ReportCount';
+import ReportSummary from './ReportSummary';
 
 const messages = {
   warnings: {
@@ -30,7 +30,7 @@ export default {
   inject: ['dataService'],
 
   components: {
-    ReportCount
+    ReportSummary
   },
 
   data() {

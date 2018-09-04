@@ -11,7 +11,7 @@
  * Renders count for report
  */
 export default {
-  name: 'ReportCount',
+  name: 'ReportSummary',
   inject: ['dataService'],
 
   props: {
@@ -27,26 +27,26 @@ export default {
 
   mounted() {
     // capture the promise to synchronize tests
-    this.configPromise = this.fetchReportCount();
+    this.configPromise = this.fetchReportSummary();
   },
 
   methods: {
     /**
      * Get report configuration
      */
-    fetchReportCount() {
+    fetchReportSummary() {
       const { dataService, reportId } = this;
-      return dataService.getReportCount(reportId)
-        .then(this.captureReportCount);
+      return dataService.getReportSummary(reportId)
+        .then(this.captureReportSummary);
     },
 
     /**
      * Capture count for report.
-     * @param {Promise->Object[]} responseObject - `dataService.getReportCount` response
-     * @see fetchReportCount
+     * @param {Promise->Object[]} responseObject - `dataService.getReportSummary` response
+     * @see fetchReportSummary
      * @see data-service.js
      */
-    captureReportCount(responseObject) {
+    captureReportSummary(responseObject) {
       const { count } = responseObject;
       this.count = count;
     }
