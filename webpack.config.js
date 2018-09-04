@@ -5,7 +5,13 @@ const webpack = require('webpack');
 const packageJson = require('./package.json');
 const repoInfo = require('git-repo-info')();
 
-const { DefinePlugin, LoaderOptionsPlugin } = webpack;
+const { DefinePlugin } = webpack;
+const { VueLoaderPlugin } = require('vue-loader');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
+
+const buildEnv = process.argv.includes('--optimize-minimize') ? 'production' : 'development';
 
 module.exports = {
   externals: {
@@ -13,19 +19,26 @@ module.exports = {
   },
   entry: {
     app: [
-      __dirname + '/node_modules/babel-polyfill/dist/polyfill.js',
       './js/main.js'
     ]
   },
+  resolve: {
+    alias: {
+      '@': path.join(__dirname, 'js')
+    },
+    extensions: ['.js', '.vue', '.json']
+  },
   output: {
-    path: path.join(__dirname, 'lib', 'dist'),
-    filename: 'bundle.js',
-    libraryTarget: 'var',
+    path: path.join(__dirname, 'dist'),
+    filename: 'assets/bundle.[chunkhash].js',
     library: 'ConsortReport'
   },
   module: {
-    noParse: [/\/babel-polyfill\/dist\/polyfill\.js$/],
     rules: [
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader'
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,
@@ -35,20 +48,45 @@ module.exports = {
         }
       },
       {
-        test: /\.html$/,
-        loader: 'file-loader?name=[name].[ext]'
+        test: /\.css$/,
+        use: ExtractTextWebpackPlugin.extract({
+          fallback: 'style-loader',
+          use: ['css-loader']
+        })
+      },
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        loader: 'file-loader',
+        options: {
+          name: 'assets/[name].[hash].[ext]'
+        }
       }
     ]
   },
   devtool: 'cheap-source-map',
   plugins: [
-    new LoaderOptionsPlugin({
-      options: {
-      }
-    }),
     new DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(buildEnv),
       CONSORT_REPORT_VERSION: JSON.stringify(packageJson.version),
       CONSORT_REPORT_GIT_HASH: JSON.stringify(repoInfo.abbreviatedSha)
+    }),
+    new VueLoaderPlugin(),
+    new CopyWebpackPlugin([
+      '*.md',
+      'LICENSE',
+      'index.php',
+      'ConsortReport.php',
+      'config.json',
+      'lib/**/*.php'
+    ]),
+    new HtmlWebpackPlugin({
+      template: 'lib/main.tmpl',
+      filename: 'lib/main.php',
+      hash: false,
+      inject: false
+    }),
+    new ExtractTextWebpackPlugin({
+      filename: 'assets/consort-report.[contenthash].css'
     })
   ]
 };
