@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h3>{{ reportName}}</h3>
+    <h3>{{ reportName }}</h3>
     <p>{{ count }}</p>
   </div>
 </template>

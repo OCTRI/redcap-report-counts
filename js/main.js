@@ -16,14 +16,7 @@ export function run(urlsJsonString) {
     el: '.consort-report-container',
     components: { ConsortReport },
     render(createElement) {
-      return createElement(ConsortReport, {
-        props: {
-          pid: this.pid
-        }
-      });
-    },
-    data: {
-      pid
+      return createElement(ConsortReport, { });
     },
     provide() {
       return {

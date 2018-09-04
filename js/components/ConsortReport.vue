@@ -29,10 +29,6 @@ export default {
   name: 'ConsortReport',
   inject: ['dataService'],
 
-  props: {
-    pid: Number
-  },
-
   components: {
     ReportCount
   },
