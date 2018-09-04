@@ -2,7 +2,6 @@ import uuid from 'uuid/v4';
 import { shallowMount } from '@vue/test-utils';
 
 import ConsortReport from '@/components/ConsortReport';
-import ReportSummary from '@/components/ReportSummary';
 
 function createProvideObject() {
   return {
