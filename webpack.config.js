@@ -13,8 +13,6 @@ const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 
 const buildEnv = process.argv.includes('--optimize-minimize') ? 'production' : 'development';
 
-process.traceDeprecation = true
-
 module.exports = {
   externals: {
     jquery: 'jQuery'
