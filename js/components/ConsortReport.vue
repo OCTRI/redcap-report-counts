@@ -10,30 +10,5 @@
  */
 export default {
   name: 'ConsortReport',
-
-  props: {
-    pid: Number
-  },
-
-  components: {
-  },
-
-  data() {
-    return {
-      config: {},
-      loading: true
-    };
-  },
-
-  mounted() {
-    // capture the promise to synchronize tests
-    this.configPromise = this.fetchConfig();
-  },
-
-  methods: {
-  },
-
-  computed: {
-  }
 }
 </script>
