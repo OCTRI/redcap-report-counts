@@ -1,0 +1,99 @@
+<?php
+/**
+ * EXTERNAL MODULE: REDCap Consort Report
+ * DESCRIPTION:
+ */
+
+/*
+ * NOTE: This file is required by `../index.php` to simplify upgrades, so all paths are
+ * relative to the parent directory.
+ */
+
+ // If noAuth is true, NOAUTH will be appended to the URL. The page will be public.
+$noAuth = false;
+// If true, the URL will be in the API format and will not include the REDCap version in the URL.
+$useApiEndpoint = true;
+
+// Call the REDCap Connect file in the main "redcap" directory
+require_once dirname(realpath(__FILE__)) . '/../../../redcap_connect.php';
+
+require_once dirname(realpath(__FILE__)) . '/ReportConfig.php';
+use Octri\ConsortReport\ReportConfig;
+
+// Display the project header
+require_once APP_PATH_DOCROOT . 'ProjectGeneral/header.php';
+
+/**
+ * Constructs the path to a file relative to the root of the external module directory.
+ *
+ * @param string $path - a full path to a file
+ * @return string the path to the file, relative to the root of the external module
+ */
+function moduleRelativePath($path) {
+  $prefix = basename(dirname($path));
+  return str_replace(dirname($path), $prefix, $path);
+}
+
+$jsFileNames = array();
+<% for (var file in htmlWebpackPlugin.files.js) { %>
+$jsFileNames[] = '<%= htmlWebpackPlugin.files.js[file].slice(3) %>';
+<% } %>
+
+$jsUrls = array_map(function($asset) {
+  global $module, $noAuth, $useApiEndpoint;
+  return $module->getUrl($asset, $noAuth, $useApiEndpoint);
+}, $jsFileNames);
+
+$cssFileNames = array();
+<% for (var css in htmlWebpackPlugin.files.css) { %>
+$cssFileNames[] = '<%= htmlWebpackPlugin.files.css[css].slice(3) %>';
+<% } %>
+
+$cssUrls = array_map(function($asset) {
+  global $module, $noAuth, $useApiEndpoint;
+  return $module->getUrl($asset, $noAuth, $useApiEndpoint);
+}, $cssFileNames);
+
+// Construct a JSON object where the key is like `lib/data.php` and the value is the
+// corresponding external module URL.
+$assetUrls = array();
+
+$libFilePaths = glob(dirname(realpath(__FILE__)) . '/*.php');
+foreach ($libFilePaths as $libFilePath) {
+  $relFilePath = moduleRelativePath($libFilePath);
+  $assetUrls[$relFilePath] = $module->getUrl($relFilePath, $noAuth, $useApiEndpoint);
+}
+
+$imageFilePaths = glob(realpath(__DIR__ . '/../assets') . '/*.png');
+foreach ($imageFilePaths as $imageFilePath) {
+  $relFilePath = moduleRelativePath($imageFilePath);
+  $assetUrls[$relFilePath] = $module->getUrl($relFilePath, $noAuth, $useApiEndpoint);
+}
+
+$jsonAssetUrls = json_encode($assetUrls);
+?>
+
+<div class="consort-report-container"></div>
+
+<?php
+echo(implode("\n", array_map(function($jsUrl) {
+  return "<script src=\"{$jsUrl}\"></script>";
+}, $jsUrls)));
+?>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  <?php
+  echo(implode("\n", array_map(function($cssUrl) {
+    return "$('head').append('<link href=\"{$cssUrl}\" rel=\"stylesheet\">');";
+  }, $cssUrls)));
+  ?>
+
+  ConsortReport.run('<?php echo $jsonAssetUrls ?>');
+});
+</script>
+
+<?php
+// Display the project footer
+require_once APP_PATH_DOCROOT . "ProjectGeneral/footer.php";
+?>
