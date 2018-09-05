@@ -8,7 +8,7 @@
     </div>
 
     <div class="alert alert-info" role="alert" v-if="loading">
-      Loading reports, please wait...
+      Loading consort report, please wait...
     </div>
     <div v-if="!loading">
       <ReportSummary v-for="summary in reportSummaries"
