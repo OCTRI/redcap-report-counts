@@ -7,8 +7,8 @@ function createProvideObject() {
   return {
     assetUrls: {},
     dataService: {
-      getReportConfig() {
-        return Promise.resolve([{ "name": "Report Name", "reportId": 42 }]);
+      fetchReportSummary() {
+        return Promise.resolve([{ "title": "Report Name", "reportId": 42 }]);
       }
     }
   };
@@ -19,7 +19,7 @@ describe('ConsortReport.vue', () => {
 
   beforeEach((done) => {
     mockProvide = createProvideObject();
-    spyOn(mockProvide.dataService, 'getReportConfig').and.callThrough();
+    spyOn(mockProvide.dataService, 'fetchReportSummary').and.callThrough();
 
     wrapper = shallowMount(ConsortReport, {
       provide: mockProvide
@@ -28,8 +28,8 @@ describe('ConsortReport.vue', () => {
     wrapper.vm.configPromise.then(() => done());
   });
 
-  it('requests report config when mounted', () => {
+  it('requests report summary when mounted', () => {
     const { dataService } = mockProvide;
-    expect(dataService.getReportConfig).toHaveBeenCalled();
+    expect(dataService.fetchReportSummary).toHaveBeenCalled();
   });
 });

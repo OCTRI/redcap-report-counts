@@ -9,7 +9,7 @@ describe('ReportSummary.vue', () => {
   beforeEach(() => {
     wrapper = shallowMount(ReportSummary, {
       propsData: {
-        reportName: 'Sample Report Name',
+        title: 'Sample Report Name',
         totalRecords: 101
       }
     });
@@ -17,9 +17,6 @@ describe('ReportSummary.vue', () => {
 
   it('renders report summary', () => {
     const reportName = wrapper.find('h3');
-    expect(reportName.text()).toBe('Sample Report Name');
-
-    const totalRecords = wrapper.find('p');
-    expect(totalRecords.text()).toBe('101');
+    expect(reportName.text()).toBe('101 - Sample Report Name');
   });
 });

@@ -77,7 +77,8 @@ module.exports = {
       'index.php',
       'ConsortReport.php',
       'config.json',
-      'lib/**/*.php'
+      'lib/**/*.php',
+      'lib/**/*.json'
     ]),
     new HtmlWebpackPlugin({
       template: 'lib/main.tmpl',

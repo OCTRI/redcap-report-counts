@@ -1,7 +1,10 @@
 <template>
-  <div class="container">
-    <h3>{{ reportName }}</h3>
-    <p>{{ totalRecords }}</p>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div class="container">
+        <h3>{{ totalRecords }} - {{ title }}</h3>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -14,7 +17,7 @@ export default {
   name: 'ReportSummary',
 
   props: {
-    reportName: String,
+    title: String,
     totalRecords: Number
   }
 }

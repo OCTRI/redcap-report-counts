@@ -23,7 +23,6 @@ export default function createDataService(assetUrls) {
   });
 
   return {
-    reportConfigUrl: assetUrls[ENDPOINTS.REPORT_CONFIG],
     reportDataUrl: assetUrls[ENDPOINTS.REPORT_DATA],
 
     /**
@@ -37,30 +36,14 @@ export default function createDataService(assetUrls) {
     },
 
     /**
-     * Get the current report configuration.
-     *
-     * @return {Promise ->{report-config: Object[]}} - Returns a promise that resolves to an array of report configurations.
-     */
-    getReportConfig() {
-      return axios(this.reportConfigUrl)
-        .then(this._extractData)
-        .then(data => {
-          const reportConfigArray = data;
-          const emptyConfig = Boolean(reportConfigArray && reportConfigArray.length < 1);
-          return { reportConfig: emptyConfig ? [] : reportConfigArray };
-        });
-    },
-
-    /**
      * Get a report summary that includes the total number of records for a report.
      *
-     * @param {Number} reportId - the report id.
      * @return {Promise} A promise that resolves to an object with the following keys:
-     *   - count: The total number of records for a report.
+     *   - reportId: The report ID.
+     *   - totalRecords: The total number of records for a report.
      */
-    fetchReportSummary(reportIds) {
-      return axios.post(this.reportDataUrl, qs.stringify({ reportIds: reportIds }))
-        .then(this._extractData);
+    fetchReportSummary() {
+      return axios.post(this.reportDataUrl).then(this._extractData);
     },
   };
 }

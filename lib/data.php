@@ -10,22 +10,19 @@ header('Content-Type: application/json');
 
 // Call the REDCap Connect file in the main "redcap" directory; enforces permissions.
 require_once dirname(realpath(__FILE__)) . '/../../../redcap_connect.php';
+require_once(dirname(realpath(__FILE__)) . '/ReportConfig.php');
 
-/**
- * Filter the input
- */
-function filterInput($str) {
-  return filter_var($str, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-}
+$reportConfigInstance = new \Octri\ConsortReport\ReportConfig($project_id, $module);
+$reportConfig = json_decode($reportConfigInstance->getReportConfig(), true);
 
 $returnArray = array();
-foreach ($_POST['reportIds'] as $reportId) {
-    $reportId = intval(filterInput($reportId));
-    $report = REDCap::getReport($reportId, 'json');
-    $returnArray[] = array(
-        'reportId' => $reportId,
-        'totalRecords' => count(json_decode($report, true))
-    );
+foreach ($reportConfig as $reportNode) {
+    $report = REDCap::getReport($reportNode['reportId'], 'json');
+    $returnArray[] = array_merge($reportNode, array(
+        'totalRecords' => count(json_decode($report, true)),
+        'data' => $report
+    ));
 }
+
 print json_encode($returnArray);
 ?>
