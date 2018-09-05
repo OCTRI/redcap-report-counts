@@ -1,15 +1,20 @@
 <template>
-  <div id="consort-report-container" class="container" v-if="!loading">
-      <div class="error" v-if="hasError">
-        {{ errorMessage }}
-        <ul v-if="hasErrorDetails">
-          <li v-for="message in errorDetails" :key="message">{{ message }}</li>
-        </ul>
-      </div>
+  <div id="consort-report-container" class="container">
+    <div class="error" v-if="hasError">
+      {{ errorMessage }}
+      <ul v-if="hasErrorDetails">
+        <li v-for="message in errorDetails" :key="message">{{ message }}</li>
+      </ul>
+    </div>
 
-      <ReportSummary v-for="report in reportConfig"
-                   :report-name="report.name"
-                   :report-id="report.reportId" />
+    <div class="alert alert-info" role="alert" v-if="loading">
+      Loading consort report, please wait...
+    </div>
+    <div v-if="!loading">
+      <ReportSummary v-for="summary in reportSummaries"
+                    :report-name="summary.name"
+                    :total-records="summary.totalRecords" />
+    </div>
   </div>
 </template>
 
@@ -36,6 +41,7 @@ export default {
   data() {
     return {
       reportConfig: {},
+      reportSummaries: [],
       loading: true
     };
   },
@@ -53,6 +59,8 @@ export default {
       const { dataService } = this;
       return dataService.getReportConfig()
         .then(this.captureReportConfig)
+        .then(this.fetchReportSummary)
+        .then(this.captureReportSummaries)
         .catch(this.handleConfigError)
         .finally(() => {
           this.loading = false;
@@ -68,6 +76,26 @@ export default {
     captureReportConfig(responseArray) {
       const { reportConfig } = responseArray;
       this.reportConfig = reportConfig;
+    },
+
+    /**
+     * Get a report summary for the provided report ids.
+     */
+    fetchReportSummary() {
+      const { dataService } = this;
+      const reportIds = this.reportConfig.map(report => report.reportId);
+      return dataService.fetchReportSummary(reportIds);
+    },
+
+    /**
+     * Sets report summaries from `fetchReportSummary` response.
+     * @param {Promise->Object[]} responseArray - `dataService.fetchReportSummary` response
+     */
+    captureReportSummaries(responseArray) {
+      this.reportSummaries = responseArray;
+      this.reportSummaries.map(summary => {
+        summary.name = this.reportConfig.find(report => report.reportId === summary.reportId).name;
+      });
     },
 
     /**

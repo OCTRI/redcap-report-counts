@@ -18,11 +18,14 @@ function filterInput($str) {
   return filter_var($str, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 }
 
-// Sanitize all post parameters
-$reportId = filterInput($_POST['reportId']);
-
-$returnObj = new stdClass();
-$report = REDCap::getReport($reportId, 'json');
-$returnObj->count = count(json_decode($report));
-print json_encode($returnObj);
+$returnArray = array();
+foreach ($_POST['reportIds'] as $reportId) {
+    $reportId = intval(filterInput($reportId));
+    $report = REDCap::getReport($reportId, 'json');
+    $returnArray[] = array(
+        'reportId' => $reportId,
+        'totalRecords' => count(json_decode($report, true))
+    );
+}
+print json_encode($returnArray);
 ?>
