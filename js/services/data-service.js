@@ -58,8 +58,8 @@ export default function createDataService(assetUrls) {
      * @return {Promise} A promise that resolves to an object with the following keys:
      *   - count: The total number of records for a report.
      */
-    getReportSummary(reportId) {
-      return axios.post(this.reportDataUrl, qs.stringify({ reportId: reportId }))
+    fetchReportSummary(reportIds) {
+      return axios.post(this.reportDataUrl, qs.stringify({ reportIds: reportIds }))
         .then(this._extractData);
     },
   };
