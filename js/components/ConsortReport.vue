@@ -40,7 +40,6 @@ export default {
 
   data() {
     return {
-      reportConfig: {},
       reportSummaries: [],
       loading: true
     };
@@ -48,14 +47,14 @@ export default {
 
   mounted() {
     // capture the promise to synchronize tests
-    this.configPromise = this.fetchReportConfig();
+    this.configPromise = this.fetchReportSummary();
   },
 
   methods: {
     /**
-     * Get report configuration
+     * Get a report summary.
      */
-    fetchReportConfig() {
+    fetchReportSummary() {
       const { dataService } = this;
       return dataService.fetchReportSummary()
         .then(this.captureReportSummaries)
@@ -63,14 +62,6 @@ export default {
         .finally(() => {
           this.loading = false;
         });
-    },
-
-    /**
-     * Get a report summary.
-     */
-    fetchReportSummary() {
-      const { dataService } = this;
-      return dataService.fetchReportSummary();
     },
 
     /**
