@@ -1,14 +1,18 @@
 [
   {
-    "name": "Enrolled",
-    "reportId": 9080
+    "reportId": 10908,
+    "title": "Eligible and enrolled in placebo adherence run-in (Enrolled/Consented)",
+    "strategy": "total"
   },
   {
-    "name": "Discontinued Prior to Randomization",
-    "reportId": 9082
+    "reportId": 10909,
+    "title": "Excluded (Discontinued)",
+    "strategy": "itemized",
+    "bucket-by": "dsp_stop_reason"
   },
   {
-    "name": "Randomized",
-    "reportId": 9081
+    "reportId": 10910,
+    "title": "Pregnant smokers randomized (Randomized)",
+    "strategy": "total"
   }
 ]

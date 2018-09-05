@@ -12,7 +12,7 @@
     </div>
     <div v-if="!loading">
       <ReportSummary v-for="summary in reportSummaries"
-                    :report-name="summary.name"
+                    :title="summary.title"
                     :total-records="summary.totalRecords" />
     </div>
   </div>
@@ -57,9 +57,7 @@ export default {
      */
     fetchReportConfig() {
       const { dataService } = this;
-      return dataService.getReportConfig()
-        .then(this.captureReportConfig)
-        .then(this.fetchReportSummary)
+      return dataService.fetchReportSummary()
         .then(this.captureReportSummaries)
         .catch(this.handleConfigError)
         .finally(() => {
@@ -68,23 +66,11 @@ export default {
     },
 
     /**
-     * Sets report configuration from `fetchReportConfig` response.
-     * @param {Promise->Object[]} responseArray - `dataService.getReportConfig` response
-     * @see fetchReportConfig
-     * @see data-service.js
-     */
-    captureReportConfig(responseArray) {
-      const { reportConfig } = responseArray;
-      this.reportConfig = reportConfig;
-    },
-
-    /**
-     * Get a report summary for the provided report ids.
+     * Get a report summary.
      */
     fetchReportSummary() {
       const { dataService } = this;
-      const reportIds = this.reportConfig.map(report => report.reportId);
-      return dataService.fetchReportSummary(reportIds);
+      return dataService.fetchReportSummary();
     },
 
     /**
@@ -93,9 +79,6 @@ export default {
      */
     captureReportSummaries(responseArray) {
       this.reportSummaries = responseArray;
-      this.reportSummaries.map(summary => {
-        summary.name = this.reportConfig.find(report => report.reportId === summary.reportId).name;
-      });
     },
 
     /**
