@@ -5,7 +5,7 @@
         <h3>{{ totalRecords }} - {{ title }}</h3>
 
         <ul v-if="strategy === 'itemized'" class="list-unstyled">
-          <li v-for="item in summaryData">{{ item.count }} - {{ item.label }}</li>
+          <li v-for="(count, label) in summaryData">{{ count }} - {{ label }}</li>
         </ul>
       </div>
     </div>
@@ -35,7 +35,7 @@ export default {
   },
 
   mounted() {
-    this.summaryData = Object.entries(countBy(this.data)).map(([label, count]) => ({label, count}));
+    this.summaryData = countBy(this.data);
   }
 }
 </script>
