@@ -4,7 +4,7 @@
     "type": "project",
     "scripts": {
       "test": "phpunit --colors=always",
-      "test-jenkins": "phpunit --colors=never --log-junit junit.xml"
+      "test-jenkins": "phpunit --colors=never --log-junit junit/phpunit.xml"
     },
     "require": {},
     "require-dev": {

@@ -3,15 +3,17 @@
     <div class="panel-body">
       <div class="container">
         <h3>{{ totalRecords }} - {{ title }}</h3>
-        <div v-if="strategy === 'itemized'">
-          {{ itemizedData }}
-        </div>
+
+        <ul v-if="strategy === 'itemized'" class="list-unstyled">
+          <li v-for="item in summaryData">{{ item.count }} - {{ item.label }}</li>
+        </ul>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import countBy from 'lodash/countBy';
 
 /**
  * Renders report summary.
@@ -28,18 +30,12 @@ export default {
 
   data() {
     return {
-      itemizedData: []
+      summaryData: []
     };
   },
 
   mounted() {
-    this.itemizedData = this.itemizeData();
-  },
-
-  methods: {
-    itemizeData() {
-      return this.data;
-    }
+    this.summaryData = Object.entries(countBy(this.data)).map(([label, count]) => ({label, count}));
   }
 }
 </script>
