@@ -11,7 +11,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 
-const buildEnv = process.argv.includes('--optimize-minimize') ? 'production' : 'development';
+const buildEnv = process.argv.includes('--mode=production') ? 'production' : 'development';
 
 module.exports = {
   externals: {
