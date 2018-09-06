@@ -12,7 +12,10 @@
     </div>
     <div v-if="!loading">
       <ReportSummary v-for="summary in reportSummaries"
+                    :key="summary.reportId"
                     :title="summary.title"
+                    :strategy="summary.strategy"
+                    :data="summary.data"
                     :total-records="summary.totalRecords" />
     </div>
   </div>
