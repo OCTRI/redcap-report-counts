@@ -4,8 +4,8 @@
       <div class="container">
         <h3>{{ totalRecords }} - {{ title }}</h3>
 
-        <ul v-if="strategy === 'itemized'" class="list-unstyled">
-          <li v-for="(count, label) in summaryData">{{ count }} - {{ label }}</li>
+        <ul v-if="isItemized" class="list-unstyled">
+          <li v-for="(count, label) in summaryCounts" :key="label">{{ count }} - {{ label }}</li>
         </ul>
       </div>
     </div>
@@ -25,17 +25,17 @@ export default {
     title: String,
     totalRecords: Number,
     strategy: String,
-    data: Array
+    summaryData: Array
   },
 
-  data() {
-    return {
-      summaryData: []
-    };
-  },
+  computed: {
+    isItemized() {
+      return this.strategy === 'itemized';
+    },
 
-  mounted() {
-    this.summaryData = countBy(this.data);
+    summaryCounts() {
+      return countBy(this.summaryData);
+    }
   }
 }
 </script>

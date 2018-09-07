@@ -15,7 +15,7 @@
                     :key="summary.reportId"
                     :title="summary.title"
                     :strategy="summary.strategy"
-                    :data="summary.data"
+                    :summaryData="summary.data"
                     :total-records="summary.totalRecords" />
     </div>
   </div>
