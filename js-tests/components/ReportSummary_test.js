@@ -32,7 +32,7 @@ describe('ReportSummary.vue', () => {
           title: 'Sample Itemized Report Name',
           totalRecords: 6,
           strategy: 'itemized',
-          data: [
+          summaryData: [
             'Patient follow-up',
             'Patient withdrew consent',
             'Patient follow-up',
