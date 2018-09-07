@@ -1,8 +1,8 @@
 <template>
-  <div class="panel panel-default">
-    <div class="panel-body">
+  <div class="panel panel-default card mb-3">
+    <div class="panel-body card-body">
       <div class="container">
-        <h3>{{ totalRecords }} - {{ title }}</h3>
+        <h3 class="card-title">{{ totalRecords }} - {{ title }}</h3>
 
         <ul v-if="isItemized" class="list-unstyled">
           <li v-for="(count, label) in summaryCounts" :key="label">{{ count }} - {{ label }}</li>
