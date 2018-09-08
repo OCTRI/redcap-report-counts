@@ -1,6 +1,6 @@
 <template>
-  <div class="panel panel-default card mb-3">
-    <div class="panel-body card-body">
+  <div class="card mb-3">
+    <div class="card-body">
       <div class="container">
         <h3 class="card-title">{{ totalRecords }} - {{ title }}</h3>
 
