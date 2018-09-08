@@ -9,6 +9,10 @@
       "institution": "OHSU"
     }
   ],
+  "compatibility": {
+      "redcap-version-min": "8.7.1",
+      "redcap-version-max": ""
+  },
   "permissions": [
     "select_data"
   ],
