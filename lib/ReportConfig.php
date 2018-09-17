@@ -5,6 +5,24 @@ require_once(dirname(realpath(__FILE__)) . '/constants.php');
 
 /**
  * A class for managing report configuration.
+ *
+ * Example config:
+ *
+ * <pre><code>
+ * [
+ *   {
+ *     "reportId": 1,
+ *     "title": "Report Title - Only Totaled",
+ *     "strategy": "total"
+ *   },
+ *   {
+ *     "reportId": 2,
+ *     "title": "Report Title - With Itemized Counts",
+ *     "strategy": "itemized",
+ *     "bucket-by": "field_to_bucket_on"
+ *   }
+ * ]
+ * </code></pre>
  */
 class ReportConfig {
 
@@ -33,10 +51,18 @@ class ReportConfig {
     if (isset($existingReportConfig)) {
       return $existingReportConfig;
     } else {
-      $defaultReportConfig = file_get_contents(dirname(realpath(__FILE__)) . '/sample.report-config.json');
-      $this->module->setProjectSetting($this->reportConfigKey, $defaultReportConfig, $this->project_id);
-      return $defaultReportConfig;
+      return false;
     }
+  }
+
+  public function saveReportSummary($reportSummary) {
+      $config = $this->getReportConfig();
+      if (!$config) {
+        $this->module->setProjectSetting($this->reportConfigKey, array($reportSummary), $this->project_id);
+      } else {
+        $config[] = $reportSummary;
+        $this->module->setProjectSetting($this->reportConfigKey, $config, $this->project_id);
+      }
   }
 
 }
