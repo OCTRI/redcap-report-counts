@@ -3,6 +3,17 @@ import { shallowMount } from '@vue/test-utils';
 
 import ReportSummary from '@/components/ReportSummary';
 
+function createProvideObject() {
+  return {
+    assetUrls: {},
+    dataService: {
+      fetchReportSummary() {
+        return Promise.resolve([{ "title": "Report Name", "reportId": 42 }]);
+      }
+    }
+  };
+}
+
 describe('ReportSummary.vue', () => {
   describe('For total strategy', () => {
     let wrapper;

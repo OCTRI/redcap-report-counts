@@ -30,16 +30,9 @@ final class ReportConfigTest extends TestCase {
                  $this->equalTo($this->projectIdWithConfigNotSet)
                );
 
-    $mockModule->expects($this->once())
-               ->method('setProjectSetting')
-               ->with(
-                 $this->equalTo($this->reportConfigKey),
-                 $this->logicalAnd($this->isType('string'), $this->isJson()),
-                 $this->equalTo($this->projectIdWithConfigNotSet)
-               );
-
     $reportConfig = new ReportConfig($this->projectIdWithConfigNotSet, $mockModule);
-    $reportConfig->getReportConfig();
+    $config = $reportConfig->getReportConfig();
+    $this->assertFalse($config);
   }
 
   public function testGetReportConfigAlreadyInitialized() {
@@ -64,7 +57,12 @@ final class ReportConfigTest extends TestCase {
                );
 
     $reportConfig = new ReportConfig($this->projectIdWithConfigSet, $mockModule);
-    $reportConfig->getReportConfig();
+    $config = json_decode($reportConfig->getReportConfig(), true);
+
+    $this->assertEquals($config[0]['reportId'], 101);
+    $this->assertEquals($config[1]['strategy'], 'itemized');
+    $this->assertEquals($config[1]['bucket-by'], 'bucket_field');
+    $this->assertEquals($config[2]['name'], 'Report 3');
   }
 
 }
