@@ -1,5 +1,7 @@
 <template>
   <div id="consort-report-container" class="container">
+    <h1>Consort Reports</h1>
+
     <div class="error" v-if="hasError">
       {{ errorMessage }}
       <ul v-if="hasErrorDetails">
@@ -11,18 +13,34 @@
       Loading consort report, please wait...
     </div>
     <div v-if="!loading">
-      <ReportSummary v-for="summary in reportSummaries"
-                    :key="summary.reportId"
-                    :title="summary.title"
-                    :strategy="summary.strategy"
-                    :summaryData="summary.data"
-                    :total-records="summary.totalRecords" />
+      <div v-if="showCreateReportButton">
+        <input id="create-a-report"
+               type="button"
+               name="create-a-report"
+               value="Create a Report"
+               class="btn btn-primary"
+               @click="createReport">
+      </div>
+
+      <div v-if="showReportForm">
+        <ReportSummaryForm @reportSummary="addReportSummary" />
+      </div>
+
+      <div v-if="hasReportSummaries">
+        <ReportSummary v-for="summary in reportSummaries"
+                       :key="summary.reportId"
+                       :title="summary.title"
+                       :strategy="summary.strategy"
+                       :summaryData="summary.data"
+                       :total-records="summary.totalRecords" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import ReportSummary from './ReportSummary';
+import ReportSummaryForm from './ReportSummaryForm';
 
 const messages = {
   warnings: {
@@ -38,13 +56,16 @@ export default {
   inject: ['dataService'],
 
   components: {
-    ReportSummary
+    ReportSummary,
+    ReportSummaryForm
   },
 
   data() {
     return {
       reportSummaries: [],
-      loading: true
+      loading: true,
+      newReport: false,
+      reports: []
     };
   },
 
@@ -76,6 +97,15 @@ export default {
     },
 
     /**
+     * Captures the report summary from ReportSummaryForm and appends to the
+     * list of report summaries.
+     * @param {Object} reportSummary - report summary data used to generate a ReportSummary.
+     */
+    addReportSummary(reportSummary) {
+      this.reportSummaries.push(reportSummary);
+    },
+
+    /**
      * Handles rejection of the `fetchReportConfig` request.
      * @param {Error} reason - the error that triggered rejection.
      */
@@ -83,6 +113,13 @@ export default {
       this.errorMessage = messages.warnings.reportConfigError;
       this.errorDetails = [ reason.message ];
     },
+
+    /**
+     * Indicate a report is being created.
+     */
+    createReport() {
+      this.newReport = true;
+    }
   },
 
   computed: {
@@ -94,6 +131,29 @@ export default {
     hasErrorDetails() {
       const { errorDetails } = this;
       return Array.isArray(errorDetails) && errorDetails.length > 0;
+    },
+
+    /**
+     * Handle showing the ReportSummaryForm.
+     * @return true if the ReportSummaryForm should be shown.
+     */
+    showReportForm() {
+      return !this.showCreateReportButton;
+    },
+
+    /**
+     * Checks if there are report summaries.
+     */
+    hasReportSummaries() {
+      return this.reportSummaries.length > 0;
+    },
+
+    /**
+     * Checks if the create a report button should be shown.
+     * @return true if there are no report summaries and create a report hasn't been started.
+     */
+    showCreateReportButton() {
+      return !this.hasReportSummaries && !this.newReport;
     }
   }
 }
