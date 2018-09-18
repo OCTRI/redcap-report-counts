@@ -42,8 +42,9 @@ class ReportConfig {
   }
 
   /**
-   * Get report configuration if it exists.
-   * @return The report configuration in JSON format, or false if it doesn't exist.
+   * Get report configuration. If no configuration is present, it will be initialized from
+   * sample configuration.
+   * @return The report configuration in JSON format.
    */
   public function getReportConfig() {
     $existingReportConfig = $this->module->getProjectSetting($this->reportConfigKey, $this->project_id);
@@ -52,6 +53,16 @@ class ReportConfig {
     } else {
       return false;
     }
+  }
+
+  public function saveReportSummary($reportSummary) {
+      $config = $this->getReportConfig();
+      if (!$config) {
+        $this->module->setProjectSetting($this->reportConfigKey, array($reportSummary), $this->project_id);
+      } else {
+        $config[] = $reportSummary;
+        $this->module->setProjectSetting($this->reportConfigKey, $config, $this->project_id);
+      }
   }
 
 }
