@@ -2,6 +2,9 @@
   <div class="card mb-3 report-summary-form">
     <div class="card-body">
       <h5 class="card-title">Add a Report Count</h5>
+      <ul v-if="hasErrors">
+        <li v-for="error in errors" :key="error" class="text-danger font-weight-bold">{{ error }}</li>
+      </ul>
       <div class="form-group">
         <label>Title <input id="title" name="title" v-model="title" type="text" class="form-control"></label>
       </div>
@@ -19,6 +22,11 @@
 </template>
 
 <script>
+const messages = {
+  titleRequired: 'You must provide a title',
+  reportRequired: 'You must select a report'
+};
+
 /**
  * Renders report summary form for adding report counts.
  */
@@ -30,7 +38,8 @@ export default {
     return {
       title: '',
       reportId: null,
-      reports: []
+      reports: [],
+      errors: []
     };
   },
 
@@ -86,9 +95,26 @@ export default {
     },
 
     /**
+     * Validate form.
+     */
+    validForm() {
+      this.errors = [];
+      if (!this.title.trim().length) {
+        this.errors.push(messages.titleRequired);
+      }
+			if (this.reportId === null) {
+        this.errors.push(messages.reportRequired);
+      }
+      return this.errors.length === 0;
+    },
+
+    /**
      * Save report config and clear form.
      */
     saveReportSummary() {
+      if (!this.validForm()) {
+        return;
+      }
       const { dataService } = this;
       this.savePromise = dataService.saveReportSummary(this.reportSummary())
         .then(this.captureReportSummary)
@@ -103,7 +129,16 @@ export default {
      */
     captureReportSummary(responseArray) {
       this.$emit('reportSummary', responseArray[0]);
-    },
+    }
+  },
+
+  computed: {
+    /**
+     * @return true if there are errors
+     */
+    hasErrors() {
+      return this.errors.length > 0;
+    }
   }
 }
 </script>
