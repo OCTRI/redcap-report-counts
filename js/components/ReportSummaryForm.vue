@@ -102,7 +102,7 @@ export default {
       if (!this.title.trim().length) {
         this.errors.push(messages.titleRequired);
       }
-			if (this.reportId === null) {
+      if (this.reportId === null) {
         this.errors.push(messages.reportRequired);
       }
       return this.errors.length === 0;
