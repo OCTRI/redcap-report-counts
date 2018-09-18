@@ -9,15 +9,19 @@ class MockAbstractExternalModule {
         [
           {
             "name": "Report 1",
-            "reportId": 101
+            "reportId": 101,
+            "strategy": "total"
           },
           {
             "name": "Report 2",
-            "reportId": 202
+            "reportId": 202,
+            "strategy": "itemized",
+            "bucket-by": "bucket_field"
           },
           {
             "name": "Report 3",
-            "reportId": 303
+            "reportId": 303,
+            "strategy": "total"
           }
         ]'
     ),
