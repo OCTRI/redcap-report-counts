@@ -51,6 +51,8 @@ describe('ReportSummaryForm.vue', () => {
   });
 
   it('saves report summary on submit', (done) => {
+    wrapper.vm.title = 'Report 2';
+    wrapper.vm.reportId = 2;
     wrapper.find('.btn-primary').trigger('click');
     wrapper.vm.savePromise.then(() => done());
     wrapper.vm.$nextTick(() => {
@@ -61,6 +63,28 @@ describe('ReportSummaryForm.vue', () => {
       expect(reportSummary[0][0]['strategy']).toBe('total');
       expect(reportSummary[0][0]['totalRecords']).toBe(19);
     });
+  });
+
+  it('validates form', () => {
+    // Form rendered - no input
+    wrapper.find('.btn-primary').trigger('click');
+    expect(wrapper.vm.errors.length).toEqual(2);
+    expect(wrapper.vm.errors.includes('You must provide a title')).toBe(true);
+    expect(wrapper.vm.errors.includes('You must select a report')).toBe(true);
+
+    // Only a report selected
+    wrapper.vm.title = '';
+    wrapper.vm.reportId = 42;
+    wrapper.find('.btn-primary').trigger('click');
+    expect(wrapper.vm.errors.length).toEqual(1);
+    expect(wrapper.vm.errors.includes('You must provide a title')).toBe(true);
+
+    // Only a title entered
+    wrapper.vm.title = 'Some Title';
+    wrapper.vm.reportId = null;
+    wrapper.find('.btn-primary').trigger('click');
+    expect(wrapper.vm.errors.length).toEqual(1);
+    expect(wrapper.vm.errors.includes('You must select a report')).toBe(true);
   });
 
   it('retrieves report summary values from form', () => {
