@@ -24,6 +24,7 @@ export default function createDataService(assetUrls) {
 
   return {
     reportDataUrl: assetUrls[ENDPOINTS.REPORT_DATA],
+    reportConfigUrl: assetUrls[ENDPOINTS.REPORT_CONFIG],
 
     /**
      * Extracts data returned by the request.
@@ -45,5 +46,24 @@ export default function createDataService(assetUrls) {
     fetchReportSummary() {
       return axios.post(this.reportDataUrl).then(this._extractData);
     },
+
+    /**
+     * Post report summary for saving to report config.
+     * @param {Object} reportSummary Data for a report summary.
+     * @return {Promise->Object} the response's report summary data
+     */
+    saveReportSummary(reportSummary) {
+      const data = { reportSummary: JSON.stringify({ reportSummary }) };
+      const options = { timeout: 5000 };
+      return axios.post(this.reportConfigUrl + '&action=saveReportSummary', data, options).then(this._extractData);
+    },
+
+    /**
+     * Get all of the reports for the project.
+     * @return {Promise->Object} list of reports.
+     */
+    getReports() {
+      return axios.post(this.reportDataUrl + '&action=getReports').then(this._extractData);
+    }
   };
 }

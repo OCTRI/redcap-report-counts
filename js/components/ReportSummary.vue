@@ -1,5 +1,5 @@
 <template>
-  <div class="card mb-3">
+  <div class="card mb-3 report-summary">
     <div class="card-body">
       <div class="container">
         <h3 class="card-title">{{ totalRecords }} - {{ title }}</h3>
