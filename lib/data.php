@@ -19,7 +19,7 @@ if (isset($_GET['action'])) {
         $pid = intval($_GET['pid']);
 
         $stmt = mysqli_stmt_init($rc_connection);
-        $query = 'select report_id, title from redcap_reports where project_id = ?';
+        $query = 'select report_id, title from redcap_reports where project_id = ? order by title asc';
         mysqli_stmt_prepare($stmt, $query);
         mysqli_stmt_bind_param($stmt, 'i', $pid);
         mysqli_stmt_execute($stmt);
