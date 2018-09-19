@@ -2,6 +2,7 @@
 namespace Octri\ConsortReport;
 
 require_once(dirname(realpath(__FILE__)) . '/constants.php');
+require_once(dirname(realpath(__FILE__)) . '/ReportStrategy.php');
 
 /**
  * A class for managing report configuration.
@@ -55,14 +56,72 @@ class ReportConfig {
     }
   }
 
-  public function saveReportSummary($reportSummary) {
-      $config = $this->getReportConfig();
-      if (!$config) {
-        $this->module->setProjectSetting($this->reportConfigKey, array($reportSummary), $this->project_id);
-      } else {
-        $config[] = $reportSummary;
-        $this->module->setProjectSetting($this->reportConfigKey, $config, $this->project_id);
+  /**
+   * Validate a ReportSummary.
+   * @param {Array} reportSummary - configuration for a report summary
+   */
+  public function validate($reportSummary) {
+    $errors = array();
+
+    $requiredFields = array('title', 'reportId', 'strategy');
+    foreach ($requiredFields as $requiredField) {
+      if (!array_key_exists($requiredField, $reportSummary)) {
+        $errors[] = "Missing field {$requiredField}";
       }
+    }
+
+    if (array_key_exists('strategy', $reportSummary)) {
+      if (!in_array($reportSummary['strategy'], ReportStrategy::strategies())) {
+        $errors[] = 'Invalid strategy';
+      } else {
+        if ($reportSummary['strategy'] === ReportStrategy::ITEMIZED) {
+          if (array_key_exists('bucket-by', $reportSummary)) {
+            if (strlen(trim($reportSummary['bucket-by'])) === 0) {
+                $errors[] = "bucket-by must have a value";
+            }
+          } else {
+            $errors[] = 'Missing bucket-by field when using strategy ' . ReportStrategy::ITEMIZED;
+          }
+        }
+      }
+    }
+
+    if (array_key_exists('reportId', $reportSummary)) {
+      if (intval($reportSummary['reportId']) === 0) {
+        $errors[] = "reportId must be an integer greater than zero";
+      }
+    }
+
+    if (array_key_exists('title', $reportSummary)) {
+      if (strlen(trim($reportSummary['title'])) === 0) {
+        $errors[] = "title must have a value";
+      }
+    }
+
+    return $errors;
+  }
+
+  /**
+   * Saves a ReportSummary
+   * @param {Array} reportSummary - Configuration for a report summary
+   * @return true if the report summary was saved, or an array of validation errors
+   */ 
+  public function saveReportSummary($reportSummary) {
+    $errors = $this->validate($reportSummary);
+
+    if (count($errors) > 0) {
+      return $errors;
+    }
+
+    $config = $this->getReportConfig();
+    if (!$config) {
+      $this->module->setProjectSetting($this->reportConfigKey, array($reportSummary), $this->project_id);
+    } else {
+      $config[] = $reportSummary;
+      $this->module->setProjectSetting($this->reportConfigKey, $config, $this->project_id);
+    }
+
+    return true;
   }
 
 }

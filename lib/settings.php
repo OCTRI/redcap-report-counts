@@ -22,12 +22,17 @@ if (isset($_GET['action'])) {
             $reportSummary = json_decode($data['reportSummary'], true);
 
             $reportConfig = new ReportConfig($project_id, $module);
-            $reportConfig->saveReportSummary($reportSummary['reportSummary']);
+            $result = $reportConfig->saveReportSummary($reportSummary['reportSummary']);
 
-            $report = json_decode(\REDCap::getReport($reportSummary['reportSummary']['reportId'], 'json', 'export', true /* export labels */), true);
-            $reportProcessor = new ReportConfigProcessor($report, $reportSummary['reportSummary']);
+            if ($result === true) {
+                $report = json_decode(\REDCap::getReport($reportSummary['reportSummary']['reportId'], 'json', 'export', true /* export labels */), true);
+                $reportProcessor = new ReportConfigProcessor($report, $reportSummary['reportSummary']);
 
-            exit(json_encode(array($reportProcessor->summaryConfig())));
+                exit(json_encode(array($reportProcessor->summaryConfig())));
+            } else {
+                http_response_code(400);
+                exit(json_encode($result));
+            }
         }
     }
 } else {

@@ -129,7 +129,15 @@ export default {
      */
     captureReportSummary(responseArray) {
       this.$emit('reportSummary', responseArray[0]);
-    }
+    },
+
+    /**
+     * Handles rejection of the `saveReportSummary` request.
+     * @param {Error} reason - the error that triggered rejection.
+     */
+    handleConfigError(reason) {
+      this.errors.push('An error occurred while trying to save this count.');
+    },
   },
 
   computed: {
