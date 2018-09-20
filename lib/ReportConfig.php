@@ -75,9 +75,10 @@ class ReportConfig {
         $errors[] = 'Invalid strategy';
       } else {
         if ($reportSummary['strategy'] === ReportStrategy::ITEMIZED) {
-          if (array_key_exists('bucket-by', $reportSummary)
-              && strlen(trim($reportSummary['bucket-by'])) === 0) {
-            $errors[] = "bucket-by must have a value";
+          if (array_key_exists('bucket-by', $reportSummary)) {
+            if (strlen(trim($reportSummary['bucket-by'])) === 0) {
+              $errors[] = "bucket-by must have a value";
+            }
           } else {
             $errors[] = 'Missing bucket-by field when using strategy ' . ReportStrategy::ITEMIZED;
           }
