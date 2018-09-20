@@ -15,6 +15,17 @@
           </select>
         </label>
       </div>
+      <div class="form-group">
+        <label>Strategy
+          <select id="strategy" name="strategy" v-model="strategy" class="form-control">
+            <option value="total">total</option>
+            <option value="itemized">itemized</option>
+          </select>
+        </label>
+      </div>
+      <div class="form-group">
+        <label>Bucket-by <input id="bucketby" name="bucketby" v-model="bucketby" type="text" class="form-control"></label>
+      </div>
       <button type="submit" class="btn btn-primary" @click="saveReportSummary">Submit</button>
       <a class="btn btn-link cancel" @click="cancelForm">Reset</a>
     </div>
@@ -90,7 +101,8 @@ export default {
       return {
         reportId: this.reportId,
         title: this.title,
-        strategy: 'total'
+        strategy: this.strategy,
+        "bucket-by": this.bucketby
       };
     },
 
