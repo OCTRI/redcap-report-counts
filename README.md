@@ -13,13 +13,13 @@ npm install
 JavaScript tests,
 
 ```
-npm run test
+npm test
 ```
 
 PHP tests
 
 ```
-composer run test
+composer test
 ```
 
 ## Build Application
