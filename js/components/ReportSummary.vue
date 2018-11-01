@@ -14,6 +14,7 @@
 
 <script>
 import countBy from 'lodash/countBy';
+import { STRATEGY } from '../report-strategy';
 
 /**
  * Renders report summary.
@@ -30,7 +31,7 @@ export default {
 
   computed: {
     isItemized() {
-      return this.strategy === 'itemized';
+      return this.strategy === STRATEGY.ITEMIZED;
     },
 
     summaryCounts() {

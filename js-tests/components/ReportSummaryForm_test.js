@@ -53,6 +53,8 @@ describe('ReportSummaryForm.vue', () => {
   it('saves report summary on submit', (done) => {
     wrapper.vm.title = 'Report 2';
     wrapper.vm.reportId = 2;
+
+    wrapper.vm.strategy = 'total';
     wrapper.find('.btn-primary').trigger('click');
     wrapper.vm.savePromise.then(() => done());
     wrapper.vm.$nextTick(() => {
@@ -68,20 +70,23 @@ describe('ReportSummaryForm.vue', () => {
   it('validates form', () => {
     // Form rendered - no input
     wrapper.find('.btn-primary').trigger('click');
-    expect(wrapper.vm.errors.length).toEqual(2);
+    expect(wrapper.vm.errors.length).toEqual(3);
     expect(wrapper.vm.errors.includes('You must provide a title')).toBe(true);
     expect(wrapper.vm.errors.includes('You must select a report')).toBe(true);
+    expect(wrapper.vm.errors.includes('You must select a strategy')).toBe(true);
 
     // Only a report selected
     wrapper.vm.title = '';
     wrapper.vm.reportId = 42;
     wrapper.find('.btn-primary').trigger('click');
-    expect(wrapper.vm.errors.length).toEqual(1);
+    expect(wrapper.vm.errors.length).toEqual(2);
     expect(wrapper.vm.errors.includes('You must provide a title')).toBe(true);
+    expect(wrapper.vm.errors.includes('You must select a strategy')).toBe(true);
 
     // Only a title entered
     wrapper.vm.title = 'Some Title';
     wrapper.vm.reportId = null;
+    wrapper.vm.strategy = 'total';
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(1);
     expect(wrapper.vm.errors.includes('You must select a report')).toBe(true);
@@ -90,19 +95,28 @@ describe('ReportSummaryForm.vue', () => {
   it('retrieves report summary values from form', () => {
     wrapper.vm.reportId = 7;
     wrapper.vm.title = 'Report Title';
+    wrapper.vm.strategy = 'total';
+    wrapper.vm.bucketBy = 'bucketField';
     const reportSummary = wrapper.vm.reportSummary();
     expect(reportSummary.reportId).toEqual(7);
     expect(reportSummary.title).toEqual('Report Title');
     expect(reportSummary.strategy).toEqual('total');
+    expect(reportSummary.bucketBy).toEqual('bucketField');
   });
 
   it('cancel clears form', () => {
     wrapper.vm.reportId = 7;
     wrapper.vm.title = 'Report Title';
+    wrapper.vm.strategy = 'itemized';
+    wrapper.vm.bucketBy = 'someField';
     expect(wrapper.vm.reportId).toEqual(7);
     expect(wrapper.vm.title).toEqual('Report Title');
+    expect(wrapper.vm.strategy).toEqual('itemized');
+    expect(wrapper.vm.bucketBy).toEqual('someField');
     wrapper.vm.cancelForm();
     expect(wrapper.vm.reportId).toEqual(null);
     expect(wrapper.vm.title).toEqual('');
+    expect(wrapper.vm.strategy).toEqual(null);
+    expect(wrapper.vm.bucketBy).toEqual(null);
   });
 });

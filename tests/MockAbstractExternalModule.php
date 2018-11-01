@@ -16,7 +16,7 @@ class MockAbstractExternalModule {
             "name": "Report 2",
             "reportId": 202,
             "strategy": "itemized",
-            "bucket-by": "bucket_field"
+            "bucketBy": "bucket_field"
           },
           {
             "name": "Report 3",

@@ -61,7 +61,7 @@ final class ReportConfigTest extends TestCase {
 
     $this->assertEquals($config[0]['reportId'], 101);
     $this->assertEquals($config[1]['strategy'], 'itemized');
-    $this->assertEquals($config[1]['bucket-by'], 'bucket_field');
+    $this->assertEquals($config[1]['bucketBy'], 'bucket_field');
     $this->assertEquals($config[2]['name'], 'Report 3');
   }
 
@@ -115,7 +115,7 @@ final class ReportConfigTest extends TestCase {
         'strategy' => 'itemized'
     );
     $errors = $reportConfig->validate($reportSummary);
-    $this->assertTrue(in_array('Missing bucket-by field when using strategy itemized', $errors), 'validate should report missing field bucket-by');
+    $this->assertTrue(in_array('Missing bucketBy field when using strategy itemized', $errors), 'validate should report missing field bucketBy');
   }
 
   public function testValidateMissingBucketByValue() {
@@ -126,10 +126,10 @@ final class ReportConfigTest extends TestCase {
         'reportId' => 42,
         'title' => 'This is the title',
         'strategy' => 'itemized',
-        'bucket-by' => null
+        'bucketBy' => null
     );
     $errors = $reportConfig->validate($reportSummary);
-    $this->assertTrue(in_array('bucket-by must have a value', $errors), 'validate should report missing value for bucket-by');
+    $this->assertTrue(in_array('bucketBy must have a value', $errors), 'validate should report missing value for bucketBy');
   }
 
 }
