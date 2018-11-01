@@ -34,7 +34,7 @@
 <script>
 import { STRATEGY } from '../report-strategy';
 
-const messages = {
+export const messages = {
   titleRequired: 'You must provide a title',
   reportRequired: 'You must select a report',
   strategyRequired: 'You must select a strategy',

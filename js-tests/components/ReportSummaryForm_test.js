@@ -2,6 +2,7 @@ import uuid from 'uuid/v4';
 import { shallowMount } from '@vue/test-utils';
 
 import ReportSummaryForm from '@/components/ReportSummaryForm';
+import { messages } from '@/components/ReportSummaryForm';
 import { STRATEGY } from '@/report-strategy';
 
 function createProvideObject() {
@@ -71,9 +72,9 @@ describe('ReportSummaryForm.vue', () => {
     // Form rendered - no input
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(3);
-    expect(wrapper.vm.errors.includes('You must provide a title')).toBe(true);
-    expect(wrapper.vm.errors.includes('You must select a report')).toBe(true);
-    expect(wrapper.vm.errors.includes('You must select a strategy')).toBe(true);
+    expect(wrapper.vm.errors.includes(messages.titleRequired)).toBe(true);
+    expect(wrapper.vm.errors.includes(messages.reportRequired)).toBe(true);
+    expect(wrapper.vm.errors.includes(messages.strategyRequired)).toBe(true);
     expect(wrapper.findAll('#bucketBy').length).toBe(0);
 
     // Only a report selected
@@ -81,8 +82,8 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.reportId = 42;
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(2);
-    expect(wrapper.vm.errors.includes('You must provide a title')).toBe(true);
-    expect(wrapper.vm.errors.includes('You must select a strategy')).toBe(true);
+    expect(wrapper.vm.errors.includes(messages.titleRequired)).toBe(true);
+    expect(wrapper.vm.errors.includes(messages.strategyRequired)).toBe(true);
     expect(wrapper.findAll('#bucketBy').length).toBe(0);
 
     // Only a title entered
@@ -91,7 +92,7 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.strategy = STRATEGY.TOTAL;
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(1);
-    expect(wrapper.vm.errors.includes('You must select a report')).toBe(true);
+    expect(wrapper.vm.errors.includes(messages.reportRequired)).toBe(true);
     expect(wrapper.findAll('#bucketBy').length).toBe(0);
 
     // Require a bucketBy field on strategy='itemized'
@@ -100,7 +101,7 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.strategy = STRATEGY.ITEMIZED;
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(1);
-    expect(wrapper.vm.errors.includes(`You must select a field to group by when using the ${STRATEGY.ITEMIZED} strategy`)).toBe(true);
+    expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toBe(true);
     expect(wrapper.findAll('#bucketBy').length).toBe(1);
   });
 
