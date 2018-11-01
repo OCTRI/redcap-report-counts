@@ -20,7 +20,7 @@ require_once(dirname(realpath(__FILE__)) . '/ReportStrategy.php');
  *     "reportId": 2,
  *     "title": "Report Title - With Itemized Counts",
  *     "strategy": "itemized",
- *     "bucket-by": "field_to_bucket_on"
+ *     "bucketBy": "field_to_bucket_on"
  *   }
  * ]
  * </code></pre>
@@ -75,12 +75,12 @@ class ReportConfig {
         $errors[] = 'Invalid strategy';
       } else {
         if ($reportSummary['strategy'] === ReportStrategy::ITEMIZED) {
-          if (array_key_exists('bucket-by', $reportSummary)) {
-            if (strlen(trim($reportSummary['bucket-by'])) === 0) {
-              $errors[] = "bucket-by must have a value";
+          if (array_key_exists('bucketBy', $reportSummary)) {
+            if (strlen(trim($reportSummary['bucketBy'])) === 0) {
+              $errors[] = "bucketBy must have a value";
             }
           } else {
-            $errors[] = 'Missing bucket-by field when using strategy ' . ReportStrategy::ITEMIZED;
+            $errors[] = 'Missing bucketBy field when using strategy ' . ReportStrategy::ITEMIZED;
           }
         }
       }

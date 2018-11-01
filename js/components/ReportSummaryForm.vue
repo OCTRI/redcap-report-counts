@@ -15,6 +15,16 @@
           </select>
         </label>
       </div>
+      <div class="form-group">
+        <label>Strategy
+          <select id="strategy" name="strategy" v-model="strategy" class="form-control">
+            <option v-for="strategy in strategies" :key="strategy" :value="strategy">{{ strategy }}</option>
+          </select>
+        </label>
+      </div>
+      <div class="form-group" v-if="isItemizedStrategy">
+        <label>Field to Group Results <input id="bucketBy" name="bucketBy" v-model="bucketBy" type="text" class="form-control"></label>
+      </div>
       <button type="submit" class="btn btn-primary" @click="saveReportSummary">Submit</button>
       <a class="btn btn-link cancel" @click="cancelForm">Reset</a>
     </div>
@@ -22,9 +32,13 @@
 </template>
 
 <script>
-const messages = {
+import { STRATEGY } from '../report-strategy';
+
+export const messages = {
   titleRequired: 'You must provide a title',
-  reportRequired: 'You must select a report'
+  reportRequired: 'You must select a report',
+  strategyRequired: 'You must select a strategy',
+  bucketByRequired: `You must select a field to group by when using the ${STRATEGY.ITEMIZED} strategy`
 };
 
 /**
@@ -38,6 +52,9 @@ export default {
     return {
       title: '',
       reportId: null,
+      strategy: null,
+      bucketBy: null,
+      strategies: Object.values(STRATEGY),
       reports: [],
       errors: []
     };
@@ -73,6 +90,8 @@ export default {
     clearForm() {
       this.title = '';
       this.reportId = null;
+      this.strategy = null;
+      this.bucketBy = null;
     },
 
     /**
@@ -90,7 +109,8 @@ export default {
       return {
         reportId: this.reportId,
         title: this.title,
-        strategy: 'total'
+        strategy: this.strategy,
+        bucketBy: this.bucketBy
       };
     },
 
@@ -104,6 +124,12 @@ export default {
       }
       if (this.reportId === null) {
         this.errors.push(messages.reportRequired);
+      }
+      if (this.strategy === null) {
+        this.errors.push(messages.strategyRequired);
+      }
+      if (this.strategy === STRATEGY.ITEMIZED && this.bucketBy === null) {
+        this.errors.push(messages.bucketByRequired);
       }
       return this.errors.length === 0;
     },
@@ -146,6 +172,13 @@ export default {
      */
     hasErrors() {
       return this.errors.length > 0;
+    },
+
+    /**
+     * @return true if the itemized strategy is selected
+     */
+    isItemizedStrategy() {
+      return this.strategy === STRATEGY.ITEMIZED;
     }
   }
 }

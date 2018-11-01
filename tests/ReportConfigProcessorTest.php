@@ -27,7 +27,7 @@ final class ReportConfigProcessorTest extends TestCase {
         'reportId' => 42,
         'title' => 'Test Report Summary',
         'strategy' => 'itemized',
-        'bucket-by' => 'dsp_stop_reason'
+        'bucketBy' => 'dsp_stop_reason'
     );
 
     /**

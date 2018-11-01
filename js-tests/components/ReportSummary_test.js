@@ -2,6 +2,7 @@ import uuid from 'uuid/v4';
 import { shallowMount } from '@vue/test-utils';
 
 import ReportSummary from '@/components/ReportSummary';
+import { STRATEGY } from '@/report-strategy';
 
 function createProvideObject() {
   return {
@@ -23,7 +24,7 @@ describe('ReportSummary.vue', () => {
         propsData: {
           title: 'Sample Report Name',
           totalRecords: 101,
-          strategy: 'total'
+          strategy: STRATEGY.TOTAL
         }
       });
     });
@@ -42,7 +43,7 @@ describe('ReportSummary.vue', () => {
         propsData: {
           title: 'Sample Itemized Report Name',
           totalRecords: 6,
-          strategy: 'itemized',
+          strategy: STRATEGY.ITEMIZED,
           summaryData: [
             'Patient follow-up',
             'Patient withdrew consent',

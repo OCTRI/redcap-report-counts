@@ -30,7 +30,7 @@ class ReportConfigProcessor {
      * @return Array of values for the field bucketBy
      */
     private function mapBucketData() {
-        $bucketBy = $this->summaryConfig['bucket-by'];
+        $bucketBy = $this->summaryConfig['bucketBy'];
         return array_map(function($record) use ($bucketBy) {
             return $record[$bucketBy];
         }, $this->report);
