@@ -54,7 +54,6 @@ describe('ReportSummaryForm.vue', () => {
   it('saves report summary on submit', (done) => {
     wrapper.vm.title = 'Report 2';
     wrapper.vm.reportId = 2;
-
     wrapper.vm.strategy = STRATEGY.TOTAL;
     wrapper.find('.btn-primary').trigger('click');
     wrapper.vm.savePromise.then(() => done());
