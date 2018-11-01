@@ -76,7 +76,7 @@ class ReportConfig {
       } else {
         if ($reportSummary['strategy'] === ReportStrategy::ITEMIZED) {
           if (array_key_exists('bucket-by', $reportSummary)) {
-            if(strlen(trim($reportSummary['bucket-by'])) === 0) {
+            if (strlen(trim($reportSummary['bucket-by'])) === 0) {
               $errors[] = "bucket-by must have a value";
             }
           } else {

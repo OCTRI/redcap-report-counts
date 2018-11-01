@@ -43,7 +43,7 @@ if (isset($_GET['action'])) {
     // Default action, get report config
     $returnArray = array();
     foreach ($config as $summaryConfig) {
-        $report = json_decode(\REDCap::getReport($summaryConfig['reportId'], 'json', 'export', true /* export labels */), true);
+        $report = json_decode(\REDCap::getReport($summaryConfig['reportId'], 'json', true /* export labels */), true);
         $reportProcessor = new ReportConfigProcessor($report, $summaryConfig);
         $returnArray[] = $reportProcessor->summaryConfig();
     }
