@@ -23,7 +23,7 @@
         </label>
       </div>
       <div class="form-group" v-if="isItemizedStrategy">
-        <label>Group By <input id="bucketBy" name="bucketBy" v-model="bucketBy" type="text" class="form-control"></label>
+        <label>Field to Group Results <input id="bucketBy" name="bucketBy" v-model="bucketBy" type="text" class="form-control"></label>
       </div>
       <button type="submit" class="btn btn-primary" @click="saveReportSummary">Submit</button>
       <a class="btn btn-link cancel" @click="cancelForm">Reset</a>
