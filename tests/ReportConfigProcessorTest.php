@@ -49,7 +49,6 @@ final class ReportConfigProcessorTest extends TestCase {
         $processedSummaryConfig = $reportProcessor->summaryConfig();
 
         $this->assertEquals($expectedSummaryConfig, $processedSummaryConfig, "The processed summary config should contain total number of records.");
-        $this->assertFalse(isset($processedSummaryConfig['data']), "There should be no bucket data for strategy=total");
         $this->assertEquals(6, $processedSummaryConfig['totalRecords'], "Processed summary config should include the total number of records.");
     }
 
@@ -64,8 +63,7 @@ final class ReportConfigProcessorTest extends TestCase {
         );
 
         $expectedSummaryConfig = array_merge($this->mockItemizedSummaryConfig, array(
-            "totalRecords" => 6,
-            "data" => $expectedBucketData
+            "totalRecords" => 6
         ));
 
         $reportProcessor = new ReportConfigProcessor($this->mockReport, $this->mockItemizedSummaryConfig);
@@ -73,7 +71,6 @@ final class ReportConfigProcessorTest extends TestCase {
         $processedSummaryConfig = $reportProcessor->summaryConfig();
 
         $this->assertEquals($expectedSummaryConfig, $processedSummaryConfig, "The processed summary config should contain bucket data and total number of records.");
-        $this->assertEquals($expectedBucketData, $processedSummaryConfig['data'], "Processed summary config should include data for bucketing.");
         $this->assertEquals(6, $processedSummaryConfig['totalRecords'], "Processed summary config should include the total number of records.");
     }
 

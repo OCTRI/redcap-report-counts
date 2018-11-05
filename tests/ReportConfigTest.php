@@ -4,6 +4,7 @@ use Octri\ConsortReport\ReportConfig,
 
 require_once('MockAbstractExternalModule.php');
 require_once('lib/constants.php');
+require_once('lib/ReportStrategy.php');
 
 /**
  * @covers ReportConfig
@@ -60,7 +61,7 @@ final class ReportConfigTest extends TestCase {
     $config = json_decode($reportConfig->getReportConfig(), true);
 
     $this->assertEquals($config[0]['reportId'], 101);
-    $this->assertEquals($config[1]['strategy'], 'itemized');
+    $this->assertEquals($config[1]['strategy'], \Octri\ConsortReport\ReportStrategy::ITEMIZED);
     $this->assertEquals($config[1]['bucketBy'], 'bucket_field');
     $this->assertEquals($config[2]['name'], 'Report 3');
   }
@@ -73,7 +74,7 @@ final class ReportConfigTest extends TestCase {
     $reportSummary = array(
         'reportId' => 42,
         'title' => 'This is the title',
-        'strategy' => 'total'
+        'strategy' => \Octri\ConsortReport\ReportStrategy::TOTAL
     );
     $errors = $reportConfig->validate($reportSummary);
     $this->assertTrue(count($errors) === 0, 'report summary should be valid');
@@ -112,10 +113,10 @@ final class ReportConfigTest extends TestCase {
     $reportSummary = array(
         'reportId' => 42,
         'title' => 'This is the title',
-        'strategy' => 'itemized'
+        'strategy' => \Octri\ConsortReport\ReportStrategy::ITEMIZED
     );
     $errors = $reportConfig->validate($reportSummary);
-    $this->assertTrue(in_array('Missing bucketBy field when using strategy itemized', $errors), 'validate should report missing field bucketBy');
+    $this->assertTrue(in_array('Missing bucketBy field when using strategy ' . \Octri\ConsortReport\ReportStrategy::ITEMIZED, $errors), 'validate should report missing field bucketBy');
   }
 
   public function testValidateMissingBucketByValue() {
@@ -125,7 +126,7 @@ final class ReportConfigTest extends TestCase {
     $reportSummary = array(
         'reportId' => 42,
         'title' => 'This is the title',
-        'strategy' => 'itemized',
+        'strategy' => \Octri\ConsortReport\ReportStrategy::ITEMIZED,
         'bucketBy' => null
     );
     $errors = $reportConfig->validate($reportSummary);

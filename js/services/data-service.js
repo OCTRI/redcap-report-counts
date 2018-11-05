@@ -4,7 +4,8 @@ import qs from 'qs';
 
 export const ENDPOINTS = {
   REPORT_DATA: 'lib/data.php',
-  REPORT_CONFIG: 'lib/settings.php'
+  REPORT_CONFIG: 'lib/settings.php',
+  DATA_DICTIONARY: 'lib/data-dictionary.php'
 };
 
 /**
@@ -25,6 +26,7 @@ export default function createDataService(assetUrls) {
   return {
     reportDataUrl: assetUrls[ENDPOINTS.REPORT_DATA],
     reportConfigUrl: assetUrls[ENDPOINTS.REPORT_CONFIG],
+    dataDictionaryUrl: assetUrls[ENDPOINTS.DATA_DICTIONARY],
 
     /**
      * Extracts data returned by the request.
@@ -64,6 +66,22 @@ export default function createDataService(assetUrls) {
      */
     getReports() {
       return axios.post(this.reportDataUrl + '&action=getReports').then(this._extractData);
-    }
+    },
+
+    /**
+     * Get project fields used to group by for itemized counts.
+     * Sample response:
+     *   [
+     *     {
+     *       "form_name": "screening_id",
+     *       "field_name": "screen_id",
+     *       "field_label": "Screening ID"
+     *     }
+     *   ]
+     * @return {Promise->Object} list of fields, field labels and their corresponding form names
+     */
+    getBucketByFields() {
+      return axios.post(this.dataDictionaryUrl).then(this._extractData);
+	}
   };
 }
