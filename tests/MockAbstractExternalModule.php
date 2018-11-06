@@ -34,7 +34,7 @@ class MockAbstractExternalModule {
   );
 
   public function getProjectSetting($key, $project_id) {
-    return $settings[$project_id][$key];
+    return self::$settings[$project_id][$key];
   }
 
   public function setProjectSetting($key, $value, $project_id) {

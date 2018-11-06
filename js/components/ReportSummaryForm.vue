@@ -5,13 +5,13 @@
       <ul v-if="hasErrors">
         <li v-for="error in errors" :key="error" class="text-danger font-weight-bold">{{ error }}</li>
       </ul>
-      <div class="row">
+      <div class="row form-group">
         <div class="col-lg-6">
           <label for="title">Title</label>
           <input id="title" name="title" v-model="title" type="text" class="form-control">
         </div>
       </div>
-      <div class="row mt-3">
+      <div class="row form-group">
         <div class="col">
           <label>Report
             <select id="reportId" name="reportId" v-model="reportId" class="form-control">
@@ -20,7 +20,7 @@
           </label>
         </div>
       </div>
-      <div class="row mt-3">
+      <div class="row form-group">
         <div class="col">
           <label for="strategy">Summary Type</label>
           <div class="form-check" v-for="(strategyVal, i) in strategies" :key="strategyVal">
@@ -29,7 +29,7 @@
           </div>
         </div>
       </div>
-      <div class="row mt-3" v-if="isItemizedStrategy">
+      <div class="row form-group" v-if="isItemizedStrategy">
         <div class="col">
           <label>Field to Group Results
             <select id="bucketBy" name="bucketBy" v-model="bucketBy" class="form-control">
@@ -40,7 +40,7 @@
           </label>
         </div>
       </div>
-      <div class="row mt-3">
+      <div class="row form-group">
         <div class="col">
           <button type="submit" class="btn btn-primary" @click="saveReportSummary">Submit</button>
           <a class="btn btn-link cancel" @click="cancelForm">Reset</a>
