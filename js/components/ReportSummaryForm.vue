@@ -14,7 +14,7 @@
       <div class="row form-group">
         <div class="col">
           <label>Report
-            <select id="reportId" name="reportId" v-model="reportId" class="form-control">
+            <select id="reportId" name="reportId" v-model="reportId" class="form-control" @change="loadReportFields()">
               <option v-for="report in reports" :value="report.reportId">{{ report.title }}</option>
             </select>
           </label>
@@ -24,18 +24,16 @@
         <div class="col">
           <label for="strategy">Summary Type</label>
           <div class="form-check" v-for="(strategyVal, i) in strategies" :key="strategyVal">
-            <input class="form-check-input" :id="'strategy' + i" name="strategy" v-model="strategy" :value="strategyVal" type="radio"></label>
+            <input class="form-check-input" :id="'strategy' + i" name="strategy" v-model="strategy" :value="strategyVal" type="radio" :disabled="!reportSelected"></label>
             <label class="form-check-label" :for="'strategy' + i">{{ strategyVal }}</label>
           </div>
         </div>
       </div>
-      <div class="row form-group" v-if="isItemizedStrategy">
+      <div class="row form-group" v-if="showBucketByFields">
         <div class="col">
           <label>Field to Group Results
             <select id="bucketBy" name="bucketBy" v-model="bucketBy" class="form-control">
-              <optgroup :label="label" v-for="(fields, label) in groupedBucketByFields" :key="fields.field_name">
-                <option v-for="field in fields" :key="field.field_name" :value="field.field_name">{{field.field_name}} "{{field.field_label}}"</option>
-              </optgroup>
+              <option v-for="field in reportFields" :key="field.field_name" :value="field.field_name">{{field.field_name}} "{{field.field_label}}"</option>
             </select>
           </label>
         </div>
@@ -52,13 +50,13 @@
 
 <script>
 import { STRATEGY } from '../report-strategy';
-import groupBy from 'lodash/groupBy';
 
 export const messages = {
   titleRequired: 'You must provide a title',
   reportRequired: 'You must select a report',
   strategyRequired: 'You must select a summary type',
-  bucketByRequired: `You must select a field to group by when using the ${STRATEGY.ITEMIZED} summary type`
+  bucketByRequired: `You must select a field to group by when using the '${STRATEGY.ITEMIZED}' summary type`,
+  noBucketByFields: `There are no fields to group by for the selected report when the '${STRATEGY.ITEMIZED}' summary type is selected.`
 };
 
 /**
@@ -77,14 +75,14 @@ export default {
       strategies: Object.values(STRATEGY),
       reports: [],
       errors: [],
-      bucketByFields: []
+      reportFields: [],
+      loadingReportFields: false
     };
   },
 
   mounted() {
     // capture the promise to synchronize tests
     this.reportPromise = this.fetchReports();
-    this.bucketByFields = this.fetchBucketByFields();
   },
 
   methods: {
@@ -106,6 +104,22 @@ export default {
       this.reports = responseArray;
     },
 
+    fetchReportFields(reportId) {
+      const { dataService } = this;
+      this.clearErrors();
+      this.loadingReportFields = true;
+      return dataService.getReportFields(this.reportId)
+        .then(this.captureReportFields)
+        .catch(this.handleConfigError)
+        .finally(() => {
+          this.loadingReportFields = false;
+        });
+    },
+
+    captureReportFields(responseArray) {
+      this.reportFields = responseArray;
+    },
+
     /**
      * Clears current form values.
      */
@@ -114,6 +128,10 @@ export default {
       this.reportId = null;
       this.strategy = null;
       this.bucketBy = null;
+    },
+
+    clearErrors() {
+      this.errors = [];
     },
 
     /**
@@ -140,7 +158,7 @@ export default {
      * Validate form.
      */
     validForm() {
-      this.errors = [];
+      this.clearErrors();
       if (!this.title.trim().length) {
         this.errors.push(messages.titleRequired);
       }
@@ -187,20 +205,35 @@ export default {
       this.errors.push('An error occurred while trying to save this count.');
     },
 
-    fetchBucketByFields() {
-      const { dataService } = this;
-      return dataService.getBucketByFields()
-        .then(this.captureBucketByFields)
-        .catch(this.handleGettingFieldsError);
+    /**
+     * Load fields to group by for the selected report.
+     */
+    loadReportFields() {
+      this.reportFieldsPromise = this.fetchReportFields();
+    }
+  },
+
+  watch: {
+    /**
+     * Watch strategy and if it is itemized and there are no fields to group by push an error.
+     */
+    strategy: function() {
+      this.clearErrors();
+      if (this.strategy === STRATEGY.ITEMIZED && this.reportFields.length === 0) {
+        this.errors.push(messages.noBucketByFields);
+      }
     },
 
-    captureBucketByFields(responseArray) {
-      this.bucketByFields = responseArray;
-    },
-
-    handleGettingFieldsError(reason) {
-      this.errors.push('An error occurred while retrieving fields to group by.');
-    },
+    /**
+     * Watch reportFields and if there are no fields and strategy is itemized push an error.
+     */
+    reportFields: function() {
+      this.clearErrors();
+      if (this.reportFields.length === 0 && this.strategy === STRATEGY.ITEMIZED) {
+        this.bucketBy = null;
+        this.errors.push(messages.noBucketByFields);
+      }
+    }
   },
 
   computed: {
@@ -219,12 +252,24 @@ export default {
     },
 
     /**
-     * Group fields by form name. Used to generate optgroups in form select.
+     * @return true if a report has been selected.
      */
-    groupedBucketByFields() {
-      return groupBy(this.bucketByFields, function(obj) {
-        return obj.form_name;
-      });
+    reportSelected() {
+      return this.reportId !== null;
+    },
+
+    /**
+     * @return true if itemized strategy and the report has fields to group by.
+     */
+    hasReportFields() {
+      return this.isItemizedStrategy && this.reportFields.length > 0;
+    },
+
+    /**
+     * @return true if itemized strategy and there are fields to group by.
+     */
+    showBucketByFields() {
+      return this.isItemizedStrategy && !this.loadingReportFields && this.hasReportFields;
     }
   }
 }
