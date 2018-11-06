@@ -27,8 +27,8 @@
       </div>
 
       <div v-if="hasReportSummaries">
-        <ReportSummary v-for="summary in reportSummaries"
-                       :key="summary.reportId"
+        <ReportSummary v-for="(summary, i) in reportSummaries"
+                       :key="summary.reportId + i"
                        :title="summary.title"
                        :strategy="summary.strategy"
                        :summaryData="summary.data"

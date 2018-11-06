@@ -31,6 +31,31 @@ if (isset($_GET['action'])) {
         mysqli_stmt_close($stmt);
 
         exit(json_encode($returnArray));
+    } else if ($_GET['action'] === 'getReportFields') {
+        $reportId = intval($_GET['reportId']);
+        $report = json_decode(\REDCap::getReport($reportId, 'json'), true);
+        if (count($report) > 0) {
+            $reportFields = array_keys($report[0]);
+
+            $dictionary = json_decode(\REDCap::getDataDictionary('json'), true);
+
+            $fields = array();
+            foreach ($reportFields as $key=>$field) {
+                foreach ($dictionary as $dictField) {
+                    if ($field === $dictField['field_name']
+                            && in_array($dictField['field_type'], array('radio', 'dropdown', 'truefalse', 'yesno'))) {
+                        $fields[] = array(
+                            'field_name' => $dictField['field_name'],
+                            'field_label' => $dictField['field_label']
+                        );
+                    }
+                }
+            }
+
+            exit(json_encode($fields));
+        } else {
+            exit(json_encode(array()));
+        }
     }
 } else {
     $reportConfigInstance = new ReportConfig($project_id, $module);

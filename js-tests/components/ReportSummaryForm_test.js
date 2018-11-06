@@ -5,6 +5,12 @@ import ReportSummaryForm from '@/components/ReportSummaryForm';
 import { messages } from '@/components/ReportSummaryForm';
 import { STRATEGY } from '@/report-strategy';
 
+const mockReportFields = [
+  {field_name: 'field_1', field_label: 'Field 1' },
+  {field_name: 'field_2', field_label: 'Field 2' },
+  {field_name: 'field_3', field_label: 'Field 3' }
+];
+
 function createProvideObject() {
   return {
     assetUrls: {},
@@ -21,14 +27,8 @@ function createProvideObject() {
         return Promise.resolve([{reportId: 2, title: 'Report 2', strategy: STRATEGY.TOTAL, totalRecords: 19}]);
       },
 
-      getBucketByFields() {
-        return Promise.resolve([
-          { form_name: 'form_1', field_name: 'field_1_form_1', field_label: 'Field 1 Form 1' },
-          { form_name: 'form_1', field_name: 'field_2_form_1', field_label: 'Field 2 Form 1' },
-          { form_name: 'form_2', field_name: 'field_1_form_2', field_label: 'Field 1 Form 2' },
-          { form_name: 'form_2', field_name: 'field_2_form_2', field_label: 'Field 2 Form 2' },
-          { form_name: 'form_2', field_name: 'field_3_form_2', field_label: 'Field 3 Form 2' }
-        ]);
+      getReportFields() {
+        return Promise.resolve(mockReportFields);
       }
     }
   };
@@ -80,22 +80,20 @@ describe('ReportSummaryForm.vue', () => {
     });
 
     it('renders strategy drop-down with all group by values', () => {
+      wrapper.vm.reportId = 42;
       wrapper.vm.strategy = STRATEGY.ITEMIZED;
+      wrapper.vm.reportFields = mockReportFields;
 
-      const optGroups = wrapper.findAll('#bucketBy optgroup');
       expect(wrapper.findAll('#bucketBy').length).toBe(1);
-      expect(optGroups.length).toBe(2);
 
-      const optionsGroup1 = optGroups.at(0).findAll('option');
-      const optionsGroup2 = optGroups.at(1).findAll('option');;
-      expect(optionsGroup1.length).toBe(2);
-      expect(optionsGroup2.length).toBe(3);
-      // check first option in first optgroup
-      expect(optionsGroup1.at(0).text()).toBe('field_1_form_1 "Field 1 Form 1"');
-      expect(optionsGroup1.at(0).attributes().value).toBe('field_1_form_1');
-      // check third option in second optgroup
-      expect(optionsGroup2.at(2).text()).toBe('field_3_form_2 "Field 3 Form 2"');
-      expect(optionsGroup2.at(2).attributes().value).toBe('field_3_form_2');
+      const options = wrapper.findAll('#bucketBy option');
+      expect(options.length).toBe(3);
+
+      expect(options.at(0).text()).toBe('field_1 "Field 1"');
+      expect(options.at(0).attributes().value).toBe('field_1');
+
+      expect(options.at(2).text()).toBe('field_3 "Field 3"');
+      expect(options.at(2).attributes().value).toBe('field_3');
     });
   });
 
@@ -146,11 +144,35 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.title = 'Itemized Results';
     wrapper.vm.reportId = 42;
     wrapper.vm.strategy = STRATEGY.ITEMIZED;
+    wrapper.vm.reportFields = mockReportFields;
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(1);
     expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toBe(true);
     expect(wrapper.findAll('#bucketBy').length).toBe(1);
     expect(wrapper.findAll('#bucketBy').isVisible()).toBe(true);
+  });
+
+  it('checks for fields to group by and displays error message accordingly', () => {
+    wrapper.vm.title = 'No fields to group by test';
+    wrapper.vm.reportId = 42;
+    wrapper.vm.strategy = STRATEGY.ITEMIZED;
+    wrapper.vm.reportFields = [];
+
+    // Show error message, no fields to group by
+    expect(wrapper.vm.errors.length).toEqual(1);
+    expect(wrapper.vm.errors.includes(messages.noBucketByFields)).toBe(true);
+
+    // Strategy changed to total, remove error message
+    wrapper.vm.strategy = STRATEGY.TOTAL;
+    expect(wrapper.vm.errors.length).toEqual(0);
+
+    // Strategy changed back to itemized, display error message
+    wrapper.vm.strategy = STRATEGY.ITEMIZED;
+    expect(wrapper.vm.errors.length).toEqual(1);
+
+    // Fields to group by are loaded, remove error message
+    wrapper.vm.reportFields = mockReportFields;
+    expect(wrapper.vm.errors.length).toEqual(0);
   });
 
   it('retrieves report summary values from form', () => {
@@ -179,5 +201,45 @@ describe('ReportSummaryForm.vue', () => {
     expect(wrapper.vm.title).toEqual('');
     expect(wrapper.vm.strategy).toEqual(null);
     expect(wrapper.vm.bucketBy).toEqual(null);
+  });
+
+  it('disables strategy radio buttons unless a report is selected', () => {
+    wrapper.vm.title = 'Report Title';
+
+    const radios = wrapper.findAll('input[name="strategy"]');
+    expect(radios.at(0).attributes().disabled).toBeTruthy();
+    expect(radios.at(1).attributes().disabled).toBeTruthy();
+
+    wrapper.vm.reportId = 42;
+
+    expect(radios.at(0).attributes().disabled).toBeFalsy()
+    expect(radios.at(1).attributes().disabled).toBeFalsy();
+  });
+
+  it('prevents form submission if changing report to one that does not have fields to bucket by', () => {
+    // Choose a report that has reportFields
+    wrapper.vm.title = 'Prevent Submission';
+    wrapper.vm.reportId = 10;
+    wrapper.vm.strategy = STRATEGY.ITEMIZED;
+    wrapper.vm.reportFields = mockReportFields;
+
+    // Select one of the bucketBy options
+    wrapper.findAll('#bucketBy option').at(0).element.selected = true;
+    wrapper.find('#bucketBy').trigger('change');
+
+    // Switch to a report that does not have reportFields
+    wrapper.vm.reportId = 11;
+    wrapper.vm.reportFields = [];
+
+    // There should now be a message saying there are no fields to group by
+    expect(wrapper.vm.errors.includes(messages.noBucketByFields)).toBe(true);
+    expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toBe(false);
+
+    // Try to submit the form
+    wrapper.find('.btn-primary').trigger('click');
+
+    // Ensure that the previously selected bucketBy field is not selected which
+    // prevents the form from being submitted with an invalid bucketBy value.
+    expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toBe(true);
   });
 });

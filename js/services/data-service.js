@@ -73,19 +73,11 @@ export default function createDataService(assetUrls) {
     },
 
     /**
-     * Get project fields used to group by for itemized counts.
-     * Sample response:
-     *   [
-     *     {
-     *       "form_name": "screening_id",
-     *       "field_name": "screen_id",
-     *       "field_label": "Screening ID"
-     *     }
-     *   ]
-     * @return {Promise->Object} list of fields, field labels and their corresponding form names
+     * @param {Number} The report id
+     * @return {Promise->Object} list of field names and labels for the current project
      */
-    getBucketByFields() {
-      return this._makeRequest(this.dataDictionaryUrl);
+    getReportFields(reportId) {
+      return this._makeRequest(`${this.reportDataUrl}&action=getReportFields&reportId=${reportId}`);
     }
   };
 }
