@@ -38,6 +38,10 @@ export default function createDataService(assetUrls) {
       return response.data;
     },
 
+    _makeRequest(url, data, options) {
+      return axios.post(url, data, options).then(this._extractData);
+    },
+
     /**
      * Get a report summary that includes the total number of records for a report.
      *
@@ -46,7 +50,7 @@ export default function createDataService(assetUrls) {
      *   - totalRecords: The total number of records for a report.
      */
     fetchReportSummary() {
-      return axios.post(this.reportDataUrl).then(this._extractData);
+      return this._makeRequest(this.reportDataUrl);
     },
 
     /**
@@ -57,7 +61,7 @@ export default function createDataService(assetUrls) {
     saveReportSummary(reportSummary) {
       const data = { reportSummary: JSON.stringify({ reportSummary }) };
       const options = { timeout: 5000 };
-      return axios.post(this.reportConfigUrl + '&action=saveReportSummary', data, options).then(this._extractData);
+      return this._makeRequest(`${this.reportConfigUrl}&action=saveReportSummary`, data, options);
     },
 
     /**
@@ -65,7 +69,7 @@ export default function createDataService(assetUrls) {
      * @return {Promise->Object} list of reports.
      */
     getReports() {
-      return axios.post(this.reportDataUrl + '&action=getReports').then(this._extractData);
+      return this._makeRequest(`${this.reportDataUrl}&action=getReports`);
     },
 
     /**
@@ -81,7 +85,7 @@ export default function createDataService(assetUrls) {
      * @return {Promise->Object} list of fields, field labels and their corresponding form names
      */
     getBucketByFields() {
-      return axios.post(this.dataDictionaryUrl).then(this._extractData);
+      return this._makeRequest(this.dataDictionaryUrl);
     }
   };
 }

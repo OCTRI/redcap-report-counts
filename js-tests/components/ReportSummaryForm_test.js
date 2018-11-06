@@ -11,9 +11,9 @@ function createProvideObject() {
     dataService: {
       getReports() {
         return Promise.resolve([
-          { reportId: 1, "title": "Report 1" },
-          { reportId: 2, "title": "Report 2" },
-          { reportId: 3, "title": "Report 3" }
+          { reportId: 1, 'title': 'Report 1' },
+          { reportId: 2, 'title': 'Report 2' },
+          { reportId: 3, 'title': 'Report 3' }
         ]);
       },
 
@@ -23,11 +23,11 @@ function createProvideObject() {
 
       getBucketByFields() {
         return Promise.resolve([
-          { form_name: "form_1", field_name: "field_1_form_1", field_label: "Field 1 Form 1" },
-          { form_name: "form_1", field_name: "field_2_form_1", field_label: "Field 2 Form 1" },
-          { form_name: "form_2", field_name: "field_1_form_2", field_label: "Field 1 Form 2" },
-          { form_name: "form_2", field_name: "field_2_form_2", field_label: "Field 2 Form 2" },
-          { form_name: "form_2", field_name: "field_3_form_2", field_label: "Field 3 Form 2" }
+          { form_name: 'form_1', field_name: 'field_1_form_1', field_label: 'Field 1 Form 1' },
+          { form_name: 'form_1', field_name: 'field_2_form_1', field_label: 'Field 2 Form 1' },
+          { form_name: 'form_2', field_name: 'field_1_form_2', field_label: 'Field 1 Form 2' },
+          { form_name: 'form_2', field_name: 'field_2_form_2', field_label: 'Field 2 Form 2' },
+          { form_name: 'form_2', field_name: 'field_3_form_2', field_label: 'Field 3 Form 2' }
         ]);
       }
     }
