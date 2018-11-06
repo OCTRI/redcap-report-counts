@@ -105,7 +105,7 @@ class ReportConfig {
    * Saves a ReportSummary
    * @param {Array} reportSummary - Configuration for a report summary
    * @return true if the report summary was saved, or an array of validation errors
-   */ 
+   */
   public function saveReportSummary($reportSummary) {
     $errors = $this->validate($reportSummary);
 

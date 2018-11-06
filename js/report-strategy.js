@@ -1,4 +1,4 @@
 export const STRATEGY = {
-  TOTAL: 'total',
-  ITEMIZED: 'itemized'
+  TOTAL: 'Total count',
+  ITEMIZED: 'Itemized count'
 };
