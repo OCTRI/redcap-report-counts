@@ -124,4 +124,14 @@ class ReportConfig {
     return true;
   }
 
+  /**
+   * Save list of all report summaries
+   * @param {Array} reportSummaries - Configuration for all summaries.
+   * @return true if persisted, otherwise an array of validation errors
+   */
+  public function saveReportSummaries($reportSummaries) {
+    $this->module->setProjectSetting($this->reportConfigKey, $reportSummaries, $this->project_id);
+    return true;
+  }
+
 }

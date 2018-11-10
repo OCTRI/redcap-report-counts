@@ -4,6 +4,7 @@ import Vue from 'vue';
 
 import ConsortReport from './components/ConsortReport';
 import createDataService from './services/data-service';
+import '../lib/consort-report.css';
 
 /**
  * Main method that will render a consort diagram.

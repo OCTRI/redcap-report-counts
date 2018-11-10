@@ -133,4 +133,18 @@ final class ReportConfigTest extends TestCase {
     $this->assertTrue(in_array('bucketBy must have a value', $errors), 'validate should report missing value for bucketBy');
   }
 
+  public function testSaveReportSummaries() {
+    $reportSummaries = array(array(
+        "reportId" => 1,
+        "title" => "Title One",
+        "strategy" => "Itemized count",
+        "bucketBy" => "bucket_field"
+    ));
+    $mockModule = $this->getMockBuilder(get_class(new MockAbstractExternalModule()))->getMock();
+    $module = $this->prophesize(get_class($mockModule));
+    $module->setProjectSetting($this->reportConfigKey, $reportSummaries, $this->projectIdWithConfigSet)->shouldBeCalled();
+    $reportConfig = new ReportConfig($this->projectIdWithConfigSet, $module->reveal());
+    $reportConfig->saveReportSummaries($reportSummaries);
+  }
+
 }

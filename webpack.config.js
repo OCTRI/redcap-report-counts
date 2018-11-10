@@ -87,7 +87,7 @@ module.exports = {
       inject: false
     }),
     new ExtractTextWebpackPlugin({
-      filename: 'assets/consort-report.[contenthash].css'
+      filename: 'assets/consort-report.[hash].css'
     })
   ]
 };

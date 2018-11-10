@@ -65,6 +65,17 @@ export default function createDataService(assetUrls) {
     },
 
     /**
+     * Post report summary for saving to report config.
+     * @param {Object} reportSummary Data for a report summary.
+     * @return {Promise->Object} the response's report summary data
+     */
+    saveReportSummaries(reportSummaries) {
+      const data = { reportSummaries: JSON.stringify({ reportSummaries }) };
+      const options = { timeout: 5000 };
+      return this._makeRequest(`${this.reportConfigUrl}&action=saveReportSummaries`, data, options);
+    },
+
+    /**
      * Get all of the reports for the project.
      * @return {Promise->Object} list of reports.
      */
