@@ -22,6 +22,7 @@ describe('ReportSummary.vue', () => {
     beforeEach(() => {
       wrapper = shallowMount(ReportSummary, {
         propsData: {
+          index: 3,
           title: 'Sample Report Name',
           totalRecords: 101,
           strategy: STRATEGY.TOTAL
@@ -41,6 +42,7 @@ describe('ReportSummary.vue', () => {
     beforeEach(() => {
       wrapper = shallowMount(ReportSummary, {
         propsData: {
+          index: 0,
           title: 'Sample Itemized Report Name',
           totalRecords: 6,
           strategy: STRATEGY.ITEMIZED,
@@ -66,6 +68,25 @@ describe('ReportSummary.vue', () => {
         expect(wrapper.findAll('li').at(0).text()).toEqual('3 - Patient follow-up');
         expect(wrapper.findAll('li').at(1).text()).toEqual('2 - Patient withdrew consent');
         expect(wrapper.findAll('li').at(2).text()).toEqual('1 - Perceived drug side effects');
+        done();
+      });
+    });
+
+    it('emits deleteSummary event', (done) => {
+      wrapper.vm.$nextTick(() => {
+        spyOn(window, 'confirm').and.returnValue(true);
+        wrapper.find('.delete').trigger('click');
+        expect(wrapper.emitted('deleteSummary')).toBeTruthy();
+        expect(wrapper.emitted('deleteSummary')[0]).toBeTruthy();
+        done();
+      });
+    });
+
+    it('does not emit deleteSummary event if canceled', (done) => {
+      wrapper.vm.$nextTick(() => {
+        spyOn(window, 'confirm').and.returnValue(false);
+        wrapper.find('.delete').trigger('click');
+        expect(wrapper.emitted('deleteSummary')).toBeFalsy();
         done();
       });
     });

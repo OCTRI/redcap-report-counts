@@ -29,10 +29,12 @@
       <div v-if="hasReportSummaries">
         <ReportSummary v-for="(summary, i) in reportSummaries"
                        :key="summary.reportId + i"
+                       :index="i"
                        :title="summary.title"
                        :strategy="summary.strategy"
                        :summaryData="summary.data"
-                       :total-records="summary.totalRecords" />
+                       :total-records="summary.totalRecords"
+                       @deleteSummary="deleteReportSummary" />
       </div>
     </div>
   </div>
@@ -106,11 +108,28 @@ export default {
     },
 
     /**
+     * Delete a report summary.
+     * @param {Integer} index - the report summary index to be delete from reportSummaries
+     */
+    deleteReportSummary(index) {
+      const { dataService } = this;
+      this.reportSummaries.splice(index, 1);
+      this.saveSummariesPromise = dataService.saveReportSummaries(this.reportSummaries.map((summary) => {
+        return {
+          reportId: summary.reportId,
+          title: summary.title,
+          strategy: summary.strategy,
+          bucketBy: summary.bucketBy
+        };
+      })).catch(this.handleConfigError);
+    },
+
+    /**
      * Handles rejection of the `fetchReportConfig` request.
      * @param {Error} reason - the error that triggered rejection.
      */
     handleConfigError(reason) {
-      this.errorMessage = messages.warnings.reportConfigError;
+      this.errorMessage = messages.warnings.configError;
       this.errorDetails = [ reason.message ];
     },
 

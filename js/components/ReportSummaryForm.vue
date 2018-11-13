@@ -15,7 +15,7 @@
         <div class="col">
           <label>Report
             <select id="reportId" name="reportId" v-model="reportId" class="form-control" @change="loadReportFields()">
-              <option v-for="report in reports" :value="report.reportId">{{ report.title }}</option>
+              <option v-for="report in reports" :key="report.reportId" :value="report.reportId">{{ report.title }}</option>
             </select>
           </label>
         </div>
