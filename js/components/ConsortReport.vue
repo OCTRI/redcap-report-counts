@@ -114,8 +114,14 @@ export default {
     deleteReportSummary(index) {
       const { dataService } = this;
       this.reportSummaries.splice(index, 1);
-      this.saveSummariesPromise = dataService.saveReportSummaries(this.reportSummaries)
-        .catch(this.handleConfigError);
+      this.saveSummariesPromise = dataService.saveReportSummaries(this.reportSummaries.map((summary) => {
+        return {
+          reportId: summary.reportId,
+          title: summary.title,
+          strategy: summary.strategy,
+          bucketBy: summary.bucketBy
+        };
+      })).catch(this.handleConfigError);
     },
 
     /**
