@@ -1,4 +1,3 @@
-import uuid from 'uuid/v4';
 import { shallowMount } from '@vue/test-utils';
 
 import ReportSummary from '@/components/ReportSummary';

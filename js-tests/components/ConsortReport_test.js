@@ -1,4 +1,3 @@
-import uuid from 'uuid/v4';
 import { shallowMount, mount } from '@vue/test-utils';
 
 import ConsortReport from '@/components/ConsortReport';
