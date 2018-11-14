@@ -106,17 +106,16 @@ describe('ReportSummary.vue', () => {
     it('handles missing values', (done) => {
       propsData.summaryData = [
         'Patient follow-up',
-        42,
+        '42',
         'Patient withdrew consent',
         '',
         'Patient follow-up',
-        42,
+        '42',
         'Patient follow-up',
         null,
         'Patient withdrew consent',
-        42,
-        42,
-        undefined,
+        '42',
+        '42',
         'Perceived drug side effects',
         '       '
       ];
@@ -128,7 +127,7 @@ describe('ReportSummary.vue', () => {
 
         const li = wrapper.findAll('li');
         expect(li.length).toBe(5);
-        expect(li.at(4).text()).toBe(`4 - ${MISSING}`);
+        expect(li.at(4).text()).toBe(`3 - ${MISSING}`);
         done();
       });
     });
@@ -139,7 +138,8 @@ describe('ReportSummary.vue', () => {
         ...new Array(2).fill('Afakemonth'),
         ...new Array(10).fill('February'),
         ...new Array(2).fill('August'),
-        ...new Array(42).fill(''),
+        ...new Array(40).fill(''),
+        ...new Array(2).fill(null),
         ...new Array(7).fill('March'),
         ...new Array(2).fill('April'),
         ...new Array(15).fill('May')

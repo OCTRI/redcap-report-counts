@@ -17,7 +17,8 @@
 <script>
 import countBy from 'lodash/countBy';
 import orderBy from 'lodash/orderBy';
-import { MISSING } from '../constants'
+import isString from 'lodash/isString';
+import { MISSING } from '../constants';
 import { STRATEGY } from '../report-strategy';
 
 /**
@@ -54,18 +55,13 @@ export default {
     },
 
     /**
-     * Checks a value to determine if it is missing. Missing values are those
-     * that are zero in length, undefined, only whitespace, or null.
+     * Checks a value to determine if it is missing. A value is missing
+     * if it is not a string, or the string is of zero length.
+     * @param String value - The label for a field value.
      * @return true if the value is missing
      */
     missingValue(value) {
-      if (value == null || typeof value === 'undefined') {
-        return true;
-      } else {
-        const stringValue = new String(value);
-        const trimmed = stringValue.trim();
-        return trimmed.length ? false : true;
-      }
+      return !isString(value) || !value.trim();
     }
   },
 
@@ -82,9 +78,7 @@ export default {
      * @return true if summaryData contains a missing value.
      */
     hasMissingValue() {
-      return this.summaryData.filter(val => {
-        return this.missingValue(val);
-      }).length > 0;
+      return this.summaryData.some(val => this.missingValue(val));
     },
 
     /**
@@ -110,14 +104,9 @@ export default {
      * @return an array of objects where each object has a label and a count.
      */
     mappedSummaryCounts() {
-      const summaryData = [];
-      Object.keys(this.summaryCounts).forEach(key => {
-        summaryData.push({
-          label: key,
-          count: this.summaryCounts[key]
-        });
-      });
-      return summaryData;
+      const { summaryCounts } = this;
+      return Object.keys(summaryCounts)
+        .map(key => ({ label: key, count: summaryCounts[key] }));
     },
 
     /**
