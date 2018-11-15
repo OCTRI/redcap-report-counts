@@ -1,21 +1,9 @@
-import uuid from 'uuid/v4';
 import { shallowMount } from '@vue/test-utils';
 
 import ReportSummary from '@/components/ReportSummary';
 import { STRATEGY } from '@/report-strategy';
 import { MISSING } from '@/constants';
 import shuffle from 'lodash/shuffle';
-
-function createProvideObject() {
-  return {
-    assetUrls: {},
-    dataService: {
-      fetchReportSummary() {
-        return Promise.resolve([{ "title": "Report Name", "reportId": 42 }]);
-      }
-    }
-  };
-}
 
 describe('ReportSummary.vue', () => {
   describe('For total strategy', () => {

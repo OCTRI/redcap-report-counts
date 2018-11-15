@@ -1,6 +1,5 @@
 import assert from 'assert';
 import axios from 'axios';
-import qs from 'qs';
 
 export const ENDPOINTS = {
   REPORT_DATA: 'lib/data.php',

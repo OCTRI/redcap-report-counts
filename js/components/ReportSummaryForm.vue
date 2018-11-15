@@ -24,7 +24,7 @@
         <div class="col">
           <label for="strategy">Summary Type</label>
           <div class="form-check" v-for="(strategyVal, i) in strategies" :key="strategyVal">
-            <input class="form-check-input" :id="'strategy' + i" name="strategy" v-model="strategy" :value="strategyVal" type="radio" :disabled="!reportSelected"></label>
+            <input class="form-check-input" :id="'strategy' + i" name="strategy" v-model="strategy" :value="strategyVal" type="radio" :disabled="!reportSelected">
             <label class="form-check-label" :for="'strategy' + i">{{ strategyVal }}</label>
           </div>
         </div>
