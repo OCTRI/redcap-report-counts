@@ -32,6 +32,7 @@
                        :index="i"
                        :title="summary.title"
                        :strategy="summary.strategy"
+                       :bucketByLabel="summary.bucketByLabel"
                        :summaryData="summary.data"
                        :total-records="summary.totalRecords"
                        @deleteSummary="deleteReportSummary" />

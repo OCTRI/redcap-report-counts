@@ -5,6 +5,11 @@ import { STRATEGY } from '@/report-strategy';
 import { MISSING } from '@/constants';
 import shuffle from 'lodash/shuffle';
 
+const selectors = {
+  metadata: '.summary-metadata li',
+  counts: '[data-description="itemized-counts"] li'
+};
+
 describe('ReportSummary.vue', () => {
   describe('For total strategy', () => {
     let wrapper;
@@ -22,7 +27,10 @@ describe('ReportSummary.vue', () => {
 
     it('renders report summary', () => {
       const reportName = wrapper.find('h3');
-      expect(reportName.text()).toBe('101 - Sample Report Name');
+      expect(reportName.text()).toBe('Sample Report Name');
+      const metadata = wrapper.findAll(selectors.metadata);
+      expect(metadata.length).toBe(1);
+      expect(metadata.at(0).text()).toBe('Total Count: 101');
     });
   });
 
@@ -36,6 +44,7 @@ describe('ReportSummary.vue', () => {
           title: 'Sample Itemized Report Name',
           totalRecords: 6,
           strategy: STRATEGY.ITEMIZED,
+          bucketByLabel: 'Field Label',
           summaryData: [
             'Patient follow-up',
             'Patient withdrew consent',
@@ -50,14 +59,24 @@ describe('ReportSummary.vue', () => {
 
     it('renders report summary with itemized counts', (done) => {
       const reportName = wrapper.find('h3');
-
-      expect(reportName.text()).toBe('6 - Sample Itemized Report Name');
+      expect(reportName.text()).toBe('Sample Itemized Report Name');
 
       wrapper.vm.$nextTick(() => {
-        expect(wrapper.findAll('li').length).toEqual(3);
-        expect(wrapper.findAll('li').at(0).text()).toEqual('3 - Patient follow-up');
-        expect(wrapper.findAll('li').at(1).text()).toEqual('2 - Patient withdrew consent');
-        expect(wrapper.findAll('li').at(2).text()).toEqual('1 - Perceived drug side effects');
+        const li = wrapper.findAll(selectors.counts);
+        expect(li.length).toEqual(3);
+        expect(li.at(0).text()).toEqual('3 - Patient follow-up');
+        expect(li.at(1).text()).toEqual('2 - Patient withdrew consent');
+        expect(li.at(2).text()).toEqual('1 - Perceived drug side effects');
+        done();
+      });
+    });
+
+    it('renders a metadata section', (done) => {
+      wrapper.vm.$nextTick(() => {
+        const metadata = wrapper.findAll(selectors.metadata);
+        expect(metadata.length).toBe(2);
+        expect(metadata.at(0).text()).toBe('Total Count: 6');
+        expect(metadata.at(1).text()).toBe('Grouped By: Field Label');
         done();
       });
     });
@@ -113,7 +132,7 @@ describe('ReportSummary.vue', () => {
       wrapper.vm.$nextTick(() => {
         expect(wrapper.vm.hasMissingValue).toBe(true);
 
-        const li = wrapper.findAll('li');
+        const li = wrapper.findAll(selectors.counts);
         expect(li.length).toBe(5);
         expect(li.at(4).text()).toBe(`3 - ${MISSING}`);
         done();
@@ -136,7 +155,7 @@ describe('ReportSummary.vue', () => {
       const wrapper = shallowMount(ReportSummary, { propsData: propsData });
 
       wrapper.vm.$nextTick(() => {
-        const li = wrapper.findAll('li');
+        const li = wrapper.findAll(selectors.counts);
         expect(li.length).toBe(8);
 
         // Count in descending order

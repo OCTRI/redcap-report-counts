@@ -12,6 +12,7 @@ header('Content-Type: application/json');
 require_once(dirname(realpath(__FILE__)) . '/../../../redcap_connect.php');
 require_once(dirname(realpath(__FILE__)) . '/ReportConfig.php');
 require_once(dirname(realpath(__FILE__)) . '/ReportConfigProcessor.php');
+require_once(dirname(realpath(__FILE__)) . '/DataDictionary.php');
 
 if (isset($_GET['action'])) {
     $requestBody = trim(file_get_contents('php://input'));
@@ -29,7 +30,10 @@ if (isset($_GET['action'])) {
                 $report = json_decode(\REDCap::getReport($reportSummary['reportSummary']['reportId'], 'json', true /* export labels */), true);
                 $reportProcessor = new ReportConfigProcessor($report, $reportSummary['reportSummary']);
 
-                exit(json_encode(array($reportProcessor->summaryConfig())));
+                $summaryConfig = $reportProcessor->summaryConfig();
+                $dataDictionary = new DataDictionary(\REDCap::getDataDictionary('array'));
+                $summaryConfig['bucketByLabel'] = $dataDictionary->getFieldLabel($summaryConfig['field_name']);
+                exit(json_encode(array($summaryConfig)));
             }
 
         } else if ($_GET['action'] === 'saveReportSummaries') {

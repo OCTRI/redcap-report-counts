@@ -2,3 +2,7 @@
   color: #c30 ! important;
   cursor: pointer;
 }
+
+.summary-metadata {
+  font-size: 0.9rem;
+}
