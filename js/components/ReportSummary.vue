@@ -2,11 +2,15 @@
   <div class="card mb-3 report-summary" :data-index="index">
     <div class="card-body">
       <div class="container">
-        <h3 class="card-title mb-0">{{ totalRecords }} - {{ title }}</h3>
-        <div class="summary-controls mb-3">
+        <h3 class="card-title mb-1">{{ title }}</h3>
+        <div class="summary-controls mb-1">
           <a class="delete" v-if="canDelete" @click="deleteSummary">Delete <i class="far fa-trash-alt"></i></a>
         </div>
-        <ul v-if="isItemized" class="list-unstyled">
+        <ul class="summary-metadata lead list-unstyled mb-0">
+          <li>Total Count: {{ totalRecords }}</li>
+          <li v-if="isItemized" class="mt-0">Grouped By: {{bucketByLabel}}</li>
+        </ul>
+        <ul v-if="isItemized" class="list-unstyled mt-3 mb-0" data-description="itemized-counts">
           <li v-for="summary in sortedSummaryCounts" :key="summary.label">{{ summary.count }} - {{ summary.label }}</li>
         </ul>
       </div>
@@ -32,6 +36,7 @@ export default {
     title: String,
     totalRecords: Number,
     strategy: String,
+    bucketByLabel: String,
     summaryData: Array
   },
 

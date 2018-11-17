@@ -12,7 +12,8 @@ header('Content-Type: application/json');
 // Call the REDCap Connect file in the main "redcap" directory; enforces permissions.
 require_once dirname(realpath(__FILE__)) . '/../../../redcap_connect.php';
 require_once(dirname(realpath(__FILE__)) . '/ReportConfig.php');
-require_once(dirname(realpath(__FILE__)) . '/ReportConfigProcessor.php');
+require_once(dirname(realpath(__FILE__)) . '/DataDictionary.php');
+require_once(dirname(realpath(__FILE__)) . '/SummaryUIProcessor.php');
 
 if (isset($_GET['action'])) {
     if ($_GET['action'] === 'getReports') {
@@ -65,11 +66,13 @@ if (isset($_GET['action'])) {
         exit(json_encode(array()));
     }
 
+    $dataDictionary = new DataDictionary(\REDCap::getDataDictionary('array'));
+
     // Default action, get report config
     $returnArray = array();
     foreach ($config as $summaryConfig) {
         $report = json_decode(\REDCap::getReport($summaryConfig['reportId'], 'json', true /* export labels */), true);
-        $reportProcessor = new ReportConfigProcessor($report, $summaryConfig);
+        $reportProcessor = new SummaryUIProcessor($summaryConfig, $report, $dataDictionary);
         $returnArray[] = $reportProcessor->summaryConfig();
     }
 
