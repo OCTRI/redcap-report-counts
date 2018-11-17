@@ -20,6 +20,9 @@ class SummaryUIProcessor {
      * @param Number dataDictionary An instance of `DataDictionary`.
      */
     public function __construct($summaryConfig, $report, $dataDictionary) {
+        assert(isset($summaryConfig), '$summaryConfig is required.');
+        assert(isset($report), '$report is required.');
+        assert(isset($dataDictionary), '$dataDictionary is required.');
         $this->summaryConfig = $summaryConfig;
         $this->report = $report;
         $this->dataDictionary = $dataDictionary;

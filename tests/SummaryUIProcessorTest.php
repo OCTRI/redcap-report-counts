@@ -68,7 +68,7 @@ final class SummaryUIProcessorTest extends TestCase {
     private $mockDataDictionary;
 
     public function setUp() {
-        $this->dataDictionary = new DataDictionary($this->mockDictionaryData);
+        $this->mockDataDictionary = new DataDictionary($this->mockDictionaryData);
     }
 
     public function testReportSummaryWithOnlyTotalCount() {
