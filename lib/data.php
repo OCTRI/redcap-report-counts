@@ -13,7 +13,7 @@ header('Content-Type: application/json');
 require_once dirname(realpath(__FILE__)) . '/../../../redcap_connect.php';
 require_once(dirname(realpath(__FILE__)) . '/ReportConfig.php');
 require_once(dirname(realpath(__FILE__)) . '/DataDictionary.php');
-require_once(dirname(realpath(__FILE__)) . '/ReportConfigProcessor.php');
+require_once(dirname(realpath(__FILE__)) . '/SummaryUIProcessor.php');
 
 if (isset($_GET['action'])) {
     if ($_GET['action'] === 'getReports') {
@@ -72,10 +72,8 @@ if (isset($_GET['action'])) {
     $returnArray = array();
     foreach ($config as $summaryConfig) {
         $report = json_decode(\REDCap::getReport($summaryConfig['reportId'], 'json', true /* export labels */), true);
-        $reportProcessor = new ReportConfigProcessor($report, $summaryConfig);
-        $summary = $reportProcessor->summaryConfig();
-        $summary['bucketByLabel'] = $dataDictionary->getFieldLabel($summary['bucketBy']);
-        $returnArray[] = $summary;
+        $reportProcessor = new SummaryUIProcessor($summaryConfig, $report, $dataDictionary);
+        $returnArray[] = $reportProcessor->summaryConfig();
     }
 
     exit(json_encode($returnArray));

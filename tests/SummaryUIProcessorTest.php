@@ -1,11 +1,12 @@
 <?php
-use Octri\ConsortReport\ReportConfigProcessor,
+use Octri\ConsortReport\SummaryUIProcessor,
+    Octri\ConsortReport\DataDictionary,
     PHPUnit\Framework\TestCase;
 
 /**
- * @covers ReportConfigProcessor
+ * @covers SummaryUIProcessor
  */
-final class ReportConfigProcessorTest extends TestCase {
+final class SummaryUIProcessorTest extends TestCase {
 
     /**
      * Report as returned by REDCap.
@@ -40,11 +41,41 @@ final class ReportConfigProcessorTest extends TestCase {
         'strategy' => 'total'
     );
 
+    /**
+     * Mock array data returned by `REDCap::getDataDictionary('array')`
+     */
+    private $mockDictionaryData = array(
+      'screen_id' => array(
+        'field_name' => 'screen_id',
+        'form_name' => 'screening_id',
+        'field_label' => 'Screening Id'
+      ),
+      'dsp_stop_reason' => array(
+        'field_name' => 'dsp_stop_reason',
+        'form_name' => 'subject_data',
+        'field_label' => 'Stop Reason'
+      ),
+      'another_field' => array(
+        'field_name' => 'another_field',
+        'form_name' => 'another_form',
+        'field_label' => 'Another Field'
+      )
+    );
+
+    /**
+     * Instance of lib/DataDictionary.php
+     */
+    private $mockDataDictionary;
+
+    public function setUp() {
+        $this->dataDictionary = new DataDictionary($this->mockDictionaryData);
+    }
+
     public function testReportSummaryWithOnlyTotalCount() {
         $expectedSummaryConfig = array_merge($this->mockTotalSummaryConfig,
             array("totalRecords" => 6));
 
-        $reportProcessor = new ReportConfigProcessor($this->mockReport, $this->mockTotalSummaryConfig);
+        $reportProcessor = new SummaryUIProcessor($this->mockTotalSummaryConfig, $this->mockReport, $this->mockDataDictionary);
 
         $processedSummaryConfig = $reportProcessor->summaryConfig();
 
@@ -66,7 +97,7 @@ final class ReportConfigProcessorTest extends TestCase {
             "totalRecords" => 6
         ));
 
-        $reportProcessor = new ReportConfigProcessor($this->mockReport, $this->mockItemizedSummaryConfig);
+        $reportProcessor = new SummaryUIProcessor($this->mockItemizedSummaryConfig, $this->mockReport, $this->mockDataDictionary);
 
         $processedSummaryConfig = $reportProcessor->summaryConfig();
 

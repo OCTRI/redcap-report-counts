@@ -11,7 +11,7 @@ header('Content-Type: application/json');
 // Call the REDCap Connect file in the main "redcap" directory; enforces permissions.
 require_once(dirname(realpath(__FILE__)) . '/../../../redcap_connect.php');
 require_once(dirname(realpath(__FILE__)) . '/ReportConfig.php');
-require_once(dirname(realpath(__FILE__)) . '/ReportConfigProcessor.php');
+require_once(dirname(realpath(__FILE__)) . '/SummaryUIProcessor.php');
 require_once(dirname(realpath(__FILE__)) . '/DataDictionary.php');
 
 if (isset($_GET['action'])) {
@@ -21,18 +21,17 @@ if (isset($_GET['action'])) {
         $data = json_decode($requestBody, true);
 
         if ($_GET['action'] === 'saveReportSummary') {
-            $reportSummary = json_decode($data['reportSummary'], true);
+            $reportSummaryData = json_decode($data['reportSummary'], true);
+            $reportSummary = $reportSummaryData['reportSummary'];
 
             $reportConfig = new ReportConfig($project_id, $module);
-            $result = $reportConfig->saveReportSummary($reportSummary['reportSummary']);
+            $result = $reportConfig->saveReportSummary($reportSummary);
 
             if ($result === true) {
-                $report = json_decode(\REDCap::getReport($reportSummary['reportSummary']['reportId'], 'json', true /* export labels */), true);
-                $reportProcessor = new ReportConfigProcessor($report, $reportSummary['reportSummary']);
-
-                $summaryConfig = $reportProcessor->summaryConfig();
+                $report = json_decode(\REDCap::getReport($reportSummary['reportId'], 'json', true /* export labels */), true);
                 $dataDictionary = new DataDictionary(\REDCap::getDataDictionary('array'));
-                $summaryConfig['bucketByLabel'] = $dataDictionary->getFieldLabel($summaryConfig['field_name']);
+                $reportProcessor = new SummaryUIProcessor($reportSummary, $report, $dataDictionary);
+                $summaryConfig = $reportProcessor->summaryConfig();
                 exit(json_encode(array($summaryConfig)));
             }
 
