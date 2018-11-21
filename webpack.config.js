@@ -8,9 +8,10 @@ const { DefinePlugin } = webpack;
 const { VueLoaderPlugin } = require('vue-loader');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const buildEnv = process.argv.includes('--mode=production') ? 'production' : 'development';
+const devMode = buildEnv === 'development';
 
 module.exports = {
   externals: {
@@ -48,10 +49,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ExtractTextWebpackPlugin.extract({
-          fallback: 'style-loader',
-          use: ['css-loader']
-        })
+        use: [devMode ? 'style-loader' : MiniCssExtractPlugin.loader, 'css-loader']
       },
       {
         test: /\.(png|svg|jpg|gif)$/,
@@ -85,8 +83,9 @@ module.exports = {
       hash: false,
       inject: false
     }),
-    new ExtractTextWebpackPlugin({
-      filename: 'assets/consort-report.[hash].css'
+    new MiniCssExtractPlugin({
+      filename: devMode ? 'assets/consort-report.css' : 'assets/consort-report.[contenthash].css',
+      chunkFilename: devMode ? '[id].css' : '[id].[hash].css'
     })
   ]
 };
