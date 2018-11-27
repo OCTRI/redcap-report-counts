@@ -3,8 +3,7 @@ import axios from 'axios';
 
 export const ENDPOINTS = {
   REPORT_DATA: 'lib/data.php',
-  REPORT_CONFIG: 'lib/settings.php',
-  DATA_DICTIONARY: 'lib/data-dictionary.php'
+  REPORT_CONFIG: 'lib/settings.php'
 };
 
 /**
@@ -25,7 +24,6 @@ export default function createDataService(assetUrls) {
   return {
     reportDataUrl: assetUrls[ENDPOINTS.REPORT_DATA],
     reportConfigUrl: assetUrls[ENDPOINTS.REPORT_CONFIG],
-    dataDictionaryUrl: assetUrls[ENDPOINTS.DATA_DICTIONARY],
 
     /**
      * Extracts data returned by the request.
