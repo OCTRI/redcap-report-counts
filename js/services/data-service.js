@@ -1,5 +1,6 @@
 import assert from 'assert';
 import axios from 'axios';
+import uuid from 'uuid/v4';
 
 export const ENDPOINTS = {
   REPORT_DATA: 'lib/data.php',
@@ -35,6 +36,18 @@ export default function createDataService(assetUrls) {
       return response.data;
     },
 
+    /**
+     * Adds unique IDs to existing report summaries.
+     *
+     * @param {Object[]} reportSummaries - array of report summaries.
+     */
+    _insertUuids(reportSummaries) {
+      return reportSummaries.map(summaryConfig => {
+        summaryConfig.id = summaryConfig.id || uuid();
+        return summaryConfig;
+      });
+    },
+
     _makeRequest(url, data, options) {
       return axios.post(url, data, options).then(this._extractData);
     },
@@ -47,7 +60,7 @@ export default function createDataService(assetUrls) {
      *   - totalRecords: The total number of records for a report.
      */
     fetchReportSummary() {
-      return this._makeRequest(this.reportDataUrl);
+      return this._makeRequest(this.reportDataUrl).then(this._insertUuids);
     },
 
     /**
