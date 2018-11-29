@@ -9,6 +9,7 @@ function provideWithSummaries() {
     dataService: {
       fetchReportSummary() {
         return Promise.resolve([{
+          id: "bce1cc37-a9b4-458c-82d8-9f2f276bef93",
           title: "Report Name",
           reportId: 42,
           strategy: STRATEGY.ITEMIZED,
@@ -70,18 +71,16 @@ describe('ConsortReport.vue', () => {
     });
 
     it('deletes summary', () => {
-      wrapper.vm.reportSummaries = [
-        { reportId: 1, title: "One",      strategy: "Itemized count", bucketBy: "dsp_stop_reason" },
-        { reportId: 2, title: "Enrolled", strategy: "Total count",    bucketBy: null },
-        { reportId: 3, title: "Random",   strategy: "Total count",    bucketBy: null }
+      const reportSummaries = [
+        { id: '7c121ae3-c6b4-4e88-b744-9f2503ac1605', reportId: 1, title: "One", strategy: "Itemized count", bucketBy: "dsp_stop_reason" },
+        { id: '0236bf99-bb61-485f-a3e3-dd138f22f34c', reportId: 2, title: "Enrolled", strategy: "Total count", bucketBy: null },
+        { id: '032172c9-e544-4272-bcdc-dceb732f30c5', reportId: 3, title: "Random", strategy: "Total count", bucketBy: null }
       ];
 
-      wrapper.vm.deleteReportSummary(1);
+      const expected = [reportSummaries[0], reportSummaries[2]];
 
-      const expected = [
-        { reportId: 1, title: "One",      strategy: "Itemized count", bucketBy: "dsp_stop_reason" },
-        { reportId: 3, title: "Random",   strategy: "Total count",    bucketBy: null }
-      ];
+      wrapper.vm.reportSummaries = reportSummaries;
+      wrapper.vm.deleteReportSummary('0236bf99-bb61-485f-a3e3-dd138f22f34c');
 
       expect(wrapper.vm.reportSummaries).toEqual(expected);
     });

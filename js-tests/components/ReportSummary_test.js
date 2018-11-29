@@ -17,7 +17,7 @@ describe('ReportSummary.vue', () => {
     beforeEach(() => {
       wrapper = shallowMount(ReportSummary, {
         propsData: {
-          index: 3,
+          id: 'a51361a1-8d64-4348-a28a-fc6b5dcca663',
           title: 'Sample Report Name',
           totalRecords: 101,
           strategy: STRATEGY.TOTAL
@@ -40,7 +40,7 @@ describe('ReportSummary.vue', () => {
     beforeEach(() => {
       wrapper = shallowMount(ReportSummary, {
         propsData: {
-          index: 0,
+          id: 'a48bc291-951f-4ef6-9ec3-fff6291d7cd1',
           title: 'Sample Itemized Report Name',
           totalRecords: 6,
           strategy: STRATEGY.ITEMIZED,
@@ -103,7 +103,7 @@ describe('ReportSummary.vue', () => {
 
   describe('Report Summary ordering', () => {
     const propsData = {
-      index: 0,
+      id: '7e09f84b-76d8-48bb-9eca-e1e4fe33f844',
       title: 'Test Report Summary',
       totalRecords: 8,
       strategy: STRATEGY.ITEMIZED,

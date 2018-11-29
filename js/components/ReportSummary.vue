@@ -1,5 +1,5 @@
 <template>
-  <div class="card mb-3 report-summary" :data-index="index">
+  <div class="card mb-3 report-summary" :id="id">
     <div class="card-body">
       <div class="container">
         <h3 class="card-title mb-1">{{ title }}</h3>
@@ -32,7 +32,7 @@ export default {
   name: 'ReportSummary',
 
   props: {
-    index: Number,
+    id: String,
     title: String,
     totalRecords: Number,
     strategy: String,
@@ -46,7 +46,7 @@ export default {
      */
     deleteSummary() {
       if (confirm('Permanently delete this summary?')) {
-        this.$emit('deleteSummary', this.index);
+        this.$emit('deleteSummary', this.id);
       }
     },
 

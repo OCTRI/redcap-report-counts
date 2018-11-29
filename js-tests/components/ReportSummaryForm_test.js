@@ -4,10 +4,12 @@ import ReportSummaryForm from '@/components/ReportSummaryForm';
 import { messages } from '@/components/ReportSummaryForm';
 import { STRATEGY } from '@/report-strategy';
 
+const uuidPattern = /[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}/i;
+
 const mockReportFields = [
-  {field_name: 'field_1', field_label: 'Field 1' },
-  {field_name: 'field_2', field_label: 'Field 2' },
-  {field_name: 'field_3', field_label: 'Field 3' }
+  { field_name: 'field_1', field_label: 'Field 1' },
+  { field_name: 'field_2', field_label: 'Field 2' },
+  { field_name: 'field_3', field_label: 'Field 3' }
 ];
 
 function createProvideObject() {
@@ -23,7 +25,7 @@ function createProvideObject() {
       },
 
       saveReportSummary(reportSummary) {
-        return Promise.resolve([{reportId: 2, title: 'Report 2', strategy: STRATEGY.TOTAL, totalRecords: 19}]);
+        return Promise.resolve([reportSummary]);
       },
 
       getReportFields() {
@@ -50,6 +52,10 @@ describe('ReportSummaryForm.vue', () => {
   });
 
   describe('Report Summary Form', () => {
+    it('generates a unique ID for the report summary', () => {
+      expect(wrapper.vm.id).toMatch(uuidPattern);
+    });
+
     it('renders form and title field', () => {
       expect(wrapper.findAll('.report-summary-form').length).toBe(1);
       expect(wrapper.findAll('#title').length).toBe(1);
@@ -105,10 +111,12 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.$nextTick(() => {
       const reportSummary = wrapper.emitted().reportSummary;
       expect(reportSummary[0].length).toBe(1);
-      expect(reportSummary[0][0]['reportId']).toBe(2);
-      expect(reportSummary[0][0]['title']).toBe('Report 2');
-      expect(reportSummary[0][0]['strategy']).toBe(STRATEGY.TOTAL);
-      expect(reportSummary[0][0]['totalRecords']).toBe(19);
+
+      const summaryObject = reportSummary[0][0];
+      expect(summaryObject.id).toMatch(uuidPattern);
+      expect(summaryObject.reportId).toBe(2);
+      expect(summaryObject.title).toBe('Report 2');
+      expect(summaryObject.strategy).toBe(STRATEGY.TOTAL);
     });
   });
 
@@ -175,11 +183,13 @@ describe('ReportSummaryForm.vue', () => {
   });
 
   it('retrieves report summary values from form', () => {
+    const id = wrapper.vm.id;
     wrapper.vm.reportId = 7;
     wrapper.vm.title = 'Report Title';
     wrapper.vm.strategy = STRATEGY.TOTAL;
     wrapper.vm.bucketBy = 'bucketField';
     const reportSummary = wrapper.vm.reportSummary();
+    expect(reportSummary.id).toEqual(id);
     expect(reportSummary.reportId).toEqual(7);
     expect(reportSummary.title).toEqual('Report Title');
     expect(reportSummary.strategy).toEqual(STRATEGY.TOTAL);
@@ -187,6 +197,7 @@ describe('ReportSummaryForm.vue', () => {
   });
 
   it('cancel clears form', () => {
+    const originalId = wrapper.vm.id;
     wrapper.vm.reportId = 7;
     wrapper.vm.title = 'Report Title';
     wrapper.vm.strategy = STRATEGY.ITEMIZED;
@@ -196,6 +207,7 @@ describe('ReportSummaryForm.vue', () => {
     expect(wrapper.vm.strategy).toEqual(STRATEGY.ITEMIZED);
     expect(wrapper.vm.bucketBy).toEqual('someField');
     wrapper.vm.cancelForm();
+    expect(wrapper.vm.id).not.toEqual(originalId);
     expect(wrapper.vm.reportId).toEqual(null);
     expect(wrapper.vm.title).toEqual('');
     expect(wrapper.vm.strategy).toEqual(null);

@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import uuid from 'uuid/v4';
 import { STRATEGY } from '../report-strategy';
 
 export const messages = {
@@ -68,6 +69,7 @@ export default {
 
   data() {
     return {
+      id: uuid(),
       title: '',
       reportId: null,
       strategy: null,
@@ -124,6 +126,7 @@ export default {
      * Clears current form values.
      */
     clearForm() {
+      this.id = uuid();
       this.title = '';
       this.reportId = null;
       this.strategy = null;
@@ -147,6 +150,7 @@ export default {
      */
     reportSummary() {
       return {
+        id: this.id,
         reportId: this.reportId,
         title: this.title,
         strategy: this.strategy,

@@ -27,9 +27,9 @@
       </div>
 
       <div v-if="hasReportSummaries">
-        <ReportSummary v-for="(summary, i) in reportSummaries"
-                       :key="summary.reportId + i"
-                       :index="i"
+        <ReportSummary v-for="summary in reportSummaries"
+                       :key="summary.id"
+                       :id="summary.id"
                        :title="summary.title"
                        :strategy="summary.strategy"
                        :bucketByLabel="summary.bucketByLabel"
@@ -110,10 +110,11 @@ export default {
 
     /**
      * Delete a report summary.
-     * @param {Integer} index - the report summary index to be delete from reportSummaries
+     * @param {String} id - the id of the report summary to delete from reportSummaries
      */
-    deleteReportSummary(index) {
+    deleteReportSummary(id) {
       const { dataService } = this;
+      const index = this.reportSummaries.findIndex(summary => summary.id === id);
       this.reportSummaries.splice(index, 1);
       this.saveSummariesPromise = dataService.saveReportSummaries(this.reportSummaries.map((summary) => {
         return {
