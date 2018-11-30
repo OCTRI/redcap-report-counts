@@ -175,4 +175,68 @@ describe('ReportSummary.vue', () => {
       });
     });
   });
+
+  describe('drag and drop', () => {
+    let wrapper;
+
+    beforeEach(() => {
+      wrapper = shallowMount(ReportSummary, {
+        propsData: {
+          id: 'a51361a1-8d64-4348-a28a-fc6b5dcca663',
+          title: 'Some Name',
+          totalRecords: 10,
+          strategy: STRATEGY.TOTAL
+        }
+      });
+    });
+
+    it('is disabled by default to allow text selection', () => {
+      expect(wrapper.attributes('draggable')).toEqual('false');
+    });
+
+    it('is enabled when the drag handle is grabbed', () => {
+      expect(wrapper.attributes('draggable')).toBe('false');
+      wrapper.find('.drag-handle').trigger('mousedown');
+      expect(wrapper.attributes('draggable')).toEqual('true');
+    });
+
+    it('is disabled when the drag handle is released', () => {
+      wrapper.setData({ draggable: true });
+      wrapper.find('.drag-handle').trigger('mouseup');
+      expect(wrapper.attributes('draggable')).toBe('false');
+    });
+
+    it('emits an event with the id when the user starts to drag it', () => {
+      wrapper.trigger('dragstart');
+      expect(wrapper.emitted('reorder-start')[0][0]).toEqual(wrapper.vm.id);
+    });
+
+    it('emits an event when an item is dropped on it', () => {
+      wrapper.trigger('drop');
+      expect(wrapper.emitted('reorder-end')).toBeTruthy();
+    });
+
+    it('disables dragging when the drag ends', () => {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.dropEffect = 'move';
+
+      wrapper.setData({ draggable: true });
+      wrapper.trigger('dragend', {
+        dataTransfer
+      });
+
+      expect(wrapper.attributes('draggable')).toBe('false');
+    });
+
+    it('emits an event if the drag is canceled', () => {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.dropEffect = 'none';
+
+      wrapper.trigger('dragend', {
+        dataTransfer
+      });
+
+      expect(wrapper.emitted('reorder-cancel')).toBeTruthy();
+    });
+  });
 });

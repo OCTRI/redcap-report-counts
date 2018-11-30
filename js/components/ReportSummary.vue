@@ -1,8 +1,23 @@
 <template>
-  <div class="card mb-3 report-summary" :id="id">
+  <div :id="id"
+       class="card mb-3 report-summary"
+       :draggable="draggable"
+       @dragstart="onDragStart"
+       @dragend="onDragEnd"
+       @dragenter="onDragEnter"
+       @dragover="onDragOver"
+       @drop.prevent="onDrop">
     <div class="card-body">
       <div class="container">
-        <h3 class="card-title mb-1">{{ title }}</h3>
+        <div class="clearfix">
+          <h3 class="card-title mb-1 float-left">{{ title }}</h3>
+          <div class="drag-handle float-right text-muted"
+               title="Drag to Reorder"
+               @mousedown="enableDrag"
+               @mouseup="disableDrag">
+            <i class="fa fa-bars"></i>
+          </div>
+        </div>
         <div class="summary-controls mb-1">
           <a class="delete" v-if="canDelete" @click="deleteSummary">Delete <i class="far fa-trash-alt"></i></a>
         </div>
@@ -40,6 +55,12 @@ export default {
     summaryData: Array
   },
 
+  data() {
+    return {
+      draggable: false
+    };
+  },
+
   methods: {
     /**
      * Emit deleteSummary event.
@@ -67,6 +88,72 @@ export default {
      */
     missingValue(value) {
       return !isString(value) || !value.trim();
+    },
+
+    /**
+     * Enables dragging the element.
+     */
+    enableDrag() {
+      this.draggable = true;
+    },
+
+    /**
+     * Disables dragging the element.
+     */
+    disableDrag() {
+      this.draggable = false;
+    },
+
+    /**
+     * Handles the `dragstart` event, notifying the container that the user has started
+     * reordering the summaries.
+     */
+    onDragStart() {
+      const { id } = this;
+      this.$emit('reorder-start', id);
+    },
+
+    /**
+     * Handles the `dragenter` event. If this is the drop target, prevent default to allow
+     * dropping the item. Otherwise reset the item that will be swapped.
+     */
+    onDragEnter(evt) {
+      const { id, isDragging } = this;
+      if (isDragging) {
+        evt.preventDefault();
+        this.$emit('reorder-swap-reset');
+      } else {
+        this.$emit('reorder-swap', id);
+      }
+    },
+
+    /**
+     * Handles the `dragover` event. If this is the drop target, prevent default to allow
+     * dropping the item.
+     */
+    onDragOver(evt) {
+      const { isDragging } = this;
+      if (isDragging) {
+        evt.preventDefault();
+      }
+    },
+
+    /**
+     * Handles the `drop` event, notifying the container that the reorder is complete.
+     */
+    onDrop(evt) {
+      this.$emit('reorder-end');
+    },
+
+    /**
+     * Handles the `dragend` event, notifying the container if the reorder was canceled.
+     */
+    onDragEnd(evt) {
+      const { dataTransfer } = evt;
+      this.disableDrag();
+      if (dataTransfer.dropEffect === 'none') {
+        this.$emit('reorder-cancel');
+      }
     }
   },
 
@@ -76,6 +163,13 @@ export default {
      */
     isItemized() {
       return this.strategy === STRATEGY.ITEMIZED;
+    },
+
+    /**
+     * @return true if the summary is being dragged.
+     */
+    isDragging() {
+      return this.draggable;
     },
 
     /**

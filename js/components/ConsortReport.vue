@@ -30,12 +30,18 @@
         <ReportSummary v-for="summary in reportSummaries"
                        :key="summary.id"
                        :id="summary.id"
+                       :class="{ 'drag-chosen': isBeingDragged(summary.id) }"
                        :title="summary.title"
                        :strategy="summary.strategy"
                        :bucketByLabel="summary.bucketByLabel"
                        :summaryData="summary.data"
                        :total-records="summary.totalRecords"
-                       @deleteSummary="deleteReportSummary" />
+                       @deleteSummary="deleteReportSummary"
+                       @reorder-start="startReorder"
+                       @reorder-swap="swapWith"
+                       @reorder-swap-reset="resetSwapItem"
+                       @reorder-end="endReorder"
+                       @reorder-cancel="cancelReorder"/>
       </div>
     </div>
   </div>
@@ -68,7 +74,13 @@ export default {
       reportSummaries: [],
       loading: true,
       newReport: false,
-      reports: []
+      reports: [],
+      dndState: {
+        dragItemId: null,
+        dropItemId: null,
+        startIndex: null,
+        originalArray: null
+      }
     };
   },
 
@@ -113,9 +125,16 @@ export default {
      * @param {String} id - the id of the report summary to delete from reportSummaries
      */
     deleteReportSummary(id) {
-      const { dataService } = this;
       const index = this.reportSummaries.findIndex(summary => summary.id === id);
       this.reportSummaries.splice(index, 1);
+      this.saveReportSummaries();
+    },
+
+    /**
+     * Persists changes to reportSummaries.
+     */
+    saveReportSummaries() {
+      const { dataService } = this;
       this.saveSummariesPromise = dataService.saveReportSummaries(this.reportSummaries.map((summary) => {
         return {
           reportId: summary.reportId,
@@ -140,6 +159,139 @@ export default {
      */
     createReport() {
       this.newReport = true;
+    },
+
+    /**
+     * Reports whether the summary with the given ID is being dragged.
+     * @param {String} id - a reportSummary id
+     * @return {Boolean} true if the summary is currently being dragged, otherwise false
+     */
+    isBeingDragged(id) {
+      const { dragItemId } = this.dndState;
+      return id === dragItemId;
+    },
+
+    /**
+     * Reports whether the given value is one of the reportSummary IDs.
+     * @param {Any} value - a value to compare to reportSummary IDs
+     * @return {Boolean} true if value is one of the summary IDs, otherwise false
+     */
+    isValidSummary(value) {
+      const { reportSummaries } = this;
+      return reportSummaries.some(summary => summary.id === value);
+    },
+
+    /**
+     * Reports whether the dragging item should be swapped with the reportSummary with
+     * the given id.
+     * @param {String} id - a reportSummary ID
+     * @return {Boolean} true if id is different from the current drag item and the
+     *   current drop item, false if it would swap the drag item with itself or repeat
+     *   the last swap
+     */
+    shouldSwap(id) {
+      const { dragItemId, dropItemId } = this.dndState;
+      return id !== dragItemId && id !== dropItemId;
+    },
+
+    /**
+     * Reset drag and drop state after the drag stops.
+     */
+    resetDndState() {
+      this.dndState = {
+        dragItemId: null,
+        dropItemId: null,
+        startIndex: null
+      };
+    },
+
+    /**
+     * Finds the index of the item with the given ID in reportSummaries.
+     * @param {String} id - the reportSummary ID to search for
+     * @return {Number} the index of the matching reportSummary
+     */
+    findSummaryIndex(id) {
+      const { reportSummaries } = this;
+      return reportSummaries.findIndex(summary => summary.id === id);
+    },
+
+    /**
+     * Given two reportSummary IDs, replaces reportSummaries with a new array where
+     * the matching summaries are swapped.
+     * @param {String} id1 - a reportSummary ID
+     * @param {String} id2 - a reportSummary ID
+     */
+    swapReportSummaries(id1, id2) {
+      const { reportSummaries } = this;
+      const idx1 = this.findSummaryIndex(id1);
+      const idx2 = this.findSummaryIndex(id2);
+      const newArray = [...reportSummaries];
+
+      if (idx1 < idx2) {
+        // insert item at idx1 after idx2, then delete original
+        newArray.splice(idx2 + 1, 0, newArray[idx1]);
+        newArray.splice(idx1, 1);
+      } else {
+        // insert item at idx1 before idx2, then delete original
+        newArray.splice(idx2, 0, newArray[idx1]);
+        newArray.splice(idx1 + 1, 1);
+      }
+
+      this.reportSummaries = newArray;
+    },
+
+    /**
+     * Captures the ID and initial position of the summary being moved.
+     * @param {String} id - a reportSummary ID
+     */
+    startReorder(id) {
+      const { dndState, reportSummaries } = this;
+      if (this.isValidSummary(id)) {
+        dndState.dragItemId = id;
+        dndState.startIndex = this.findSummaryIndex(id);
+        dndState.originalArray = reportSummaries;
+      }
+    },
+
+    /**
+     * Swaps the summary being moved with the one with the given ID, if needed.
+     * @param {String} id - a reportSummary ID
+     */
+    swapWith(id) {
+      const { dndState } = this;
+      if (this.isValidSummary(id) && this.shouldSwap(id)) {
+        dndState.dropItemId = id;
+        this.swapReportSummaries(dndState.dragItemId, dndState.dropItemId);
+      }
+    },
+
+    /**
+     * Resets the ID of the item being swapped to allow moving both directions.
+     */
+    resetSwapItem() {
+      const { dndState } = this;
+      dndState.dropItemId = null;
+    },
+
+    /**
+     * Resets drag and drop state and persists new order.
+     */
+    endReorder() {
+      const { dragItemId, startIndex } = this.dndState;
+      const persistChange = this.findSummaryIndex(dragItemId) !== startIndex;
+      this.resetDndState();
+      if (persistChange) {
+        this.saveReportSummaries();
+      }
+    },
+
+    /**
+     * Resets drag and drop state when drag is canceled.
+     */
+    cancelReorder() {
+      const { originalArray } = this.dndState;
+      this.reportSummaries = originalArray;
+      this.resetDndState();
     }
   },
 

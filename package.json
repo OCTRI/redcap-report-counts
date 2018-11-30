@@ -22,7 +22,7 @@
     "url": "https://octriinternal.ohsu.edu/stash/scm/reddev/consort-report.git"
   },
   "devDependencies": {
-    "@vue/test-utils": "^1.0.0-beta.24",
+    "@vue/test-utils": "^1.0.0-beta.26",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.5",
     "babel-loader": "^7.1.2",
