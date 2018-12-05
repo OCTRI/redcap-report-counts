@@ -170,7 +170,7 @@ describe('ConsortReport.vue', () => {
       expect(originalArray).toEqual(null);
     });
 
-    it('summary is not being dragged', () => {
+    it('summary is being dragged', () => {
       wrapper.vm.dndState.dragItemId = 'one-id';
       expect(wrapper.vm.isBeingDragged('one-id')).toEqual(true);
     });
