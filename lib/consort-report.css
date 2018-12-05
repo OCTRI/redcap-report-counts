@@ -6,3 +6,11 @@
 .summary-metadata {
   font-size: 0.9rem;
 }
+
+.drag-handle {
+  cursor: move;
+}
+
+.drag-chosen {
+  opacity: 0;
+}

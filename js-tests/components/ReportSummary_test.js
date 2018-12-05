@@ -27,10 +27,10 @@ describe('ReportSummary.vue', () => {
 
     it('renders report summary', () => {
       const reportName = wrapper.find('h3');
-      expect(reportName.text()).toBe('Sample Report Name');
+      expect(reportName.text()).toEqual('Sample Report Name');
       const metadata = wrapper.findAll(selectors.metadata);
-      expect(metadata.length).toBe(1);
-      expect(metadata.at(0).text()).toBe('Total Count: 101');
+      expect(metadata.length).toEqual(1);
+      expect(metadata.at(0).text()).toEqual('Total Count: 101');
     });
   });
 
@@ -59,7 +59,7 @@ describe('ReportSummary.vue', () => {
 
     it('renders report summary with itemized counts', (done) => {
       const reportName = wrapper.find('h3');
-      expect(reportName.text()).toBe('Sample Itemized Report Name');
+      expect(reportName.text()).toEqual('Sample Itemized Report Name');
 
       wrapper.vm.$nextTick(() => {
         const li = wrapper.findAll(selectors.counts);
@@ -74,9 +74,9 @@ describe('ReportSummary.vue', () => {
     it('renders a metadata section', (done) => {
       wrapper.vm.$nextTick(() => {
         const metadata = wrapper.findAll(selectors.metadata);
-        expect(metadata.length).toBe(2);
-        expect(metadata.at(0).text()).toBe('Total Count: 6');
-        expect(metadata.at(1).text()).toBe('Grouped By: Field Label');
+        expect(metadata.length).toEqual(2);
+        expect(metadata.at(0).text()).toEqual('Total Count: 6');
+        expect(metadata.at(1).text()).toEqual('Grouped By: Field Label');
         done();
       });
     });
@@ -130,11 +130,11 @@ describe('ReportSummary.vue', () => {
       const wrapper = shallowMount(ReportSummary, { propsData: propsData });
 
       wrapper.vm.$nextTick(() => {
-        expect(wrapper.vm.hasMissingValue).toBe(true);
+        expect(wrapper.vm.hasMissingValue).toEqual(true);
 
         const li = wrapper.findAll(selectors.counts);
-        expect(li.length).toBe(5);
-        expect(li.at(4).text()).toBe(`3 - ${MISSING}`);
+        expect(li.length).toEqual(5);
+        expect(li.at(4).text()).toEqual(`3 - ${MISSING}`);
         done();
       });
     });
@@ -156,23 +156,87 @@ describe('ReportSummary.vue', () => {
 
       wrapper.vm.$nextTick(() => {
         const li = wrapper.findAll(selectors.counts);
-        expect(li.length).toBe(8);
+        expect(li.length).toEqual(8);
 
         // Count in descending order
-        expect(li.at(0).text()).toBe('15 - May');
-        expect(li.at(1).text()).toBe('10 - February');
-        expect(li.at(2).text()).toBe('7 - March');
-        expect(li.at(3).text()).toBe('3 - January');
+        expect(li.at(0).text()).toEqual('15 - May');
+        expect(li.at(1).text()).toEqual('10 - February');
+        expect(li.at(2).text()).toEqual('7 - March');
+        expect(li.at(3).text()).toEqual('3 - January');
 
         // Label is ascending when the count is the same
-        expect(li.at(4).text()).toBe('2 - Afakemonth');
-        expect(li.at(5).text()).toBe('2 - April');
-        expect(li.at(6).text()).toBe('2 - August');
+        expect(li.at(4).text()).toEqual('2 - Afakemonth');
+        expect(li.at(5).text()).toEqual('2 - April');
+        expect(li.at(6).text()).toEqual('2 - August');
 
         // Missing is always the last count
-        expect(li.at(7).text()).toBe(`42 - ${MISSING}`);
+        expect(li.at(7).text()).toEqual(`42 - ${MISSING}`);
         done();
       });
+    });
+  });
+
+  describe('drag and drop', () => {
+    let wrapper;
+
+    beforeEach(() => {
+      wrapper = shallowMount(ReportSummary, {
+        propsData: {
+          id: 'a51361a1-8d64-4348-a28a-fc6b5dcca663',
+          title: 'Some Name',
+          totalRecords: 10,
+          strategy: STRATEGY.TOTAL
+        }
+      });
+    });
+
+    it('is disabled by default to allow text selection', () => {
+      expect(wrapper.attributes('draggable')).toEqual('false');
+    });
+
+    it('is enabled when the drag handle is grabbed', () => {
+      expect(wrapper.attributes('draggable')).toEqual('false');
+      wrapper.find('.drag-handle').trigger('mousedown');
+      expect(wrapper.attributes('draggable')).toEqual('true');
+    });
+
+    it('is disabled when the drag handle is released', () => {
+      wrapper.setData({ draggable: true });
+      wrapper.find('.drag-handle').trigger('mouseup');
+      expect(wrapper.attributes('draggable')).toEqual('false');
+    });
+
+    it('emits an event with the id when the user starts to drag it', () => {
+      wrapper.trigger('dragstart');
+      expect(wrapper.emitted('reorder-start')[0][0]).toEqual(wrapper.vm.id);
+    });
+
+    it('emits an event when an item is dropped on it', () => {
+      wrapper.trigger('drop');
+      expect(wrapper.emitted('reorder-end')).toBeTruthy();
+    });
+
+    it('disables dragging when the drag ends', () => {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.dropEffect = 'move';
+
+      wrapper.setData({ draggable: true });
+      wrapper.trigger('dragend', {
+        dataTransfer
+      });
+
+      expect(wrapper.attributes('draggable')).toEqual('false');
+    });
+
+    it('emits an event if the drag is canceled', () => {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.dropEffect = 'none';
+
+      wrapper.trigger('dragend', {
+        dataTransfer
+      });
+
+      expect(wrapper.emitted('reorder-cancel')).toBeTruthy();
     });
   });
 });

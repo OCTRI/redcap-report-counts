@@ -57,17 +57,17 @@ describe('ReportSummaryForm.vue', () => {
     });
 
     it('renders form and title field', () => {
-      expect(wrapper.findAll('.report-summary-form').length).toBe(1);
-      expect(wrapper.findAll('#title').length).toBe(1);
+      expect(wrapper.findAll('.report-summary-form').length).toEqual(1);
+      expect(wrapper.findAll('#title').length).toEqual(1);
     });
 
     it('renders report drop-down', () => {
-      expect(wrapper.findAll('#reportId').length).toBe(1);
+      expect(wrapper.findAll('#reportId').length).toEqual(1);
       wrapper.vm.$nextTick(() => {
         const options = wrapper.findAll('#reportId option');
-        expect(options.length).toBe(3);
-        expect(options.at(1).attributes().value).toBe('2');
-        expect(options.at(1).text()).toBe('Report 2');
+        expect(options.length).toEqual(3);
+        expect(options.at(1).attributes().value).toEqual('2');
+        expect(options.at(1).text()).toEqual('Report 2');
       });
     });
 
@@ -75,13 +75,13 @@ describe('ReportSummaryForm.vue', () => {
       wrapper.vm.strategy = STRATEGY.ITEMIZED;
 
       const strategy = wrapper.findAll('input[name="strategy"]');
-      expect(strategy.length).toBe(2);
+      expect(strategy.length).toEqual(2);
       const radio1 = strategy.at(0);
       const radio2 = strategy.at(1);
-      expect(radio1.attributes().id).toBe('strategy0');
-      expect(radio1.attributes().value).toBe(STRATEGY.TOTAL);
-      expect(radio2.attributes().id).toBe('strategy1');
-      expect(radio2.attributes().value).toBe(STRATEGY.ITEMIZED);
+      expect(radio1.attributes().id).toEqual('strategy0');
+      expect(radio1.attributes().value).toEqual(STRATEGY.TOTAL);
+      expect(radio2.attributes().id).toEqual('strategy1');
+      expect(radio2.attributes().value).toEqual(STRATEGY.ITEMIZED);
     });
 
     it('renders strategy drop-down with all group by values', () => {
@@ -89,16 +89,16 @@ describe('ReportSummaryForm.vue', () => {
       wrapper.vm.strategy = STRATEGY.ITEMIZED;
       wrapper.vm.reportFields = mockReportFields;
 
-      expect(wrapper.findAll('#bucketBy').length).toBe(1);
+      expect(wrapper.findAll('#bucketBy').length).toEqual(1);
 
       const options = wrapper.findAll('#bucketBy option');
-      expect(options.length).toBe(3);
+      expect(options.length).toEqual(3);
 
-      expect(options.at(0).text()).toBe('field_1 "Field 1"');
-      expect(options.at(0).attributes().value).toBe('field_1');
+      expect(options.at(0).text()).toEqual('field_1 "Field 1"');
+      expect(options.at(0).attributes().value).toEqual('field_1');
 
-      expect(options.at(2).text()).toBe('field_3 "Field 3"');
-      expect(options.at(2).attributes().value).toBe('field_3');
+      expect(options.at(2).text()).toEqual('field_3 "Field 3"');
+      expect(options.at(2).attributes().value).toEqual('field_3');
     });
   });
 
@@ -110,13 +110,13 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.savePromise.then(() => done());
     wrapper.vm.$nextTick(() => {
       const reportSummary = wrapper.emitted().reportSummary;
-      expect(reportSummary[0].length).toBe(1);
+      expect(reportSummary[0].length).toEqual(1);
 
       const summaryObject = reportSummary[0][0];
       expect(summaryObject.id).toMatch(uuidPattern);
-      expect(summaryObject.reportId).toBe(2);
-      expect(summaryObject.title).toBe('Report 2');
-      expect(summaryObject.strategy).toBe(STRATEGY.TOTAL);
+      expect(summaryObject.reportId).toEqual(2);
+      expect(summaryObject.title).toEqual('Report 2');
+      expect(summaryObject.strategy).toEqual(STRATEGY.TOTAL);
     });
   });
 
@@ -124,19 +124,19 @@ describe('ReportSummaryForm.vue', () => {
     // Form rendered - no input
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(3);
-    expect(wrapper.vm.errors.includes(messages.titleRequired)).toBe(true);
-    expect(wrapper.vm.errors.includes(messages.reportRequired)).toBe(true);
-    expect(wrapper.vm.errors.includes(messages.strategyRequired)).toBe(true);
-    expect(wrapper.findAll('#bucketBy').length).toBe(0);
+    expect(wrapper.vm.errors.includes(messages.titleRequired)).toEqual(true);
+    expect(wrapper.vm.errors.includes(messages.reportRequired)).toEqual(true);
+    expect(wrapper.vm.errors.includes(messages.strategyRequired)).toEqual(true);
+    expect(wrapper.findAll('#bucketBy').length).toEqual(0);
 
     // Only a report selected
     wrapper.vm.title = '';
     wrapper.vm.reportId = 42;
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(2);
-    expect(wrapper.vm.errors.includes(messages.titleRequired)).toBe(true);
-    expect(wrapper.vm.errors.includes(messages.strategyRequired)).toBe(true);
-    expect(wrapper.findAll('#bucketBy').length).toBe(0);
+    expect(wrapper.vm.errors.includes(messages.titleRequired)).toEqual(true);
+    expect(wrapper.vm.errors.includes(messages.strategyRequired)).toEqual(true);
+    expect(wrapper.findAll('#bucketBy').length).toEqual(0);
 
     // Only a title entered
     wrapper.vm.title = 'Some Title';
@@ -144,8 +144,8 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.strategy = STRATEGY.TOTAL;
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(1);
-    expect(wrapper.vm.errors.includes(messages.reportRequired)).toBe(true);
-    expect(wrapper.findAll('#bucketBy').length).toBe(0);
+    expect(wrapper.vm.errors.includes(messages.reportRequired)).toEqual(true);
+    expect(wrapper.findAll('#bucketBy').length).toEqual(0);
 
     // Require a bucketBy field on strategy='itemized'
     wrapper.vm.title = 'Itemized Results';
@@ -154,9 +154,9 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.reportFields = mockReportFields;
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(1);
-    expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toBe(true);
-    expect(wrapper.findAll('#bucketBy').length).toBe(1);
-    expect(wrapper.findAll('#bucketBy').isVisible()).toBe(true);
+    expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toEqual(true);
+    expect(wrapper.findAll('#bucketBy').length).toEqual(1);
+    expect(wrapper.findAll('#bucketBy').isVisible()).toEqual(true);
   });
 
   it('checks for fields to group by and displays error message accordingly', () => {
@@ -167,7 +167,7 @@ describe('ReportSummaryForm.vue', () => {
 
     // Show error message, no fields to group by
     expect(wrapper.vm.errors.length).toEqual(1);
-    expect(wrapper.vm.errors.includes(messages.noBucketByFields)).toBe(true);
+    expect(wrapper.vm.errors.includes(messages.noBucketByFields)).toEqual(true);
 
     // Strategy changed to total, remove error message
     wrapper.vm.strategy = STRATEGY.TOTAL;
@@ -243,14 +243,14 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.reportFields = [];
 
     // There should now be a message saying there are no fields to group by
-    expect(wrapper.vm.errors.includes(messages.noBucketByFields)).toBe(true);
-    expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toBe(false);
+    expect(wrapper.vm.errors.includes(messages.noBucketByFields)).toEqual(true);
+    expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toEqual(false);
 
     // Try to submit the form
     wrapper.find('.btn-primary').trigger('click');
 
     // Ensure that the previously selected bucketBy field is not selected which
     // prevents the form from being submitted with an invalid bucketBy value.
-    expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toBe(true);
+    expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toEqual(true);
   });
 });
