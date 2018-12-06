@@ -1,23 +1,31 @@
 <template>
   <div class="card mb-3 report-summary-form">
+    <div v-if="!hideFormTitle" class="card-header mb-0">
+      <strong>Add a Report Count</strong>
+      <a href="#"
+         class="cancel-form float-right"
+         role="button"
+         data-toggle="collapse"
+         aria-hidden="true"
+         aria-expanded="true"
+         @click="cancelForm">&times;</a>
+    </div>
     <div class="card-body">
-      <h5 class="card-title">Add a Report Count</h5>
       <ul v-if="hasErrors">
         <li v-for="error in errors" :key="error" class="text-danger font-weight-bold">{{ error }}</li>
       </ul>
       <div class="row form-group">
-        <div class="col-lg-6">
+        <div class="col">
           <label for="title">Title</label>
           <input id="title" name="title" v-model="title" type="text" class="form-control">
         </div>
       </div>
       <div class="row form-group">
         <div class="col">
-          <label>Report
-            <select id="reportId" name="reportId" v-model="reportId" class="form-control" @change="loadReportFields()">
-              <option v-for="report in reports" :key="report.reportId" :value="report.reportId">{{ report.title }}</option>
-            </select>
-          </label>
+          <label for="reportId">Report</label>
+          <select id="reportId" name="reportId" v-model="reportId" class="form-control" @change="loadReportFields()">
+            <option v-for="report in reports" :key="report.reportId" :value="report.reportId">{{ report.title }}</option>
+          </select>
         </div>
       </div>
       <div class="row form-group">
@@ -33,15 +41,15 @@
         <div class="col">
           <label>Field to Group Results
             <select id="bucketBy" name="bucketBy" v-model="bucketBy" class="form-control">
-              <option v-for="field in reportFields" :key="field.field_name" :value="field.field_name">{{field.field_name}} "{{field.field_label}}"</option>
+              <option v-for="field in reportFields" :key="field.field_name" :value="field.field_name">{{ field.field_name }} "{{ field.field_label }}"</option>
             </select>
           </label>
         </div>
       </div>
-      <div class="row form-group">
+      <div class="row form-group mb-0">
         <div class="col">
-          <button type="submit" class="btn btn-primary" @click="saveReportSummary">Submit</button>
-          <a class="btn btn-link cancel" @click="cancelForm">Reset</a>
+          <button type="submit" class="btn btn-primary" @click="saveReportSummary">Save</button>
+          <button type="cancel" class="btn btn-link" @click="cancelForm">Cancel</button>
         </div>
       </div>
     </div>
@@ -66,6 +74,10 @@ export const messages = {
 export default {
   name: 'ReportSummaryForm',
   inject: ['dataService'],
+
+  props: {
+    hideFormTitle: Boolean
+  },
 
   data() {
     return {
@@ -139,9 +151,10 @@ export default {
 
     /**
      * Currently canceling the ReportSummaryForm just clears the fields.
-     * TODO: May close the form eventually, but currently clears the form until we better understand the UI.
+     * TODO: implement REDDEV-594
      */
     cancelForm() {
+      console.warn('Cancel form is not implemented - see REDDEV-594');
       this.clearForm();
     },
 
