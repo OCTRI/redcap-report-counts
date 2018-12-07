@@ -1,6 +1,17 @@
+.summary-controls a {
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  margin-right: 8px;
+  text-transform: capitalize;
+}
+
+.edit {
+  color: rgb(51, 122, 183) ! important;
+}
+
 .delete {
   color: #c30 ! important;
-  cursor: pointer;
 }
 
 .summary-metadata {
@@ -13,4 +24,36 @@
 
 .drag-chosen {
   opacity: 0;
+}
+
+/* Report Summary Form */
+
+.report-summary-form {
+  width: 600px;
+}
+
+.report-summary-form .card-header {
+  font-size: 140%;
+}
+
+.report-summary-form .card-header {
+  color: #ffff99;
+}
+
+.report-summary-form .card-header strong {
+  color: #fff;
+}
+
+.report-summary-form .card-header {
+  background-color:rgb(51, 122, 183);
+}
+
+.report-summary-form.card {
+  border-color: rgb(51, 122, 183);
+}
+
+.report-summary-form .cancel-form {
+  color: #ffff99;
+  font-size: 140%;
+  text-decoration: none;
 }

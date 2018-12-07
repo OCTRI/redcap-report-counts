@@ -253,4 +253,26 @@ describe('ReportSummaryForm.vue', () => {
     // prevents the form from being submitted with an invalid bucketBy value.
     expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toEqual(true);
   });
+
+  it('hides form title', (done) => {
+    wrapper = shallowMount(ReportSummaryForm, {
+      provide: createProvideObject(),
+      propsData: {
+        hideFormTitle: true
+      }
+    });
+    wrapper.vm.reportPromise.then(() => done());
+    expect(wrapper.findAll('.card-header').length).toEqual(0);
+  });
+
+  it('shows form title', (done) => {
+    wrapper = shallowMount(ReportSummaryForm, {
+      provide: createProvideObject(),
+      propsData: {
+        hideFormTitle: false
+      }
+    });
+    wrapper.vm.reportPromise.then(() => done());
+    expect(wrapper.findAll('.card-header').length).toEqual(1);
+  });
 });
