@@ -21,8 +21,10 @@ if (isset($_GET['action'])) {
         $data = json_decode($requestBody, true);
 
         if ($_GET['action'] === 'saveReportSummary') {
-            $reportSummaryData = json_decode($data['reportSummary'], true);
-            $reportSummary = $reportSummaryData['reportSummary'];
+            $reportSummaryJSON = $data['reportSummary'];
+            $reportSummaryArray = json_decode($reportSummaryJSON, true);
+            $reportSummary = $reportSummaryArray['reportSummary'];
+            $editing = $data['editing'];
 
             $reportConfig = new ReportConfig($project_id, $module);
             $result = $reportConfig->saveReportSummary($reportSummary);

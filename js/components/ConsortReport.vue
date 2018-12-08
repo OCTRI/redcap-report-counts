@@ -23,7 +23,7 @@
       </div>
 
       <div v-if="showReportForm">
-        <ReportSummaryForm @reportSummary="addReportSummary" />
+        <ReportSummaryForm @reportSummary="addReportSummary" :key="formId" />
       </div>
 
       <div v-if="hasReportSummaries">
@@ -32,7 +32,9 @@
                        :id="summary.id"
                        :class="{ 'drag-chosen': isBeingDragged(summary.id) }"
                        :title="summary.title"
+                       :reportId="summary.reportId"
                        :strategy="summary.strategy"
+                       :bucketBy="summary.bucketBy"
                        :bucketByLabel="summary.bucketByLabel"
                        :summaryData="summary.data"
                        :total-records="summary.totalRecords"
@@ -50,6 +52,7 @@
 <script>
 import ReportSummary from './ReportSummary';
 import ReportSummaryForm from './ReportSummaryForm';
+import uuid from 'uuid/v4';
 
 const messages = {
   warnings: {
@@ -71,6 +74,7 @@ export default {
 
   data() {
     return {
+      formId: uuid(),
       reportSummaries: [],
       loading: true,
       newReport: false,
@@ -125,7 +129,7 @@ export default {
      * @param {String} id - the id of the report summary to delete from reportSummaries
      */
     deleteReportSummary(id) {
-      const index = this.reportSummaries.findIndex(summary => summary.id === id);
+      const index = this.findSummaryIndex(id);
       this.reportSummaries.splice(index, 1);
       this.saveReportSummaries();
     },

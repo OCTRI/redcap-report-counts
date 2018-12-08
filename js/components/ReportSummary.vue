@@ -19,11 +19,21 @@
           </div>
         </div>
         <div class="summary-controls mb-1">
+          <a class="edit" v-if="canEdit" @click="editSummary">Edit <i class="fa fa-edit"></i></a>
           <a class="delete" v-if="canDelete" @click="deleteSummary">Delete <i class="far fa-trash-alt"></i></a>
+        </div>
+        <div v-if="editing && canEdit" class="edit-form container">
+          <ReportSummaryForm :key="reportId + id"
+                             :hideFormTitle=true
+                             :editingProp=true
+                             :titleProp="title"
+                             :reportIdProp="reportId"
+                             :strategyProp="strategy"
+                             :bucketByProp="bucketBy" />
         </div>
         <ul class="summary-metadata lead list-unstyled mb-0">
           <li>Total Count: {{ totalRecords }}</li>
-          <li v-if="isItemized" class="mt-0">Grouped By: {{bucketByLabel}}</li>
+          <li v-if="isItemized" class="mt-0">Grouped By: {{ bucketByLabel }}</li>
         </ul>
         <ul v-if="isItemized" class="list-unstyled mt-3 mb-0" data-description="itemized-counts">
           <li v-for="summary in sortedSummaryCounts" :key="summary.label">{{ summary.count }} - {{ summary.label }}</li>
@@ -39,6 +49,7 @@ import orderBy from 'lodash/orderBy';
 import isString from 'lodash/isString';
 import { MISSING } from '../constants';
 import { STRATEGY } from '../report-strategy';
+import ReportSummaryForm from './ReportSummaryForm';
 
 /**
  * Renders report summary.
@@ -46,18 +57,25 @@ import { STRATEGY } from '../report-strategy';
 export default {
   name: 'ReportSummary',
 
+  components: {
+    ReportSummaryForm
+  },
+
   props: {
     id: String,
     title: String,
+    reportId: Number,
     totalRecords: Number,
     strategy: String,
+    bucketBy: String,
     bucketByLabel: String,
     summaryData: Array
   },
 
   data() {
     return {
-      draggable: false
+      draggable: false,
+      editing: false
     };
   },
 
@@ -76,6 +94,24 @@ export default {
      * @return true if the user has permission to delete a report summary.
      */
     canDelete() {
+      // TODO: implement REDDEV-595
+      return true;
+    },
+
+    /**
+     * Emit editSummary event.
+     */
+    editSummary() {
+      console.log('emit editSummary');
+      this.editing = true;
+      this.$emit('editSummary', this.id);
+    },
+
+    /**
+     * Checks if the user has permission to edit a report summary.
+     * @return true if the user has permission to edit a report summary.
+     */
+    canEdit() {
       // TODO: implement REDDEV-595
       return true;
     },

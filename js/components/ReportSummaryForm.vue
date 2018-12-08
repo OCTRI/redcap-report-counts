@@ -11,7 +11,7 @@
          @click="cancelForm">&times;</a>
     </div>
     <div class="card-body">
-      <ul v-if="hasErrors">
+      <ul v-if="hasErrors && !loadingReportFields">
         <li v-for="error in errors" :key="error" class="text-danger font-weight-bold">{{ error }}</li>
       </ul>
       <div class="row form-group">
@@ -48,7 +48,7 @@
       </div>
       <div class="row form-group mb-0">
         <div class="col">
-          <button type="submit" class="btn btn-primary" @click="saveReportSummary">Save</button>
+          <button type="submit" class="btn btn-primary" @click="saveReportSummary(editing)">Save</button>
           <button type="cancel" class="btn btn-link" @click="cancelForm">Cancel</button>
         </div>
       </div>
@@ -76,12 +76,18 @@ export default {
   inject: ['dataService'],
 
   props: {
-    hideFormTitle: Boolean
+    hideFormTitle: Boolean,
+    editingProp: Boolean,
+    titleProp: String,
+    reportIdProp: Number,
+    strategyProp: String,
+    bucketByProp: String
   },
 
   data() {
     return {
       id: uuid(),
+      editing: false,
       title: '',
       reportId: null,
       strategy: null,
@@ -97,6 +103,12 @@ export default {
   mounted() {
     // capture the promise to synchronize tests
     this.reportPromise = this.fetchReports();
+    this.editing = this.editingProp ? true : false;
+    this.title = this.titleProp;
+    this.reportId = this.reportIdProp;
+    this.strategy = this.strategyProp;
+    this.bucketBy = this.bucketByProp;
+    this.loadReportFields();
   },
 
   methods: {
@@ -193,13 +205,14 @@ export default {
 
     /**
      * Save report config and clear form.
+     * @param Boolean editing - true if editing a summary, otherwise saving a new summary
      */
-    saveReportSummary() {
+    saveReportSummary(editing) {
       if (!this.validForm()) {
         return;
       }
       const { dataService } = this;
-      this.savePromise = dataService.saveReportSummary(this.reportSummary())
+      this.savePromise = dataService.saveReportSummary(this.reportSummary(), editing)
         .then(this.captureReportSummary)
         .catch(this.handleConfigError)
         .finally(this.clearForm);

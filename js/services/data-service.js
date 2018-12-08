@@ -68,8 +68,11 @@ export default function createDataService(assetUrls) {
      * @param {Object} reportSummary Data for a report summary.
      * @return {Promise->Object} the response's report summary data
      */
-    saveReportSummary(reportSummary) {
-      const data = { reportSummary: JSON.stringify({ reportSummary }) };
+    saveReportSummary(reportSummary, editing) {
+      const data = {
+        reportSummary: JSON.stringify({ reportSummary }),
+        editing: editing
+      };
       const options = { timeout: 5000 };
       return this._makeRequest(`${this.reportConfigUrl}&action=saveReportSummary`, data, options);
     },
@@ -79,7 +82,7 @@ export default function createDataService(assetUrls) {
      * @param {Object} reportSummary Data for a report summary.
      * @return {Promise->Object} the response's report summary data
      */
-    saveReportSummaries(reportSummaries) {
+    saveReportSummaries(reportSummaries, editing) {
       const data = { reportSummaries: JSON.stringify({ reportSummaries }) };
       const options = { timeout: 5000 };
       return this._makeRequest(`${this.reportConfigUrl}&action=saveReportSummaries`, data, options);
