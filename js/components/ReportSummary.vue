@@ -15,7 +15,7 @@
                title="Drag to Reorder"
                @mousedown="enableDrag"
                @mouseup="disableDrag">
-            <i class="fa fa-bars"></i>
+            <i class="fa fa-arrows-alt"></i>
           </div>
         </div>
         <div class="summary-controls mb-1">
