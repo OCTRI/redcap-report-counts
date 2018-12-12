@@ -57,47 +57,35 @@ describe('ReportSummary.vue', () => {
       });
     });
 
-    it('renders report summary with itemized counts', (done) => {
+    it('renders report summary with itemized counts', () => {
       const reportName = wrapper.find('h3');
       expect(reportName.text()).toEqual('Sample Itemized Report Name');
 
-      wrapper.vm.$nextTick(() => {
-        const li = wrapper.findAll(selectors.counts);
-        expect(li.length).toEqual(3);
-        expect(li.at(0).text()).toEqual('3 - Patient follow-up');
-        expect(li.at(1).text()).toEqual('2 - Patient withdrew consent');
-        expect(li.at(2).text()).toEqual('1 - Perceived drug side effects');
-        done();
-      });
+      const li = wrapper.findAll(selectors.counts);
+      expect(li.length).toEqual(3);
+      expect(li.at(0).text()).toEqual('3 - Patient follow-up');
+      expect(li.at(1).text()).toEqual('2 - Patient withdrew consent');
+      expect(li.at(2).text()).toEqual('1 - Perceived drug side effects');
     });
 
-    it('renders a metadata section', (done) => {
-      wrapper.vm.$nextTick(() => {
-        const metadata = wrapper.findAll(selectors.metadata);
-        expect(metadata.length).toEqual(2);
-        expect(metadata.at(0).text()).toEqual('Total Count: 6');
-        expect(metadata.at(1).text()).toEqual('Grouped By: Field Label');
-        done();
-      });
+    it('renders a metadata section', () => {
+      const metadata = wrapper.findAll(selectors.metadata);
+      expect(metadata.length).toEqual(2);
+      expect(metadata.at(0).text()).toEqual('Total Count: 6');
+      expect(metadata.at(1).text()).toEqual('Grouped By: Field Label');
     });
 
-    it('emits deleteSummary event', (done) => {
-      wrapper.vm.$nextTick(() => {
-        spyOn(window, 'confirm').and.returnValue(true);
-        wrapper.find('.delete').trigger('click');
-        expect(wrapper.emitted('deleteSummary')).toBeTruthy();
-        expect(wrapper.emitted('deleteSummary')[0]).toBeTruthy();
-        done();
-      });
+    it('emits deleteSummary event', () => {
+      spyOn(window, 'confirm').and.returnValue(true);
+      wrapper.find('.delete').trigger('click');
+      expect(wrapper.emitted('deleteSummary')).toBeTruthy();
+      expect(wrapper.emitted('deleteSummary')[0]).toBeTruthy();
     });
 
-    it('does not emit deleteSummary event if canceled', (done) => {
-      wrapper.vm.$nextTick(() => {
-        spyOn(window, 'confirm').and.returnValue(false);
-        wrapper.find('.delete').trigger('click');
-        expect(wrapper.emitted('deleteSummary')).toBeFalsy();
-        done();
-      });
+    it('does not emit deleteSummary event if canceled', () => {
+      spyOn(window, 'confirm').and.returnValue(false);
+      wrapper.find('.delete').trigger('click');
+      expect(wrapper.emitted('deleteSummary')).toBeFalsy();
     });
   });
 
@@ -110,7 +98,7 @@ describe('ReportSummary.vue', () => {
       summaryData: []
     };
 
-    it('handles missing values', (done) => {
+    it('handles missing values', () => {
       propsData.summaryData = [
         'Patient follow-up',
         '42',
@@ -128,18 +116,14 @@ describe('ReportSummary.vue', () => {
       ];
 
       const wrapper = shallowMount(ReportSummary, { propsData: propsData });
+      expect(wrapper.vm.hasMissingValue).toEqual(true);
 
-      wrapper.vm.$nextTick(() => {
-        expect(wrapper.vm.hasMissingValue).toEqual(true);
-
-        const li = wrapper.findAll(selectors.counts);
-        expect(li.length).toEqual(5);
-        expect(li.at(4).text()).toEqual(`3 - ${MISSING}`);
-        done();
-      });
+      const li = wrapper.findAll(selectors.counts);
+      expect(li.length).toEqual(5);
+      expect(li.at(4).text()).toEqual(`3 - ${MISSING}`);
     });
 
-    it('orders counts', (done) => {
+    it('orders counts', () => {
       propsData.summaryData = shuffle([
         ...new Array(3).fill('January'),
         ...new Array(2).fill('Afakemonth'),
@@ -154,25 +138,22 @@ describe('ReportSummary.vue', () => {
 
       const wrapper = shallowMount(ReportSummary, { propsData: propsData });
 
-      wrapper.vm.$nextTick(() => {
-        const li = wrapper.findAll(selectors.counts);
-        expect(li.length).toEqual(8);
+      const li = wrapper.findAll(selectors.counts);
+      expect(li.length).toEqual(8);
 
-        // Count in descending order
-        expect(li.at(0).text()).toEqual('15 - May');
-        expect(li.at(1).text()).toEqual('10 - February');
-        expect(li.at(2).text()).toEqual('7 - March');
-        expect(li.at(3).text()).toEqual('3 - January');
+      // Count in descending order
+      expect(li.at(0).text()).toEqual('15 - May');
+      expect(li.at(1).text()).toEqual('10 - February');
+      expect(li.at(2).text()).toEqual('7 - March');
+      expect(li.at(3).text()).toEqual('3 - January');
 
-        // Label is ascending when the count is the same
-        expect(li.at(4).text()).toEqual('2 - Afakemonth');
-        expect(li.at(5).text()).toEqual('2 - April');
-        expect(li.at(6).text()).toEqual('2 - August');
+      // Label is ascending when the count is the same
+      expect(li.at(4).text()).toEqual('2 - Afakemonth');
+      expect(li.at(5).text()).toEqual('2 - April');
+      expect(li.at(6).text()).toEqual('2 - August');
 
-        // Missing is always the last count
-        expect(li.at(7).text()).toEqual(`42 - ${MISSING}`);
-        done();
-      });
+      // Missing is always the last count
+      expect(li.at(7).text()).toEqual(`42 - ${MISSING}`);
     });
   });
 
