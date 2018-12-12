@@ -101,6 +101,18 @@ class ReportConfig {
     return $errors;
   }
 
+  public function updateReportSummary($reportSummary) {
+    $config = $this->getReportConfig();
+    foreach ($config as $key => $summary) {
+      if ($reportSummary['id'] === $summary['id']) {
+        $config[$key] = $reportSummary;
+        return $this->saveReportSummary($reportSummary);
+      }
+    }
+
+    return false;
+  }
+
   /**
    * Saves a ReportSummary
    * @param {Array} reportSummary - Configuration for a report summary

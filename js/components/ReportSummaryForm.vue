@@ -17,13 +17,13 @@
       <div class="row form-group">
         <div class="col">
           <label for="title">Title</label>
-          <input id="title" name="title" v-model="title" type="text" class="form-control">
+          <input id="title" name="title" v-model="formTitle" type="text" class="form-control">
         </div>
       </div>
       <div class="row form-group">
         <div class="col">
           <label for="reportId">Report</label>
-          <select id="reportId" name="reportId" v-model="reportId" class="form-control" @change="loadReportFields()">
+          <select id="reportId" name="reportId" v-model="formReportId" class="form-control" @change="loadReportFields()">
             <option v-for="report in reports" :key="report.reportId" :value="report.reportId">{{ report.title }}</option>
           </select>
         </div>
@@ -32,7 +32,7 @@
         <div class="col">
           <label for="strategy">Summary Type</label>
           <div class="form-check" v-for="(strategyVal, i) in strategies" :key="strategyVal">
-            <input class="form-check-input" :id="'strategy' + i" name="strategy" v-model="strategy" :value="strategyVal" type="radio" :disabled="!reportSelected">
+            <input class="form-check-input" :id="'strategy' + i" name="strategy" v-model="formStrategy" :value="strategyVal" type="radio" :disabled="!reportSelected">
             <label class="form-check-label" :for="'strategy' + i">{{ strategyVal }}</label>
           </div>
         </div>
@@ -40,7 +40,7 @@
       <div class="row form-group" v-if="showBucketByFields">
         <div class="col">
           <label>Field to Group Results
-            <select id="bucketBy" name="bucketBy" v-model="bucketBy" class="form-control">
+            <select id="bucketBy" name="bucketBy" v-model="formBucketBy" class="form-control">
               <option v-for="field in reportFields" :key="field.field_name" :value="field.field_name">{{ field.field_name }} "{{ field.field_label }}"</option>
             </select>
           </label>
@@ -48,7 +48,8 @@
       </div>
       <div class="row form-group mb-0">
         <div class="col">
-          <button type="submit" class="btn btn-primary" @click="saveReportSummary(editing)">Save</button>
+          id = {{ id }}, formId = {{ formId }}
+          <button type="submit" class="btn btn-primary" @click="saveReportSummary(isEditing)">Save</button>
           <button type="cancel" class="btn btn-link" @click="cancelForm">Cancel</button>
         </div>
       </div>
@@ -77,21 +78,22 @@ export default {
 
   props: {
     hideFormTitle: Boolean,
-    editingProp: Boolean,
-    titleProp: String,
-    reportIdProp: Number,
-    strategyProp: String,
-    bucketByProp: String
+    id: String,
+    editing: Boolean,
+    title: String,
+    reportId: Number,
+    strategy: String,
+    bucketBy: String
   },
 
   data() {
     return {
-      id: uuid(),
-      editing: false,
-      title: '',
-      reportId: null,
-      strategy: null,
-      bucketBy: null,
+      formId: '',
+      isEditing: false,
+      formTitle: '',
+      formReportId: null,
+      formStrategy: null,
+      formBucketBy: null,
       strategies: Object.values(STRATEGY),
       reports: [],
       errors: [],
@@ -103,11 +105,12 @@ export default {
   mounted() {
     // capture the promise to synchronize tests
     this.reportPromise = this.fetchReports();
-    this.editing = this.editingProp ? true : false;
-    this.title = this.titleProp;
-    this.reportId = this.reportIdProp;
-    this.strategy = this.strategyProp;
-    this.bucketBy = this.bucketByProp;
+    this.isEditing = this.editing ? true : false;
+    this.formId = this.id;
+    this.formTitle = this.title;
+    this.formReportId = this.reportId;
+    this.formStrategy = this.strategy;
+    this.formBucketBy = this.bucketBy;
     this.loadReportFields();
   },
 
@@ -130,11 +133,11 @@ export default {
       this.reports = responseArray;
     },
 
-    fetchReportFields(reportId) {
+    fetchReportFields() {
       const { dataService } = this;
       this.clearErrors();
       this.loadingReportFields = true;
-      return dataService.getReportFields(this.reportId)
+      return dataService.getReportFields(this.formReportId)
         .then(this.captureReportFields)
         .catch(this.handleConfigError)
         .finally(() => {
@@ -150,11 +153,11 @@ export default {
      * Clears current form values.
      */
     clearForm() {
-      this.id = uuid();
-      this.title = '';
-      this.reportId = null;
-      this.strategy = null;
-      this.bucketBy = null;
+      this.formId = uuid();
+      this.formTitle = '';
+      this.formReportId = null;
+      this.formStrategy = null;
+      this.formBucketBy = null;
     },
 
     clearErrors() {
@@ -175,11 +178,11 @@ export default {
      */
     reportSummary() {
       return {
-        id: this.id,
-        reportId: this.reportId,
-        title: this.title,
-        strategy: this.strategy,
-        bucketBy: this.bucketBy
+        id: this.formId,
+        reportId: this.formReportId,
+        title: this.formTitle,
+        strategy: this.formStrategy,
+        bucketBy: this.formBucketBy
       };
     },
 
@@ -188,16 +191,16 @@ export default {
      */
     validForm() {
       this.clearErrors();
-      if (!this.title.trim().length) {
+      if (this.formTitle && !this.formTitle.trim().length) {
         this.errors.push(messages.titleRequired);
       }
-      if (this.reportId === null) {
+      if (this.formReportId === null) {
         this.errors.push(messages.reportRequired);
       }
-      if (this.strategy === null) {
+      if (this.formStrategy === null) {
         this.errors.push(messages.strategyRequired);
       }
-      if (this.strategy === STRATEGY.ITEMIZED && this.bucketBy === null) {
+      if (this.formStrategy === STRATEGY.ITEMIZED && this.formBucketBy === null) {
         this.errors.push(messages.bucketByRequired);
       }
       return this.errors.length === 0;
@@ -259,7 +262,7 @@ export default {
      */
     reportFields: function() {
       this.clearErrors();
-      if (this.reportFields.length === 0 && this.strategy === STRATEGY.ITEMIZED) {
+      if (this.reportFields.length === 0 && this.formStrategy === STRATEGY.ITEMIZED) {
         this.bucketBy = null;
         this.errors.push(messages.noBucketByFields);
       }
@@ -278,14 +281,14 @@ export default {
      * @return true if the itemized strategy is selected
      */
     isItemizedStrategy() {
-      return this.strategy === STRATEGY.ITEMIZED;
+      return this.formStrategy === STRATEGY.ITEMIZED;
     },
 
     /**
      * @return true if a report has been selected.
      */
     reportSelected() {
-      return this.reportId !== null;
+      return this.formReportId !== null;
     },
 
     /**

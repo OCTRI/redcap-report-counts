@@ -32,6 +32,10 @@
   width: 600px;
 }
 
+.report-summary .report-summary-form {
+  width: 100%;
+}
+
 .report-summary-form .card-header {
   font-size: 140%;
 }

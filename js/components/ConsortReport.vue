@@ -23,7 +23,7 @@
       </div>
 
       <div v-if="showReportForm">
-        <ReportSummaryForm @reportSummary="addReportSummary" :key="formId" />
+        <ReportSummaryForm @reportSummary="addReportSummary" :key="formId" :id="formId" />
       </div>
 
       <div v-if="hasReportSummaries">
@@ -141,6 +141,7 @@ export default {
       const { dataService } = this;
       this.saveSummariesPromise = dataService.saveReportSummaries(this.reportSummaries.map((summary) => {
         return {
+          id: summary.id,
           reportId: summary.reportId,
           title: summary.title,
           strategy: summary.strategy,

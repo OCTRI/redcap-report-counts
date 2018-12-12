@@ -23,13 +23,14 @@
           <a class="delete" v-if="canDelete" @click="deleteSummary">Delete <i class="far fa-trash-alt"></i></a>
         </div>
         <div v-if="editing && canEdit" class="edit-form container">
-          <ReportSummaryForm :key="reportId + id"
+          <ReportSummaryForm :key="id"
                              :hideFormTitle=true
-                             :editingProp=true
-                             :titleProp="title"
-                             :reportIdProp="reportId"
-                             :strategyProp="strategy"
-                             :bucketByProp="bucketBy" />
+                             :editing=true
+                             :id="id"
+                             :title="title"
+                             :reportId="reportId"
+                             :strategy="strategy"
+                             :bucketBy="bucketBy" />
         </div>
         <ul class="summary-metadata lead list-unstyled mb-0">
           <li>Total Count: {{ totalRecords }}</li>
@@ -102,9 +103,8 @@ export default {
      * Emit editSummary event.
      */
     editSummary() {
-      console.log('emit editSummary');
       this.editing = true;
-      this.$emit('editSummary', this.id);
+      // this.$emit('editSummary', this.id);
     },
 
     /**

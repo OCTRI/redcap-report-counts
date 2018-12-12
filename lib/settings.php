@@ -21,13 +21,17 @@ if (isset($_GET['action'])) {
         $data = json_decode($requestBody, true);
 
         if ($_GET['action'] === 'saveReportSummary') {
-            $reportSummaryJSON = $data['reportSummary'];
-            $reportSummaryArray = json_decode($reportSummaryJSON, true);
+            $reportSummaryArray = json_decode($data['reportSummary'], true);
             $reportSummary = $reportSummaryArray['reportSummary'];
             $editing = $data['editing'];
 
             $reportConfig = new ReportConfig($project_id, $module);
-            $result = $reportConfig->saveReportSummary($reportSummary);
+            $result = false;
+            if ($editing === true) {
+                $result = $reportConfig->updateReportSummary($reportSummary);
+            } else {
+                $result = $reportConfig->saveReportSummary($reportSummary);
+            }
 
             if ($result === true) {
                 $report = json_decode(\REDCap::getReport($reportSummary['reportId'], 'json', true /* export labels */), true);
@@ -39,6 +43,7 @@ if (isset($_GET['action'])) {
 
         } else if ($_GET['action'] === 'saveReportSummaries') {
             $reportSummaries = json_decode($data['reportSummaries'], true);
+            var_dump('reportSummaries', $reportSummaries);
 
             $reportConfig = new ReportConfig($project_id, $module);
             $result = $reportConfig->saveReportSummaries($reportSummaries['reportSummaries']);
