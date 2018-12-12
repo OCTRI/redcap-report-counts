@@ -51,7 +51,7 @@ describe('ConsortReport.vue', () => {
   let mockProvide, wrapper;
 
   describe('With report summaries', () => {
-    beforeEach((done) => {
+    beforeEach(async () => {
       mockProvide = provideWithSummaries();
       spyOn(mockProvide.dataService, 'fetchReportSummary').and.callThrough();
       spyOn(mockProvide.dataService, 'getReports').and.callThrough();
@@ -61,7 +61,7 @@ describe('ConsortReport.vue', () => {
         provide: mockProvide
       });
 
-      wrapper.vm.configPromise.then(() => done());
+      await wrapper.vm.configPromise;
     });
 
     it('requests report summary when mounted', () => {
@@ -87,7 +87,7 @@ describe('ConsortReport.vue', () => {
   });
 
   describe('Without report summaries', () => {
-    beforeEach((done) => {
+    beforeEach(async () => {
       mockProvide = provideWithoutSummaries();
       spyOn(mockProvide.dataService, 'fetchReportSummary').and.callThrough();
 
@@ -95,7 +95,7 @@ describe('ConsortReport.vue', () => {
         provide: mockProvide
       });
 
-      wrapper.vm.configPromise.then(() => done());
+      await wrapper.vm.configPromise;
     });
 
     it('shows create a report button - all else hidden', () => {
@@ -116,7 +116,7 @@ describe('ConsortReport.vue', () => {
   describe('drag and drop', () => {
     let mockReportSummaries;
 
-    beforeEach((done) => {
+    beforeEach(async () => {
       mockReportSummaries = [
         {
           id: 'one-id',
@@ -159,7 +159,7 @@ describe('ConsortReport.vue', () => {
         provide: mockProvide
       });
 
-      wrapper.vm.configPromise.then(() => done());
+      await wrapper.vm.configPromise;
     });
 
     it('default dnd state', () => {
