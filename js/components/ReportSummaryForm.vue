@@ -82,7 +82,14 @@ export default {
 
   data() {
     const { initialState } = this.$props;
-    const model = initialState ? ReportSummaryConfig.clone(initialState) : new ReportSummaryConfig();
+    let model;
+
+    if (initialState) {
+      model = ReportSummaryConfig.fromObject(initialState);
+    } else {
+      model = new ReportSummaryConfig();
+    }
+
     return {
       model,
       isEditing: Boolean(initialState),
@@ -142,7 +149,7 @@ export default {
     clearForm() {
       const { isEditing, $props } = this;
       if (isEditing) {
-        this.model = ReportSummaryConfig.clone($props.initialState);
+        this.model = ReportSummaryConfig.fromObject($props.initialState);
       } else {
         this.model = new ReportSummaryConfig();
       }

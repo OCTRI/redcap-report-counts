@@ -5,12 +5,12 @@ import uuid from 'uuid/v4';
  */
 export default class ReportSummaryConfig {
   /**
-   * Creates a new `ReportSummaryConfig` object that is a copy of the input object.
+   * Creates a new `ReportSummaryConfig` object with property values copied from another object.
    *
-   * @param {ReportSummaryConfig} other - the object to copy
+   * @param {Object} other - the object to copy property values from.
    * @return {ReportSummaryConfig} a new object with the same property values
    */
-  static clone(other) {
+  static fromObject(other) {
     const { id, title, reportId, strategy, bucketBy } = other;
     return new ReportSummaryConfig(id, title, reportId, strategy, bucketBy);
   }

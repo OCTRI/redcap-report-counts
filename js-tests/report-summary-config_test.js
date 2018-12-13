@@ -24,7 +24,7 @@ describe('ReportSummaryConfig class', () => {
 
   it('can clone an existing ReportSummaryConfig', () =>{
     const oldObj = new ReportSummaryConfig('a', 'Title', 42, STRATEGY.ITEMIZED, 'someField');
-    const newObj = ReportSummaryConfig.clone(oldObj);
+    const newObj = ReportSummaryConfig.fromObject(oldObj);
 
     // result should be a different object
     expect(newObj).not.toBe(oldObj);

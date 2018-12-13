@@ -96,7 +96,7 @@ describe('ReportSummaryForm.vue', () => {
     });
 
     it('makes drop-down with group by values visible when itemized strategy selected', () => {
-      const modelWithStrategy = ReportSummaryConfig.clone(wrapper.vm.model);
+      const modelWithStrategy = ReportSummaryConfig.fromObject(wrapper.vm.model);
       modelWithStrategy.strategy = STRATEGY.ITEMIZED;
 
       wrapper.setData({
