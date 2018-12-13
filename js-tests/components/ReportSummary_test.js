@@ -1,6 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 
 import ReportSummary from '@/components/ReportSummary';
+import ReportSummaryModel from '@/report-summary-model';
 import { STRATEGY } from '@/report-strategy';
 import { MISSING } from '@/constants';
 import shuffle from 'lodash/shuffle';
@@ -15,12 +16,16 @@ describe('ReportSummary.vue', () => {
     let wrapper;
 
     beforeEach(() => {
+      const model = ReportSummaryModel.fromObject({
+        id: 'a51361a1-8d64-4348-a28a-fc6b5dcca663',
+        title: 'Sample Report Name',
+        totalRecords: 101,
+        strategy: STRATEGY.TOTAL
+      });
+
       wrapper = shallowMount(ReportSummary, {
         propsData: {
-          id: 'a51361a1-8d64-4348-a28a-fc6b5dcca663',
-          title: 'Sample Report Name',
-          totalRecords: 101,
-          strategy: STRATEGY.TOTAL
+          model
         }
       });
     });
@@ -38,21 +43,25 @@ describe('ReportSummary.vue', () => {
     let wrapper;
 
     beforeEach(() => {
+      const model = ReportSummaryModel.fromObject({
+        id: 'a48bc291-951f-4ef6-9ec3-fff6291d7cd1',
+        title: 'Sample Itemized Report Name',
+        totalRecords: 6,
+        strategy: STRATEGY.ITEMIZED,
+        bucketByLabel: 'Field Label',
+        summaryData: [
+          'Patient follow-up',
+          'Patient withdrew consent',
+          'Patient follow-up',
+          'Patient follow-up',
+          'Patient withdrew consent',
+          'Perceived drug side effects'
+        ]
+      });
+
       wrapper = shallowMount(ReportSummary, {
         propsData: {
-          id: 'a48bc291-951f-4ef6-9ec3-fff6291d7cd1',
-          title: 'Sample Itemized Report Name',
-          totalRecords: 6,
-          strategy: STRATEGY.ITEMIZED,
-          bucketByLabel: 'Field Label',
-          summaryData: [
-            'Patient follow-up',
-            'Patient withdrew consent',
-            'Patient follow-up',
-            'Patient follow-up',
-            'Patient withdrew consent',
-            'Perceived drug side effects'
-          ]
+          model
         }
       });
     });
@@ -90,16 +99,16 @@ describe('ReportSummary.vue', () => {
   });
 
   describe('Report Summary ordering', () => {
-    const propsData = {
+    const model = ReportSummaryModel.fromObject({
       id: '7e09f84b-76d8-48bb-9eca-e1e4fe33f844',
       title: 'Test Report Summary',
       totalRecords: 8,
       strategy: STRATEGY.ITEMIZED,
       summaryData: []
-    };
+    });
 
     it('handles missing values', () => {
-      propsData.summaryData = [
+      model.summaryData = [
         'Patient follow-up',
         '42',
         'Patient withdrew consent',
@@ -115,7 +124,11 @@ describe('ReportSummary.vue', () => {
         '       '
       ];
 
-      const wrapper = shallowMount(ReportSummary, { propsData: propsData });
+      const wrapper = shallowMount(ReportSummary, {
+        propsData: {
+          model
+        }
+      });
       expect(wrapper.vm.hasMissingValue).toEqual(true);
 
       const li = wrapper.findAll(selectors.counts);
@@ -124,7 +137,7 @@ describe('ReportSummary.vue', () => {
     });
 
     it('orders counts', () => {
-      propsData.summaryData = shuffle([
+      model.summaryData = shuffle([
         ...new Array(3).fill('January'),
         ...new Array(2).fill('Afakemonth'),
         ...new Array(10).fill('February'),
@@ -136,7 +149,11 @@ describe('ReportSummary.vue', () => {
         ...new Array(15).fill('May')
       ]);
 
-      const wrapper = shallowMount(ReportSummary, { propsData: propsData });
+      const wrapper = shallowMount(ReportSummary, {
+        propsData: {
+          model
+        }
+      });
 
       const li = wrapper.findAll(selectors.counts);
       expect(li.length).toEqual(8);
@@ -161,12 +178,16 @@ describe('ReportSummary.vue', () => {
     let wrapper;
 
     beforeEach(() => {
+      const model = ReportSummaryModel.fromObject({
+        id: 'a51361a1-8d64-4348-a28a-fc6b5dcca663',
+        title: 'Some Name',
+        totalRecords: 10,
+        strategy: STRATEGY.TOTAL
+      });
+
       wrapper = shallowMount(ReportSummary, {
         propsData: {
-          id: 'a51361a1-8d64-4348-a28a-fc6b5dcca663',
-          title: 'Some Name',
-          totalRecords: 10,
-          strategy: STRATEGY.TOTAL
+          model
         }
       });
     });
@@ -189,7 +210,7 @@ describe('ReportSummary.vue', () => {
 
     it('emits an event with the id when the user starts to drag it', () => {
       wrapper.trigger('dragstart');
-      expect(wrapper.emitted('reorder-start')[0][0]).toEqual(wrapper.vm.id);
+      expect(wrapper.emitted('reorder-start')[0][0]).toEqual(wrapper.vm.model.id);
     });
 
     it('emits an event when an item is dropped on it', () => {
