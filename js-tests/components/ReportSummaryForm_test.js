@@ -208,7 +208,7 @@ describe('ReportSummaryForm.vue', () => {
     expect(reportSummary.bucketBy).toEqual('bucketField');
   });
 
-  it('cancel clears form', () => {
+  it('clears form on cancel when creating', () => {
     const originalId = wrapper.vm.model.id;
     wrapper.vm.model.reportId = 7;
     wrapper.vm.model.title = 'Report Title';
@@ -222,6 +222,27 @@ describe('ReportSummaryForm.vue', () => {
     expect(wrapper.vm.model.title).toEqual('');
     expect(wrapper.vm.model.strategy).toEqual(null);
     expect(wrapper.vm.model.bucketBy).toEqual(null);
+  });
+
+  it('resets the form to the initial state on cancel when editing', () => {
+    const initialState = new ReportSummaryConfig(null, 'Initial', 3, STRATEGY.TOTAL);
+    const wrapper = shallowMount(ReportSummaryForm, {
+      provide: mockProvide,
+      propsData: {
+        initialState
+      }
+    });
+
+    // model is initially equal to the initial state
+    expect(wrapper.vm.model).toEqual(initialState);
+
+    // changes made via the form mutate the model
+    wrapper.find('input[name="title"]').setValue('New Title');
+    expect(wrapper.vm.model).not.toEqual(initialState);
+
+    // cancel resets the model to the initial state
+    wrapper.find('button[type=cancel]').trigger('click');
+    expect(wrapper.vm.model).toEqual(initialState);
   });
 
   it('disables strategy radio buttons unless a report is selected', () => {
