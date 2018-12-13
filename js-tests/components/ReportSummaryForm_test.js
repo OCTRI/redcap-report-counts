@@ -3,8 +3,9 @@ import { shallowMount } from '@vue/test-utils';
 import ReportSummaryForm from '@/components/ReportSummaryForm';
 import { messages } from '@/components/ReportSummaryForm';
 import { STRATEGY } from '@/report-strategy';
+import ReportSummaryConfig from '@/report-summary-config';
 
-const uuidPattern = /[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}/i;
+import { uuidPattern } from '../test-utils';
 
 const mockReportFields = [
   { field_name: 'field_1', field_label: 'Field 1' },
@@ -52,8 +53,22 @@ describe('ReportSummaryForm.vue', () => {
   });
 
   describe('Report Summary Form', () => {
-    it('generates a unique ID for the report summary', () => {
-      expect(wrapper.vm.id).toMatch(uuidPattern);
+    it('creates a new form model if initial state is absent', () => {
+      expect(wrapper.vm.model).toBeDefined();
+      expect(wrapper.vm.model.id).toMatch(uuidPattern);
+    });
+
+    it('clones the form model from initial state if present', () => {
+      const wrapper = shallowMount(ReportSummaryForm, {
+        provide: mockProvide,
+        propsData: {
+          initialState: new ReportSummaryConfig(42, 'Report 2', 2, STRATEGY.TOTAL, null)
+        }
+      });
+
+      const { model, initialState } = wrapper.vm;
+      expect(model).not.toBe(initialState);
+      expect(model).toEqual(initialState);
     });
 
     it('renders form and title field', () => {
@@ -69,9 +84,7 @@ describe('ReportSummaryForm.vue', () => {
       expect(options.at(1).text()).toEqual('Report 2');
     });
 
-    it('makes drop-down with group by values visible when itemized strategy selected', () => {
-      wrapper.vm.strategy = STRATEGY.ITEMIZED;
-
+    it('renders radio buttons for the strategy values', () => {
       const strategy = wrapper.findAll('input[name="strategy"]');
       expect(strategy.length).toEqual(2);
       const radio1 = strategy.at(0);
@@ -82,10 +95,14 @@ describe('ReportSummaryForm.vue', () => {
       expect(radio2.attributes().value).toEqual(STRATEGY.ITEMIZED);
     });
 
-    it('renders strategy drop-down with all group by values', () => {
-      wrapper.vm.reportId = 42;
-      wrapper.vm.strategy = STRATEGY.ITEMIZED;
-      wrapper.vm.reportFields = mockReportFields;
+    it('makes drop-down with group by values visible when itemized strategy selected', () => {
+      const modelWithStrategy = ReportSummaryConfig.clone(wrapper.vm.model);
+      modelWithStrategy.strategy = STRATEGY.ITEMIZED;
+
+      wrapper.setData({
+        model: modelWithStrategy,
+        reportFields: mockReportFields
+      });
 
       expect(wrapper.findAll('#bucketBy').length).toEqual(1);
 
@@ -101,9 +118,7 @@ describe('ReportSummaryForm.vue', () => {
   });
 
   it('saves report summary on submit', async () => {
-    wrapper.vm.title = 'Report 2';
-    wrapper.vm.reportId = 2;
-    wrapper.vm.strategy = STRATEGY.TOTAL;
+    wrapper.vm.model = new ReportSummaryConfig(null, 'Report 2', 2, STRATEGY.TOTAL);
     wrapper.find('.btn-primary').trigger('click');
 
     await wrapper.vm.savePromise;
@@ -128,8 +143,7 @@ describe('ReportSummaryForm.vue', () => {
     expect(wrapper.findAll('#bucketBy').length).toEqual(0);
 
     // Only a report selected
-    wrapper.vm.title = '';
-    wrapper.vm.reportId = 42;
+    wrapper.vm.model.reportId = 42;
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(2);
     expect(wrapper.vm.errors.includes(messages.titleRequired)).toEqual(true);
@@ -137,19 +151,19 @@ describe('ReportSummaryForm.vue', () => {
     expect(wrapper.findAll('#bucketBy').length).toEqual(0);
 
     // Only a title entered
-    wrapper.vm.title = 'Some Title';
-    wrapper.vm.reportId = null;
-    wrapper.vm.strategy = STRATEGY.TOTAL;
+    wrapper.vm.model.title = 'Some Title';
+    wrapper.vm.model.reportId = null;
+    wrapper.vm.model.strategy = STRATEGY.TOTAL;
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(1);
     expect(wrapper.vm.errors.includes(messages.reportRequired)).toEqual(true);
     expect(wrapper.findAll('#bucketBy').length).toEqual(0);
 
     // Require a bucketBy field on strategy='itemized'
-    wrapper.vm.title = 'Itemized Results';
-    wrapper.vm.reportId = 42;
-    wrapper.vm.strategy = STRATEGY.ITEMIZED;
-    wrapper.vm.reportFields = mockReportFields;
+    wrapper.vm.model.title = 'Itemized Results';
+    wrapper.vm.model.reportId = 42;
+    wrapper.vm.model.strategy = STRATEGY.ITEMIZED;
+    wrapper.vm.model.reportFields = mockReportFields;
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(1);
     expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toEqual(true);
@@ -158,9 +172,9 @@ describe('ReportSummaryForm.vue', () => {
   });
 
   it('checks for fields to group by and displays error message accordingly', () => {
-    wrapper.vm.title = 'No fields to group by test';
-    wrapper.vm.reportId = 42;
-    wrapper.vm.strategy = STRATEGY.ITEMIZED;
+    wrapper.vm.model.title = 'No fields to group by test';
+    wrapper.vm.model.reportId = 42;
+    wrapper.vm.model.strategy = STRATEGY.ITEMIZED;
     wrapper.vm.reportFields = [];
 
     // Show error message, no fields to group by
@@ -168,11 +182,11 @@ describe('ReportSummaryForm.vue', () => {
     expect(wrapper.vm.errors.includes(messages.noBucketByFields)).toEqual(true);
 
     // Strategy changed to total, remove error message
-    wrapper.vm.strategy = STRATEGY.TOTAL;
+    wrapper.vm.model.strategy = STRATEGY.TOTAL;
     expect(wrapper.vm.errors.length).toEqual(0);
 
     // Strategy changed back to itemized, display error message
-    wrapper.vm.strategy = STRATEGY.ITEMIZED;
+    wrapper.vm.model.strategy = STRATEGY.ITEMIZED;
     expect(wrapper.vm.errors.length).toEqual(1);
 
     // Fields to group by are loaded, remove error message
@@ -181,11 +195,11 @@ describe('ReportSummaryForm.vue', () => {
   });
 
   it('retrieves report summary values from form', () => {
-    const id = wrapper.vm.id;
-    wrapper.vm.reportId = 7;
-    wrapper.vm.title = 'Report Title';
-    wrapper.vm.strategy = STRATEGY.TOTAL;
-    wrapper.vm.bucketBy = 'bucketField';
+    const id = wrapper.vm.model.id;
+    wrapper.vm.model.reportId = 7;
+    wrapper.vm.model.title = 'Report Title';
+    wrapper.vm.model.strategy = STRATEGY.TOTAL;
+    wrapper.vm.model.bucketBy = 'bucketField';
     const reportSummary = wrapper.vm.reportSummary();
     expect(reportSummary.id).toEqual(id);
     expect(reportSummary.reportId).toEqual(7);
@@ -194,32 +208,51 @@ describe('ReportSummaryForm.vue', () => {
     expect(reportSummary.bucketBy).toEqual('bucketField');
   });
 
-  it('cancel clears form', () => {
-    const originalId = wrapper.vm.id;
-    wrapper.vm.reportId = 7;
-    wrapper.vm.title = 'Report Title';
-    wrapper.vm.strategy = STRATEGY.ITEMIZED;
-    wrapper.vm.bucketBy = 'someField';
-    expect(wrapper.vm.reportId).toEqual(7);
-    expect(wrapper.vm.title).toEqual('Report Title');
-    expect(wrapper.vm.strategy).toEqual(STRATEGY.ITEMIZED);
-    expect(wrapper.vm.bucketBy).toEqual('someField');
+  it('clears form on cancel when creating', () => {
+    const originalId = wrapper.vm.model.id;
+    wrapper.vm.model.reportId = 7;
+    wrapper.vm.model.title = 'Report Title';
+    wrapper.vm.model.strategy = STRATEGY.ITEMIZED;
+    wrapper.vm.model.bucketBy = 'someField';
+
     wrapper.vm.cancelForm();
-    expect(wrapper.vm.id).not.toEqual(originalId);
-    expect(wrapper.vm.reportId).toEqual(null);
-    expect(wrapper.vm.title).toEqual('');
-    expect(wrapper.vm.strategy).toEqual(null);
-    expect(wrapper.vm.bucketBy).toEqual(null);
+
+    expect(wrapper.vm.model.id).not.toEqual(originalId);
+    expect(wrapper.vm.model.reportId).toEqual(null);
+    expect(wrapper.vm.model.title).toEqual('');
+    expect(wrapper.vm.model.strategy).toEqual(null);
+    expect(wrapper.vm.model.bucketBy).toEqual(null);
+  });
+
+  it('resets the form to the initial state on cancel when editing', () => {
+    const initialState = new ReportSummaryConfig(null, 'Initial', 3, STRATEGY.TOTAL);
+    const wrapper = shallowMount(ReportSummaryForm, {
+      provide: mockProvide,
+      propsData: {
+        initialState
+      }
+    });
+
+    // model is initially equal to the initial state
+    expect(wrapper.vm.model).toEqual(initialState);
+
+    // changes made via the form mutate the model
+    wrapper.find('input[name="title"]').setValue('New Title');
+    expect(wrapper.vm.model).not.toEqual(initialState);
+
+    // cancel resets the model to the initial state
+    wrapper.find('button[type=cancel]').trigger('click');
+    expect(wrapper.vm.model).toEqual(initialState);
   });
 
   it('disables strategy radio buttons unless a report is selected', () => {
-    wrapper.vm.title = 'Report Title';
+    wrapper.vm.model.title = 'Report Title';
 
     const radios = wrapper.findAll('input[name="strategy"]');
     expect(radios.at(0).attributes().disabled).toBeTruthy();
     expect(radios.at(1).attributes().disabled).toBeTruthy();
 
-    wrapper.vm.reportId = 42;
+    wrapper.vm.model.reportId = 42;
 
     expect(radios.at(0).attributes().disabled).toBeFalsy()
     expect(radios.at(1).attributes().disabled).toBeFalsy();
@@ -227,17 +260,16 @@ describe('ReportSummaryForm.vue', () => {
 
   it('prevents form submission if changing report to one that does not have fields to bucket by', () => {
     // Choose a report that has reportFields
-    wrapper.vm.title = 'Prevent Submission';
-    wrapper.vm.reportId = 10;
-    wrapper.vm.strategy = STRATEGY.ITEMIZED;
+    wrapper.vm.model.title = 'Prevent Submission';
+    wrapper.vm.model.reportId = 10;
+    wrapper.vm.model.strategy = STRATEGY.ITEMIZED;
     wrapper.vm.reportFields = mockReportFields;
 
     // Select one of the bucketBy options
-    wrapper.findAll('#bucketBy option').at(0).element.selected = true;
-    wrapper.find('#bucketBy').trigger('change');
+    wrapper.findAll('#bucketBy option').at(0).setSelected();
 
     // Switch to a report that does not have reportFields
-    wrapper.vm.reportId = 11;
+    wrapper.vm.model.reportId = 11;
     wrapper.vm.reportFields = [];
 
     // There should now be a message saying there are no fields to group by

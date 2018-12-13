@@ -1,0 +1,35 @@
+import uuid from 'uuid/v4';
+
+/**
+ * Configuration for a report summary.
+ */
+export default class ReportSummaryConfig {
+  /**
+   * Creates a new `ReportSummaryConfig` object that is a copy of the input object.
+   *
+   * @param {ReportSummaryConfig} other - the object to copy
+   * @return {ReportSummaryConfig} a new object with the same property values
+   */
+  static clone(other) {
+    const { id, title, reportId, strategy, bucketBy } = other;
+    return new ReportSummaryConfig(id, title, reportId, strategy, bucketBy);
+  }
+
+  /**
+   *
+   * @param {String} id - optional. Defaults to generating a new UUID.
+   * @param {String} title - optional report summary title. Defaults to an empty string.
+   * @param {Number} reportId - optional report ID. Defaults to null.
+   * @param {String} strategy - optional report summary strategy. Should be one of the
+   *   constants from `report-strategy.js`. Defaults to null.
+   * @param {String} bucketBy - field to bucket itemized counts by. Only valid when `strategy`
+   *   is `STRATEGY.ITEMIZED`. Defaults to null.
+   */
+  constructor(id, title, reportId, strategy, bucketBy) {
+    this.id = id || uuid();
+    this.title = title || '';
+    this.reportId = reportId || null;
+    this.strategy = strategy || null;
+    this.bucketBy = bucketBy || null;
+  }
+}
