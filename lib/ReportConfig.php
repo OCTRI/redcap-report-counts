@@ -106,7 +106,7 @@ class ReportConfig {
     foreach ($config as $key => $summary) {
       if ($reportSummary['id'] === $summary['id']) {
         $config[$key] = $reportSummary;
-        return $this->saveReportSummary($reportSummary);
+        return $this->saveConfig($config);
       }
     }
 
@@ -126,13 +126,20 @@ class ReportConfig {
     }
 
     $config = $this->getReportConfig();
-    if (!$config) {
-      $this->module->setProjectSetting($this->reportConfigKey, array($reportSummary), $this->project_id);
+
+    if ($config) {
+      array_push($config, $reportSummary);
     } else {
-      $config[] = $reportSummary;
-      $this->module->setProjectSetting($this->reportConfigKey, $config, $this->project_id);
+      $config = array($reportSummary);
     }
 
+    $this->saveConfig($config);
+
+    return true;
+  }
+
+  public function saveConfig($config) {
+    $this->module->setProjectSetting($this->reportConfigKey, $config, $this->project_id);
     return true;
   }
 
