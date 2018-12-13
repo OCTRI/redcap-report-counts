@@ -38,7 +38,7 @@ function createProvideObject() {
 describe('ReportSummaryForm.vue', () => {
   let mockProvide, wrapper;
 
-  beforeEach((done) => {
+  beforeEach(async () => {
     mockProvide = createProvideObject();
 
     spyOn(mockProvide.dataService, 'getReports').and.callThrough();
@@ -48,7 +48,7 @@ describe('ReportSummaryForm.vue', () => {
       provide: mockProvide
     });
 
-    wrapper.vm.reportPromise.then(() => done());
+    await wrapper.vm.reportPromise;
   });
 
   describe('Report Summary Form', () => {
@@ -63,12 +63,10 @@ describe('ReportSummaryForm.vue', () => {
 
     it('renders report drop-down', () => {
       expect(wrapper.findAll('#reportId').length).toEqual(1);
-      wrapper.vm.$nextTick(() => {
-        const options = wrapper.findAll('#reportId option');
-        expect(options.length).toEqual(3);
-        expect(options.at(1).attributes().value).toEqual('2');
-        expect(options.at(1).text()).toEqual('Report 2');
-      });
+      const options = wrapper.findAll('#reportId option');
+      expect(options.length).toEqual(3);
+      expect(options.at(1).attributes().value).toEqual('2');
+      expect(options.at(1).text()).toEqual('Report 2');
     });
 
     it('makes drop-down with group by values visible when itemized strategy selected', () => {
@@ -102,22 +100,22 @@ describe('ReportSummaryForm.vue', () => {
     });
   });
 
-  it('saves report summary on submit', (done) => {
+  it('saves report summary on submit', async () => {
     wrapper.vm.title = 'Report 2';
     wrapper.vm.reportId = 2;
     wrapper.vm.strategy = STRATEGY.TOTAL;
     wrapper.find('.btn-primary').trigger('click');
-    wrapper.vm.savePromise.then(() => done());
-    wrapper.vm.$nextTick(() => {
-      const reportSummary = wrapper.emitted().reportSummary;
-      expect(reportSummary[0].length).toEqual(1);
 
-      const summaryObject = reportSummary[0][0];
-      expect(summaryObject.id).toMatch(uuidPattern);
-      expect(summaryObject.reportId).toEqual(2);
-      expect(summaryObject.title).toEqual('Report 2');
-      expect(summaryObject.strategy).toEqual(STRATEGY.TOTAL);
-    });
+    await wrapper.vm.savePromise;
+
+    const reportSummary = wrapper.emitted().reportSummary;
+    expect(reportSummary[0].length).toEqual(1);
+
+    const summaryObject = reportSummary[0][0];
+    expect(summaryObject.id).toMatch(uuidPattern);
+    expect(summaryObject.reportId).toEqual(2);
+    expect(summaryObject.title).toEqual('Report 2');
+    expect(summaryObject.strategy).toEqual(STRATEGY.TOTAL);
   });
 
   it('validates form', () => {
@@ -254,25 +252,25 @@ describe('ReportSummaryForm.vue', () => {
     expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toEqual(true);
   });
 
-  it('hides form title', (done) => {
+  it('hides form title', async () => {
     wrapper = shallowMount(ReportSummaryForm, {
       provide: createProvideObject(),
       propsData: {
         hideFormTitle: true
       }
     });
-    wrapper.vm.reportPromise.then(() => done());
+    await wrapper.vm.reportPromise;
     expect(wrapper.findAll('.card-header').length).toEqual(0);
   });
 
-  it('shows form title', (done) => {
+  it('shows form title', async () => {
     wrapper = shallowMount(ReportSummaryForm, {
       provide: createProvideObject(),
       propsData: {
         hideFormTitle: false
       }
     });
-    wrapper.vm.reportPromise.then(() => done());
+    await wrapper.vm.reportPromise;
     expect(wrapper.findAll('.card-header').length).toEqual(1);
   });
 });
