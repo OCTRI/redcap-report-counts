@@ -199,21 +199,21 @@ export default {
     },
 
     /**
-     * Checks summaryData for missing values.
-     * @return true if summaryData contains a missing value.
+     * Checks data for missing values.
+     * @return true if data contains a missing value.
      */
     hasMissingValue() {
-      return this.model.summaryData.some(this.missingValue);
+      return this.model.data.some(this.missingValue);
     },
 
     /**
      * Inserts MISSING value if empty.
-     * @return summaryData with empty values replaced by MISSING
+     * @return data with empty values replaced by MISSING
      */
     summaryDataWithMissing() {
-      return this.hasMissingValue ? this.model.summaryData.map(summary => {
+      return this.hasMissingValue ? this.model.data.map(summary => {
         return this.missingValue(summary) ? MISSING : summary;
-      }) : this.model.summaryData;
+      }) : this.model.data;
     },
 
     /**

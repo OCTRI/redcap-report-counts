@@ -49,7 +49,7 @@ describe('ReportSummary.vue', () => {
         totalRecords: 6,
         strategy: STRATEGY.ITEMIZED,
         bucketByLabel: 'Field Label',
-        summaryData: [
+        data: [
           'Patient follow-up',
           'Patient withdrew consent',
           'Patient follow-up',
@@ -104,11 +104,11 @@ describe('ReportSummary.vue', () => {
       title: 'Test Report Summary',
       totalRecords: 8,
       strategy: STRATEGY.ITEMIZED,
-      summaryData: []
+      data: []
     });
 
     it('handles missing values', () => {
-      model.summaryData = [
+      model.data = [
         'Patient follow-up',
         '42',
         'Patient withdrew consent',
@@ -137,7 +137,7 @@ describe('ReportSummary.vue', () => {
     });
 
     it('orders counts', () => {
-      model.summaryData = shuffle([
+      model.data = shuffle([
         ...new Array(3).fill('January'),
         ...new Array(2).fill('Afakemonth'),
         ...new Array(10).fill('February'),

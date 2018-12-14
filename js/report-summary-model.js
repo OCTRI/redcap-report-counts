@@ -15,7 +15,7 @@ export default class ReportSummaryModel {
       obj.strategy,
       obj.bucketBy,
       obj.bucketByLabel,
-      obj.summaryData,
+      obj.data,
       obj.totalRecords
     );
   }
@@ -33,18 +33,18 @@ export default class ReportSummaryModel {
    * @param {String} bucketBy - field to bucket itemized counts by. Only valid when `strategy`
    *   is `STRATEGY.ITEMIZED`.
    * @param {String} bucketByLabel - string label REDCap displays for the `bucketBy` field.
-   * @param {Object[]} summaryData - ???
+   * @param {String[]} data - array of `bucketBy` field values to aggregate.
    * @param {Number} totalRecords - total number of records.
    * @return {ReportSummaryModel}
    */
-  constructor(id, title, reportId, strategy, bucketBy, bucketByLabel, summaryData, totalRecords) {
+  constructor(id, title, reportId, strategy, bucketBy, bucketByLabel, data, totalRecords) {
     this.id = id;
     this.title = title;
     this.reportId = reportId;
     this.strategy = strategy;
     this.bucketBy = bucketBy;
     this.bucketByLabel = bucketByLabel;
-    this.summaryData = summaryData;
+    this.data = data;
     this.totalRecords = totalRecords;
   }
 

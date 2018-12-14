@@ -9,7 +9,7 @@ const exampleProps = {
   strategy: STRATEGY.ITEMIZED,
   bucketBy: 'exampleField',
   bucketByLabel: 'Example field label',
-  summaryData: [],
+  data: [],
   totalRecords: 0
 };
 
@@ -22,7 +22,7 @@ describe('ReportSummaryModel class', ()  => {
       exampleProps.strategy,
       exampleProps.bucketBy,
       exampleProps.bucketByLabel,
-      exampleProps.summaryData,
+      exampleProps.data,
       exampleProps.totalRecords
     );
 
@@ -32,7 +32,7 @@ describe('ReportSummaryModel class', ()  => {
     expect(model.strategy).toEqual(STRATEGY.ITEMIZED);
     expect(model.bucketBy).toEqual('exampleField');
     expect(model.bucketByLabel).toEqual('Example field label');
-    expect(model.summaryData).toEqual([]);
+    expect(model.data).toEqual([]);
     expect(model.totalRecords).toEqual(0);
   });
 
