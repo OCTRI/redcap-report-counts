@@ -203,7 +203,7 @@ export default {
      * @return true if data contains a missing value.
      */
     hasMissingValue() {
-      return this.model.data.some(this.missingValue);
+      return this.model.data && this.model.data.some(this.missingValue);
     },
 
     /**
