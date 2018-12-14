@@ -194,20 +194,6 @@ describe('ReportSummaryForm.vue', () => {
     expect(wrapper.vm.errors.length).toEqual(0);
   });
 
-  it('retrieves report summary values from form', () => {
-    const id = wrapper.vm.model.id;
-    wrapper.vm.model.reportId = 7;
-    wrapper.vm.model.title = 'Report Title';
-    wrapper.vm.model.strategy = STRATEGY.TOTAL;
-    wrapper.vm.model.bucketBy = 'bucketField';
-    const reportSummary = wrapper.vm.reportSummary();
-    expect(reportSummary.id).toEqual(id);
-    expect(reportSummary.reportId).toEqual(7);
-    expect(reportSummary.title).toEqual('Report Title');
-    expect(reportSummary.strategy).toEqual(STRATEGY.TOTAL);
-    expect(reportSummary.bucketBy).toEqual('bucketField');
-  });
-
   it('clears form on cancel when creating', () => {
     const originalId = wrapper.vm.model.id;
     wrapper.vm.model.reportId = 7;

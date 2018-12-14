@@ -173,21 +173,6 @@ export default {
     },
 
     /**
-     * Returns the model attributes to be saved to report config.
-     */
-    reportSummary() {
-      // TODO: consider returning a `ReportSummaryConfig` here
-      const { id, reportId, title, strategy, bucketBy } = this.model;
-      return {
-        id,
-        reportId,
-        title,
-        strategy,
-        bucketBy
-      };
-    },
-
-    /**
      * Validate form.
      */
     validForm() {
@@ -216,8 +201,8 @@ export default {
       if (!this.validForm()) {
         return;
       }
-      const { dataService } = this;
-      this.savePromise = dataService.saveReportSummary(this.reportSummary(), editing)
+      const { dataService, model } = this;
+      this.savePromise = dataService.saveReportSummary(model, editing)
         .then(this.captureReportSummary)
         .catch(this.handleConfigError)
         .finally(this.clearForm);
