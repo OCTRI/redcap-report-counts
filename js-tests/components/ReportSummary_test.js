@@ -1,10 +1,12 @@
-import { shallowMount } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
 
 import ReportSummary from '@/components/ReportSummary';
 import ReportSummaryModel from '@/report-summary-model';
 import { STRATEGY } from '@/report-strategy';
 import { MISSING } from '@/constants';
 import shuffle from 'lodash/shuffle';
+
+import { createProvideObject } from '../test-utils';
 
 const selectors = {
   metadata: '.summary-metadata li',
@@ -171,6 +173,42 @@ describe('ReportSummary.vue', () => {
 
       // Missing is always the last count
       expect(li.at(7).text()).toEqual(`42 - ${MISSING}`);
+    });
+  });
+
+  describe('editing', () => {
+    let wrapper, model;
+
+    beforeEach(() => {
+      model = ReportSummaryModel.fromObject({
+        id: '68d41098-f49a-4241-8014-ab519224fda7',
+        title: 'Original Title',
+        reportId: 3,
+        strategy: STRATEGY.TOTAL,
+        totalRecords: 99
+      });
+
+      wrapper = mount(ReportSummary, {
+        provide: createProvideObject(),
+        propsData: {
+          model
+        }
+      });
+    });
+
+    it('emits an event when updated config is saved', async () => {
+      wrapper.find('.edit').trigger('click');
+      wrapper.find('input[name="title"]').setValue('New Title');
+      wrapper.find('button[type="submit"]').trigger('click');
+
+      // allow time for the form's save promise to resolve
+      await Promise.resolve();
+
+      expect(wrapper.emitted('reportSummary')).toBeTruthy();
+
+      const updatedModel = wrapper.emitted('reportSummary')[0][0];
+      expect(updatedModel).not.toEqual(model);
+      expect(updatedModel.title).toEqual('New Title');
     });
   });
 

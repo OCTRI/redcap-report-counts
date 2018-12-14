@@ -85,6 +85,24 @@ describe('ConsortReport.vue', () => {
 
       expect(wrapper.vm.reportSummaries).toEqual(expected);
     });
+
+    it('replaces an existing summary when an update is received', () => {
+      const reportSummaries = [
+        { id: '7c121ae3-c6b4-4e88-b744-9f2503ac1605', reportId: 1, title: 'One', strategy: STRATEGY.TOTAL },
+        { id: '0236bf99-bb61-485f-a3e3-dd138f22f34c', reportId: 2, title: 'Two', strategy: STRATEGY.TOTAL },
+        { id: '032172c9-e544-4272-bcdc-dceb732f30c5', reportId: 3, title: 'Three', strategy: STRATEGY.TOTAL }
+      ].map(ReportSummaryModel.fromObject);
+
+      const replacement = ReportSummaryModel.fromObject(reportSummaries[1]);
+      replacement.title = 'Replaced';
+
+      wrapper.vm.reportSummaries = reportSummaries;
+      wrapper.vm.updateReportSummary(replacement);
+
+      // the whole array object should be replaced
+      expect(wrapper.vm.reportSummaries).not.toBe(reportSummaries);
+      expect(wrapper.vm.reportSummaries[1]).toEqual(replacement);
+    });
   });
 
   describe('Without report summaries', () => {

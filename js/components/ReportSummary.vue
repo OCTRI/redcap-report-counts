@@ -24,7 +24,8 @@
         </div>
         <div v-if="editing && canEdit" class="edit-form container">
           <ReportSummaryForm :hideFormTitle=true
-                             :initial-state="model.config" />
+                             :initial-state="model.config"
+                             @reportSummary="forwardUpdatedSummary" />
         </div>
         <ul class="summary-metadata lead list-unstyled mb-0">
           <li>Total Count: {{ model.totalRecords }}</li>
@@ -78,6 +79,14 @@ export default {
       if (confirm('Permanently delete this summary?')) {
         this.$emit('deleteSummary', this.model.id);
       }
+    },
+
+    /**
+     * Emits the reportSummary event to notify the parent when the summary is edited.
+     * @param {Object} reportSummary - report summary data returned from the server
+     */
+    forwardUpdatedSummary(reportSummary) {
+      this.$emit('reportSummary', reportSummary);
     },
 
     /**
