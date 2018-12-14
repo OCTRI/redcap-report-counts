@@ -5,36 +5,11 @@ import { messages } from '@/components/ReportSummaryForm';
 import { STRATEGY } from '@/report-strategy';
 import ReportSummaryConfig from '@/report-summary-config';
 
-import { uuidPattern } from '../test-utils';
-
-const mockReportFields = [
-  { field_name: 'field_1', field_label: 'Field 1' },
-  { field_name: 'field_2', field_label: 'Field 2' },
-  { field_name: 'field_3', field_label: 'Field 3' }
-];
-
-function createProvideObject() {
-  return {
-    assetUrls: {},
-    dataService: {
-      getReports() {
-        return Promise.resolve([
-          { reportId: 1, 'title': 'Report 1' },
-          { reportId: 2, 'title': 'Report 2' },
-          { reportId: 3, 'title': 'Report 3' }
-        ]);
-      },
-
-      saveReportSummary(reportSummary) {
-        return Promise.resolve([reportSummary]);
-      },
-
-      getReportFields() {
-        return Promise.resolve(mockReportFields);
-      }
-    }
-  };
-}
+import {
+  uuidPattern,
+  mockReportFields,
+  createProvideObject
+} from '../test-utils';
 
 describe('ReportSummaryForm.vue', () => {
   let mockProvide, wrapper;
