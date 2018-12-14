@@ -1,6 +1,7 @@
 import { shallowMount, mount } from '@vue/test-utils';
 
 import ConsortReport from '@/components/ConsortReport';
+import ReportSummaryModel from '@/report-summary-model';
 import { STRATEGY } from '@/report-strategy';
 
 function provideWithSummaries() {
@@ -14,7 +15,7 @@ function provideWithSummaries() {
           reportId: 42,
           strategy: STRATEGY.ITEMIZED,
           bucketBy: 'some_field'
-        }]);
+        }].map(ReportSummaryModel.fromObject));
       },
 
       getReports() {
@@ -75,7 +76,7 @@ describe('ConsortReport.vue', () => {
         { id: '7c121ae3-c6b4-4e88-b744-9f2503ac1605', reportId: 1, title: 'One', strategy: 'Itemized count', bucketBy: 'dsp_stop_reason' },
         { id: '0236bf99-bb61-485f-a3e3-dd138f22f34c', reportId: 2, title: 'Enrolled', strategy: 'Total count', bucketBy: null },
         { id: '032172c9-e544-4272-bcdc-dceb732f30c5', reportId: 3, title: 'Random', strategy: 'Total count', bucketBy: null }
-      ];
+      ].map(ReportSummaryModel.fromObject);
 
       const expected = [reportSummaries[0], reportSummaries[2]];
 
@@ -138,7 +139,7 @@ describe('ConsortReport.vue', () => {
           reportId: 33,
           strategy: STRATEGY.TOTAL
         },
-      ];
+      ].map(ReportSummaryModel.fromObject);
 
       mockProvide = {
         assetUrls: {},

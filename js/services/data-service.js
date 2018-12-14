@@ -2,6 +2,8 @@ import assert from 'assert';
 import axios from 'axios';
 import uuid from 'uuid/v4';
 
+import ReportSummaryModel from '@/report-summary-model';
+
 export const ENDPOINTS = {
   REPORT_DATA: 'lib/data.php',
   REPORT_CONFIG: 'lib/settings.php'
@@ -37,15 +39,25 @@ export default function createDataService(assetUrls) {
     },
 
     /**
-     * Adds unique IDs to existing report summaries.
+     * Converts summary data returned by the server to `ReportSummaryModel` objects
+     * expected by components.
+     *
+     * @param {Object} summaryData - summary data returned in a response from REDCap
+     * @return {ReportSummaryModel}
+     */
+    _mapToModelObject(summaryData) {
+      const model = ReportSummaryModel.fromObject(summaryData);
+      model.id = model.id || uuid();
+      return model;
+    },
+
+    /**
+     * Converts objects in the response body to summary model objects.
      *
      * @param {Object[]} reportSummaries - array of report summaries.
      */
-    _insertUuids(reportSummaries) {
-      return reportSummaries.map(summaryConfig => {
-        summaryConfig.id = summaryConfig.id || uuid();
-        return summaryConfig;
-      });
+    _mapResponse(reportSummaries) {
+      return reportSummaries.map(item => this._mapToModelObject(item));
     },
 
     _makeRequest(url, data, options) {
@@ -60,7 +72,8 @@ export default function createDataService(assetUrls) {
      *   - totalRecords: The total number of records for a report.
      */
     fetchReportSummary() {
-      return this._makeRequest(this.reportDataUrl).then(this._insertUuids);
+      return this._makeRequest(this.reportDataUrl)
+        .then(response => this._mapResponse(response));
     },
 
     /**
