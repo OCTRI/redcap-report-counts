@@ -102,9 +102,13 @@ export default {
   },
 
   mounted() {
+    const { model } = this;
+
     // capture the promise to synchronize tests
     this.reportPromise = this.fetchReports();
-    this.loadReportFields();
+    if (model.reportId) {
+      this.loadReportFields();
+    }
   },
 
   methods: {
@@ -127,10 +131,10 @@ export default {
     },
 
     fetchReportFields() {
-      const { dataService } = this;
+      const { dataService, model } = this;
       this.clearErrors();
       this.loadingReportFields = true;
-      return dataService.getReportFields(this.formReportId)
+      return dataService.getReportFields(model.reportId)
         .then(this.captureReportFields)
         .catch(this.handleConfigError)
         .finally(() => {

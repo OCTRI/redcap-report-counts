@@ -163,7 +163,7 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.model.title = 'Itemized Results';
     wrapper.vm.model.reportId = 42;
     wrapper.vm.model.strategy = STRATEGY.ITEMIZED;
-    wrapper.vm.model.reportFields = mockReportFields;
+    wrapper.vm.reportFields = mockReportFields;
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(1);
     expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toEqual(true);
