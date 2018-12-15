@@ -29,15 +29,9 @@
       <div v-if="hasReportSummaries">
         <ReportSummary v-for="summary in reportSummaries"
                        :key="summary.id"
-                       :id="summary.id"
                        :class="{ 'drag-chosen': isBeingDragged(summary.id) }"
-                       :title="summary.title"
-                       :reportId="summary.reportId"
-                       :strategy="summary.strategy"
-                       :bucketBy="summary.bucketBy"
-                       :bucketByLabel="summary.bucketByLabel"
-                       :summaryData="summary.data"
-                       :total-records="summary.totalRecords"
+                       :model="summary"
+                       @reportSummary="updateReportSummary"
                        @deleteSummary="deleteReportSummary"
                        @reorder-start="startReorder"
                        @reorder-swap="swapWith"
@@ -50,9 +44,11 @@
 </template>
 
 <script>
+import uuid from 'uuid/v4';
+import ReportSummaryModel from '@/report-summary-model';
+
 import ReportSummary from './ReportSummary';
 import ReportSummaryForm from './ReportSummaryForm';
-import uuid from 'uuid/v4';
 
 const messages = {
   warnings: {
@@ -121,7 +117,24 @@ export default {
      * @param {Object} reportSummary - report summary data used to generate a ReportSummary.
      */
     addReportSummary(reportSummary) {
-      this.reportSummaries.push(reportSummary);
+      const newModel = ReportSummaryModel.fromObject(reportSummary);
+      this.reportSummaries.push(newModel);
+    },
+
+    /**
+     * Captures updated state when a summary is edited and replaces the old data in the
+     * list of report summaries.
+     * @param {Object} reportSummary - report summary data returned from the server
+     */
+    updateReportSummary(reportSummary) {
+      const { reportSummaries } = this;
+      const newModel = ReportSummaryModel.fromObject(reportSummary);
+      const index = this.findSummaryIndex(newModel.id);
+      if (index !== -1) {
+        const newArray = [...reportSummaries];
+        newArray[index] = newModel;
+        this.reportSummaries = newArray;
+      }
     },
 
     /**
@@ -138,16 +151,10 @@ export default {
      * Persists changes to reportSummaries.
      */
     saveReportSummaries() {
-      const { dataService } = this;
-      this.saveSummariesPromise = dataService.saveReportSummaries(this.reportSummaries.map((summary) => {
-        return {
-          id: summary.id,
-          reportId: summary.reportId,
-          title: summary.title,
-          strategy: summary.strategy,
-          bucketBy: summary.bucketBy
-        };
-      })).catch(this.handleConfigError);
+      const { dataService, reportSummaries } = this;
+      this.saveSummariesPromise = dataService
+        .saveReportSummaries(reportSummaries.map(summary => summary.config))
+        .catch(this.handleConfigError);
     },
 
     /**

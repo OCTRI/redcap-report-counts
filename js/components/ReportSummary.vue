@@ -1,5 +1,5 @@
 <template>
-  <div :id="id"
+  <div :id="model.id"
        class="card mb-3 report-summary"
        :draggable="draggable"
        @dragstart="onDragStart"
@@ -10,7 +10,7 @@
     <div class="card-body">
       <div class="container">
         <div class="clearfix">
-          <h3 class="card-title mb-1 float-left">{{ title }}</h3>
+          <h3 class="card-title mb-1 float-left">{{ model.title }}</h3>
           <div class="drag-handle float-right text-muted"
                title="Drag to Reorder"
                @mousedown="enableDrag"
@@ -23,18 +23,13 @@
           <a class="delete" v-if="canDelete" @click="deleteSummary">Delete <i class="far fa-trash-alt"></i></a>
         </div>
         <div v-if="editing && canEdit" class="edit-form container">
-          <ReportSummaryForm :key="id"
-                             :hideFormTitle=true
-                             :editing=true
-                             :id="id"
-                             :title="title"
-                             :reportId="reportId"
-                             :strategy="strategy"
-                             :bucketBy="bucketBy" />
+          <ReportSummaryForm :hideFormTitle=true
+                             :initial-state="model.config"
+                             @reportSummary="forwardUpdatedSummary" />
         </div>
         <ul class="summary-metadata lead list-unstyled mb-0">
-          <li>Total Count: {{ totalRecords }}</li>
-          <li v-if="isItemized" class="mt-0">Grouped By: {{ bucketByLabel }}</li>
+          <li>Total Count: {{ model.totalRecords }}</li>
+          <li v-if="isItemized" class="mt-0">Grouped By: {{ model.bucketByLabel }}</li>
         </ul>
         <ul v-if="isItemized" class="list-unstyled mt-3 mb-0" data-description="itemized-counts">
           <li v-for="summary in sortedSummaryCounts" :key="summary.label">{{ summary.count }} - {{ summary.label }}</li>
@@ -48,8 +43,11 @@
 import countBy from 'lodash/countBy';
 import orderBy from 'lodash/orderBy';
 import isString from 'lodash/isString';
-import { MISSING } from '../constants';
-import { STRATEGY } from '../report-strategy';
+
+import ReportSummaryModel from '@/report-summary-model';
+import { MISSING } from '@/constants';
+import { STRATEGY } from '@/report-strategy';
+
 import ReportSummaryForm from './ReportSummaryForm';
 
 /**
@@ -63,14 +61,7 @@ export default {
   },
 
   props: {
-    id: String,
-    title: String,
-    reportId: Number,
-    totalRecords: Number,
-    strategy: String,
-    bucketBy: String,
-    bucketByLabel: String,
-    summaryData: Array
+    model: ReportSummaryModel
   },
 
   data() {
@@ -86,8 +77,16 @@ export default {
      */
     deleteSummary() {
       if (confirm('Permanently delete this summary?')) {
-        this.$emit('deleteSummary', this.id);
+        this.$emit('deleteSummary', this.model.id);
       }
+    },
+
+    /**
+     * Emits the reportSummary event to notify the parent when the summary is edited.
+     * @param {Object} reportSummary - report summary data returned from the server
+     */
+    forwardUpdatedSummary(reportSummary) {
+      this.$emit('reportSummary', reportSummary);
     },
 
     /**
@@ -145,7 +144,7 @@ export default {
      * reordering the summaries.
      */
     onDragStart() {
-      const { id } = this;
+      const { id } = this.model;
       this.$emit('reorder-start', id);
     },
 
@@ -154,12 +153,12 @@ export default {
      * dropping the item. Otherwise reset the item that will be swapped.
      */
     onDragEnter(evt) {
-      const { id, isDragging } = this;
+      const { model, isDragging } = this;
       if (isDragging) {
         evt.preventDefault();
         this.$emit('reorder-swap-reset');
       } else {
-        this.$emit('reorder-swap', id);
+        this.$emit('reorder-swap', model.id);
       }
     },
 
@@ -198,7 +197,7 @@ export default {
      * @return true if the summary contains an itemized count.
      */
     isItemized() {
-      return this.strategy === STRATEGY.ITEMIZED;
+      return this.model.strategy === STRATEGY.ITEMIZED;
     },
 
     /**
@@ -209,21 +208,21 @@ export default {
     },
 
     /**
-     * Checks summaryData for missing values.
-     * @return true if summaryData contains a missing value.
+     * Checks data for missing values.
+     * @return true if data contains a missing value.
      */
     hasMissingValue() {
-      return this.summaryData.some(val => this.missingValue(val));
+      return this.model.data && this.model.data.some(this.missingValue);
     },
 
     /**
      * Inserts MISSING value if empty.
-     * @return summaryData with empty values replaced by MISSING
+     * @return data with empty values replaced by MISSING
      */
     summaryDataWithMissing() {
-      return this.hasMissingValue ? this.summaryData.map(summary => {
+      return this.hasMissingValue ? this.model.data.map(summary => {
         return this.missingValue(summary) ? MISSING : summary;
-      }) : this.summaryData;
+      }) : this.model.data;
     },
 
     /**

@@ -82,7 +82,14 @@ export default {
 
   data() {
     const { initialState } = this.$props;
-    const model = initialState ? ReportSummaryConfig.clone(initialState) : new ReportSummaryConfig();
+    let model;
+
+    if (initialState) {
+      model = ReportSummaryConfig.fromObject(initialState);
+    } else {
+      model = new ReportSummaryConfig();
+    }
+
     return {
       model,
       isEditing: Boolean(initialState),
@@ -95,9 +102,13 @@ export default {
   },
 
   mounted() {
+    const { model } = this;
+
     // capture the promise to synchronize tests
     this.reportPromise = this.fetchReports();
-    this.loadReportFields();
+    if (model.reportId) {
+      this.loadReportFields();
+    }
   },
 
   methods: {
@@ -120,10 +131,10 @@ export default {
     },
 
     fetchReportFields() {
-      const { dataService } = this;
+      const { dataService, model } = this;
       this.clearErrors();
       this.loadingReportFields = true;
-      return dataService.getReportFields(this.formReportId)
+      return dataService.getReportFields(model.reportId)
         .then(this.captureReportFields)
         .catch(this.handleConfigError)
         .finally(() => {
@@ -142,7 +153,7 @@ export default {
     clearForm() {
       const { isEditing, $props } = this;
       if (isEditing) {
-        this.model = ReportSummaryConfig.clone($props.initialState);
+        this.model = ReportSummaryConfig.fromObject($props.initialState);
       } else {
         this.model = new ReportSummaryConfig();
       }
@@ -159,21 +170,6 @@ export default {
     cancelForm() {
       console.warn('Cancel form is not implemented - see REDDEV-594');
       this.clearForm();
-    },
-
-    /**
-     * Returns the model attributes to be saved to report config.
-     */
-    reportSummary() {
-      // TODO: consider returning a `ReportSummaryConfig` here
-      const { id, reportId, title, strategy, bucketBy } = this.model;
-      return {
-        id,
-        reportId,
-        title,
-        strategy,
-        bucketBy
-      };
     },
 
     /**
@@ -205,8 +201,8 @@ export default {
       if (!this.validForm()) {
         return;
       }
-      const { dataService } = this;
-      this.savePromise = dataService.saveReportSummary(this.reportSummary(), editing)
+      const { dataService, model } = this;
+      this.savePromise = dataService.saveReportSummary(model, editing)
         .then(this.captureReportSummary)
         .catch(this.handleConfigError)
         .finally(this.clearForm);

@@ -5,36 +5,11 @@ import { messages } from '@/components/ReportSummaryForm';
 import { STRATEGY } from '@/report-strategy';
 import ReportSummaryConfig from '@/report-summary-config';
 
-import { uuidPattern } from '../test-utils';
-
-const mockReportFields = [
-  { field_name: 'field_1', field_label: 'Field 1' },
-  { field_name: 'field_2', field_label: 'Field 2' },
-  { field_name: 'field_3', field_label: 'Field 3' }
-];
-
-function createProvideObject() {
-  return {
-    assetUrls: {},
-    dataService: {
-      getReports() {
-        return Promise.resolve([
-          { reportId: 1, 'title': 'Report 1' },
-          { reportId: 2, 'title': 'Report 2' },
-          { reportId: 3, 'title': 'Report 3' }
-        ]);
-      },
-
-      saveReportSummary(reportSummary) {
-        return Promise.resolve([reportSummary]);
-      },
-
-      getReportFields() {
-        return Promise.resolve(mockReportFields);
-      }
-    }
-  };
-}
+import {
+  uuidPattern,
+  mockReportFields,
+  createProvideObject
+} from '../test-utils';
 
 describe('ReportSummaryForm.vue', () => {
   let mockProvide, wrapper;
@@ -96,7 +71,7 @@ describe('ReportSummaryForm.vue', () => {
     });
 
     it('makes drop-down with group by values visible when itemized strategy selected', () => {
-      const modelWithStrategy = ReportSummaryConfig.clone(wrapper.vm.model);
+      const modelWithStrategy = ReportSummaryConfig.fromObject(wrapper.vm.model);
       modelWithStrategy.strategy = STRATEGY.ITEMIZED;
 
       wrapper.setData({
@@ -163,7 +138,7 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.model.title = 'Itemized Results';
     wrapper.vm.model.reportId = 42;
     wrapper.vm.model.strategy = STRATEGY.ITEMIZED;
-    wrapper.vm.model.reportFields = mockReportFields;
+    wrapper.vm.reportFields = mockReportFields;
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errors.length).toEqual(1);
     expect(wrapper.vm.errors.includes(messages.bucketByRequired)).toEqual(true);
@@ -192,20 +167,6 @@ describe('ReportSummaryForm.vue', () => {
     // Fields to group by are loaded, remove error message
     wrapper.vm.reportFields = mockReportFields;
     expect(wrapper.vm.errors.length).toEqual(0);
-  });
-
-  it('retrieves report summary values from form', () => {
-    const id = wrapper.vm.model.id;
-    wrapper.vm.model.reportId = 7;
-    wrapper.vm.model.title = 'Report Title';
-    wrapper.vm.model.strategy = STRATEGY.TOTAL;
-    wrapper.vm.model.bucketBy = 'bucketField';
-    const reportSummary = wrapper.vm.reportSummary();
-    expect(reportSummary.id).toEqual(id);
-    expect(reportSummary.reportId).toEqual(7);
-    expect(reportSummary.title).toEqual('Report Title');
-    expect(reportSummary.strategy).toEqual(STRATEGY.TOTAL);
-    expect(reportSummary.bucketBy).toEqual('bucketField');
   });
 
   it('clears form on cancel when creating', () => {
