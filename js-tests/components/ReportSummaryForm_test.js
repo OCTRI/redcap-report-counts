@@ -206,6 +206,11 @@ describe('ReportSummaryForm.vue', () => {
     expect(wrapper.vm.model).toEqual(initialState);
   });
 
+  it('emits an event when on cancel', () => {
+    wrapper.find('button[type="cancel"]').trigger('click');
+    expect(wrapper.emitted('cancelForm')).toBeTruthy();
+  })
+
   it('disables strategy radio buttons unless a report is selected', () => {
     wrapper.vm.model.title = 'Report Title';
 

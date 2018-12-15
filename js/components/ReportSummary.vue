@@ -25,7 +25,8 @@
         <div v-if="editing && canEdit" class="edit-form container">
           <ReportSummaryForm :hideFormTitle=true
                              :initial-state="model.config"
-                             @reportSummary="forwardUpdatedSummary" />
+                             @reportSummary="forwardUpdatedSummary"
+                             @cancelForm="cancelEdit" />
         </div>
         <ul class="summary-metadata lead list-unstyled mb-0">
           <li>Total Count: {{ model.totalRecords }}</li>
@@ -86,7 +87,15 @@ export default {
      * @param {Object} reportSummary - report summary data returned from the server
      */
     forwardUpdatedSummary(reportSummary) {
+      this.editing = false;
       this.$emit('reportSummary', reportSummary);
+    },
+
+    /**
+     * Hides the form when edit is canceled.
+     */
+    cancelEdit() {
+      this.editing = false;
     },
 
     /**

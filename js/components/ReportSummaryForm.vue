@@ -164,12 +164,11 @@ export default {
     },
 
     /**
-     * Currently canceling the ReportSummaryForm just clears the fields.
-     * TODO: implement REDDEV-594
+     * Resets the form model and notifies the parent that the form was canceled.
      */
     cancelForm() {
-      console.warn('Cancel form is not implemented - see REDDEV-594');
       this.clearForm();
+      this.$emit('cancelForm');
     },
 
     /**
