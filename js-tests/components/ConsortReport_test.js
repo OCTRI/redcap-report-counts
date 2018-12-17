@@ -4,59 +4,26 @@ import ConsortReport from '@/components/ConsortReport';
 import ReportSummaryModel from '@/report-summary-model';
 import { STRATEGY } from '@/report-strategy';
 
-function provideWithSummaries() {
-  return {
-    assetUrls: {},
-    dataService: {
-      fetchReportSummary() {
-        return Promise.resolve([{
-          id: 'bce1cc37-a9b4-458c-82d8-9f2f276bef93',
-          title: 'Report Name',
-          reportId: 42,
-          strategy: STRATEGY.ITEMIZED,
-          bucketBy: 'some_field'
-        }].map(ReportSummaryModel.fromObject));
-      },
-
-      getReports() {
-        return Promise.resolve([]);
-      },
-
-      saveReportSummaries(reportSummaries) {
-        return Promise.resolve([]);
-      }
-    }
-  };
-}
-
-function provideWithoutSummaries() {
-  return {
-    assetUrls: {},
-    dataService: {
-      fetchReportSummary() {
-        return Promise.resolve([]);
-      },
-
-      getReports() {
-        return Promise.resolve([]);
-      },
-
-      saveReportSummaries(reportSummaries) {
-        return Promise.resolve([]);
-      }
-    }
-  };
-}
+import { createProvideObject, waitForSelector } from '../test-utils';
 
 describe('ConsortReport.vue', () => {
   let mockProvide, wrapper;
 
   describe('With report summaries', () => {
     beforeEach(async () => {
-      mockProvide = provideWithSummaries();
-      spyOn(mockProvide.dataService, 'fetchReportSummary').and.callThrough();
+      const mockExistingSummary = ReportSummaryModel.fromObject({
+        id: 'bce1cc37-a9b4-458c-82d8-9f2f276bef93',
+        title: 'Report Name',
+        reportId: 42,
+        strategy: STRATEGY.ITEMIZED,
+        bucketBy: 'some_field'
+      });
+
+      mockProvide = createProvideObject();
       spyOn(mockProvide.dataService, 'getReports').and.callThrough();
       spyOn(mockProvide.dataService, 'saveReportSummaries').and.callThrough();
+      spyOn(mockProvide.dataService, 'fetchReportSummary')
+        .and.returnValue(Promise.resolve([mockExistingSummary]))
 
       wrapper = shallowMount(ConsortReport, {
         provide: mockProvide
@@ -105,10 +72,17 @@ describe('ConsortReport.vue', () => {
     });
   });
 
-  describe('create report button', () => {
+  describe('creating reports', () => {
+    const fillForm = async (wrapper) => {
+      wrapper.find('input[name=title]').setValue('Title');
+      wrapper.findAll('select[name=reportId] option').at(1).setSelected();
+      await waitForSelector(wrapper, '#strategy0:enabled');
+      wrapper.findAll('input[name=strategy]').at(0).setChecked();
+    };
+
     beforeEach(async () => {
-      mockProvide = provideWithoutSummaries();
-      spyOn(mockProvide.dataService, 'fetchReportSummary').and.callThrough();
+      mockProvide = createProvideObject();
+      spyOn(mockProvide.dataService, 'saveReportSummary').and.callThrough();
 
       wrapper = mount(ConsortReport, {
         provide: mockProvide
@@ -127,9 +101,61 @@ describe('ConsortReport.vue', () => {
       wrapper.find('#create-a-report').trigger('click');
       expect(wrapper.findAll('.report-summary-form').length).toEqual(1);
     });
+
+    it('hides form when X is pressed', () => {
+      wrapper.find('#create-a-report').trigger('click');
+      expect(wrapper.findAll('.report-summary-form').length).toEqual(1);
+
+      wrapper.find('.cancel-form').trigger('click');
+      expect(wrapper.findAll('.report-summary-form').length).toEqual(0);
+    });
+
+    it('hides form when cancel button is pressed', () => {
+      wrapper.find('#create-a-report').trigger('click');
+      expect(wrapper.findAll('.report-summary-form').length).toEqual(1);
+
+      wrapper.find('button[type=cancel]').trigger('click');
+      expect(wrapper.findAll('.report-summary-form').length).toEqual(0);
+    });
+
+    it('saves and hides the form when save button is pressed', async () => {
+      const { dataService } = mockProvide;
+      wrapper.find('#create-a-report').trigger('click');
+
+      // wait for reports request to complete
+      await waitForSelector(wrapper, 'select option');
+
+      await fillForm(wrapper);
+      wrapper.find('button[type=submit]').trigger('click');
+
+      await Promise.resolve();
+      expect(dataService.saveReportSummary).toHaveBeenCalled();
+
+      // form closes after save
+      expect(wrapper.find('#create-a-report').exists()).toBe(true);
+      expect(wrapper.find('.report-summary-form').exists()).toBe(false);
+    });
+
+    it('saves and keeps the form open when save and create button is pressed', async () => {
+      const { dataService } = mockProvide;
+      wrapper.find('#create-a-report').trigger('click');
+
+      // wait for reports request to complete
+      await waitForSelector(wrapper, 'select option');
+
+      await fillForm(wrapper);
+      wrapper.find('button.dropdown-item').trigger('click');
+
+      await Promise.resolve();
+      expect(dataService.saveReportSummary).toHaveBeenCalled();
+
+      // form should still be open
+      expect(wrapper.find('.report-summary-form').exists()).toBe(true);
+      expect(wrapper.find('#create-a-report').exists()).toBe(false);
+    });
   });
 
-  describe('drag and drop', () => {
+  describe('reordering with drag and drop', () => {
     let mockReportSummaries;
 
     beforeEach(async () => {

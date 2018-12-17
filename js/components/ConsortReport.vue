@@ -25,6 +25,7 @@
       <div v-if="showForm">
         <ReportSummaryForm :id="formId"
                            :key="formId"
+                           :save-multiple="true"
                            @formCanceled="handleFormCancel"
                            @reportSummarySaved="addReportSummary" />
       </div>
@@ -125,11 +126,14 @@ export default {
      * Captures the report summary from ReportSummaryForm and appends to the
      * list of report summaries.
      * @param {Object} reportSummary - report summary data used to generate a ReportSummary.
+     * @param {Boolean} saveAnother - whether the user wants to create another summary
      */
-    addReportSummary(reportSummary) {
+    addReportSummary(reportSummary, saveAnother) {
       const newModel = ReportSummaryModel.fromObject(reportSummary);
       this.reportSummaries.push(newModel);
-      this.showForm = false;
+      if (!saveAnother) {
+        this.showForm = false;
+      }
     },
 
     /**
