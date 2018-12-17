@@ -98,7 +98,7 @@ describe('ReportSummaryForm.vue', () => {
 
     await wrapper.vm.savePromise;
 
-    const reportSummary = wrapper.emitted().reportSummary;
+    const reportSummary = wrapper.emitted('reportSummarySaved');
     expect(reportSummary[0].length).toEqual(1);
 
     const summaryObject = reportSummary[0][0];
@@ -205,6 +205,11 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.find('button[type=cancel]').trigger('click');
     expect(wrapper.vm.model).toEqual(initialState);
   });
+
+  it('emits an event when on cancel', () => {
+    wrapper.find('button[type="cancel"]').trigger('click');
+    expect(wrapper.emitted('formCanceled')).toBeTruthy();
+  })
 
   it('disables strategy radio buttons unless a report is selected', () => {
     wrapper.vm.model.title = 'Report Title';

@@ -1,6 +1,7 @@
 import { mount, shallowMount } from '@vue/test-utils';
 
 import ReportSummary from '@/components/ReportSummary';
+import ReportSummaryForm from '@/components/ReportSummaryForm';
 import ReportSummaryModel from '@/report-summary-model';
 import { STRATEGY } from '@/report-strategy';
 import { MISSING } from '@/constants';
@@ -89,14 +90,14 @@ describe('ReportSummary.vue', () => {
     it('emits deleteSummary event', () => {
       spyOn(window, 'confirm').and.returnValue(true);
       wrapper.find('.delete').trigger('click');
-      expect(wrapper.emitted('deleteSummary')).toBeTruthy();
-      expect(wrapper.emitted('deleteSummary')[0]).toBeTruthy();
+      expect(wrapper.emitted('summaryDeleted')).toBeTruthy();
+      expect(wrapper.emitted('summaryDeleted')[0]).toBeTruthy();
     });
 
     it('does not emit deleteSummary event if canceled', () => {
       spyOn(window, 'confirm').and.returnValue(false);
       wrapper.find('.delete').trigger('click');
-      expect(wrapper.emitted('deleteSummary')).toBeFalsy();
+      expect(wrapper.emitted('summaryDeleted')).toBeFalsy();
     });
   });
 
@@ -196,6 +197,20 @@ describe('ReportSummary.vue', () => {
       });
     });
 
+    it('reveals the form when the edit link is clicked', () => {
+      expect(wrapper.find(ReportSummaryForm).exists()).toBe(false);
+      wrapper.find('.edit').trigger('click');
+      expect(wrapper.find(ReportSummaryForm).exists()).toBe(true);
+    });
+
+    it('closes the form on cancel', () => {
+      wrapper.find('.edit').trigger('click');
+      expect(wrapper.find(ReportSummaryForm).exists()).toBe(true);
+
+      wrapper.find('button[type="cancel"]').trigger('click');
+      expect(wrapper.find(ReportSummaryForm).exists()).toBe(false);
+    });
+
     it('emits an event when updated config is saved', async () => {
       wrapper.find('.edit').trigger('click');
       wrapper.find('input[name="title"]').setValue('New Title');
@@ -204,11 +219,22 @@ describe('ReportSummary.vue', () => {
       // allow time for the form's save promise to resolve
       await Promise.resolve();
 
-      expect(wrapper.emitted('reportSummary')).toBeTruthy();
+      expect(wrapper.emitted('reportSummaryUpdated')).toBeTruthy();
 
-      const updatedModel = wrapper.emitted('reportSummary')[0][0];
+      const updatedModel = wrapper.emitted('reportSummaryUpdated')[0][0];
       expect(updatedModel).not.toEqual(model);
       expect(updatedModel.title).toEqual('New Title');
+    });
+
+    it('closes the form after saving', async () => {
+      wrapper.find('.edit').trigger('click');
+      wrapper.find('input[name="title"]').setValue('New Title');
+      wrapper.find('button[type="submit"]').trigger('click');
+
+      // allow time for the form's save promise to resolve
+      await Promise.resolve();
+
+      expect(wrapper.find(ReportSummaryForm).exists()).toBe(false);
     });
   });
 

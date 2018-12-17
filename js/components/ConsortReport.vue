@@ -14,16 +14,19 @@
     </div>
     <div v-if="!loading">
       <div v-if="showCreateReportButton">
-        <input id="create-a-report"
-               type="button"
-               name="create-a-report"
-               value="Create a Report"
-               class="btn btn-primary"
-               @click="createReport">
+        <button id="create-a-report"
+                type="button"
+                class="btn btn-primary mb-3"
+                @click="createReport">
+        Create a Report
+        </button>
       </div>
 
-      <div v-if="showReportForm">
-        <ReportSummaryForm @reportSummary="addReportSummary" :key="formId" :id="formId" />
+      <div v-if="showForm">
+        <ReportSummaryForm :id="formId"
+                           :key="formId"
+                           @formCanceled="handleFormCancel"
+                           @reportSummarySaved="addReportSummary" />
       </div>
 
       <div v-if="hasReportSummaries">
@@ -31,13 +34,13 @@
                        :key="summary.id"
                        :class="{ 'drag-chosen': isBeingDragged(summary.id) }"
                        :model="summary"
-                       @reportSummary="updateReportSummary"
-                       @deleteSummary="deleteReportSummary"
+                       @reportSummaryUpdated="updateReportSummary"
+                       @summaryDeleted="deleteReportSummary"
                        @reorder-start="startReorder"
                        @reorder-swap="swapWith"
                        @reorder-swap-reset="resetSwapItem"
                        @reorder-end="endReorder"
-                       @reorder-cancel="cancelReorder"/>
+                       @reorder-cancel="cancelReorder" />
       </div>
     </div>
   </div>
@@ -73,7 +76,7 @@ export default {
       formId: uuid(),
       reportSummaries: [],
       loading: true,
-      newReport: false,
+      showForm: false,
       reports: [],
       dndState: {
         dragItemId: null,
@@ -112,6 +115,13 @@ export default {
     },
 
     /**
+     * Hides the form when the cancel buttons are clicked.
+     */
+    handleFormCancel() {
+      this.showForm = false;
+    },
+
+    /**
      * Captures the report summary from ReportSummaryForm and appends to the
      * list of report summaries.
      * @param {Object} reportSummary - report summary data used to generate a ReportSummary.
@@ -119,6 +129,7 @@ export default {
     addReportSummary(reportSummary) {
       const newModel = ReportSummaryModel.fromObject(reportSummary);
       this.reportSummaries.push(newModel);
+      this.showForm = false;
     },
 
     /**
@@ -170,7 +181,7 @@ export default {
      * Indicate a report is being created.
      */
     createReport() {
-      this.newReport = true;
+      this.showForm = true;
     },
 
     /**
@@ -319,14 +330,6 @@ export default {
     },
 
     /**
-     * Handle showing the ReportSummaryForm.
-     * @return true if the ReportSummaryForm should be shown.
-     */
-    showReportForm() {
-      return !this.showCreateReportButton;
-    },
-
-    /**
      * Checks if there are report summaries.
      */
     hasReportSummaries() {
@@ -335,10 +338,10 @@ export default {
 
     /**
      * Checks if the create a report button should be shown.
-     * @return true if there are no report summaries and create a report hasn't been started.
+     * @return true if the report form isn't being displayed
      */
     showCreateReportButton() {
-      return !this.hasReportSummaries && !this.newReport;
+      return !this.showForm;
     }
   }
 }

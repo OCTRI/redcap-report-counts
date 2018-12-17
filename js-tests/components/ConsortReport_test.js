@@ -105,7 +105,7 @@ describe('ConsortReport.vue', () => {
     });
   });
 
-  describe('Without report summaries', () => {
+  describe('create report button', () => {
     beforeEach(async () => {
       mockProvide = provideWithoutSummaries();
       spyOn(mockProvide.dataService, 'fetchReportSummary').and.callThrough();
@@ -117,18 +117,15 @@ describe('ConsortReport.vue', () => {
       await wrapper.vm.configPromise;
     });
 
-    it('shows create a report button - all else hidden', () => {
+    it('shows create a report button', () => {
       expect(wrapper.findAll('#create-a-report').length).toEqual(1);
-      expect(wrapper.vm.showCreateReportButton).toEqual(true);
-      expect(wrapper.vm.showReportForm).toEqual(false);
-      expect(wrapper.findAll('.report-summary').length).toEqual(0);
       expect(wrapper.findAll('.report-summary-form').length).toEqual(0);
     });
 
     it('shows form when button pressed', () => {
-      expect(wrapper.vm.showReportForm).toEqual(false);
+      expect(wrapper.findAll('.report-summary-form').length).toEqual(0);
       wrapper.find('#create-a-report').trigger('click');
-      expect(wrapper.vm.showReportForm).toEqual(true);
+      expect(wrapper.findAll('.report-summary-form').length).toEqual(1);
     });
   });
 
