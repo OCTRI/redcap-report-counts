@@ -48,7 +48,28 @@
       </div>
       <div class="row form-group mb-0">
         <div class="col">
-          <button type="submit" class="btn btn-primary" @click="saveReportSummary(isEditing)">Save</button>
+          <div class="btn-group">
+            <button type="submit"
+                    class="btn btn-primary"
+                    @click="saveReportSummary(isEditing, false)">
+              Save
+            </button>
+            <button v-if="saveMultiple"
+                    type="button"
+                    class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+              <span class="sr-only">Toggle Save Dropdown</span>
+            </button>
+            <div v-if="saveMultiple" class="dropdown-menu">
+              <button type="button"
+                      class="dropdown-item"
+                      @click="saveReportSummary(isEditing, true)">
+                Save &amp; Create Another
+              </button>
+            </div>
+          </div>
           <button type="cancel" class="btn btn-link" @click="cancelForm">Cancel</button>
         </div>
       </div>
@@ -77,7 +98,12 @@ export default {
 
   props: {
     hideFormTitle: Boolean,
-    initialState: ReportSummaryConfig
+    initialState: ReportSummaryConfig,
+    saveMultiple: {
+      // enables the "Save & Create Another" menu
+      type: Boolean,
+      default: false
+    }
   },
 
   data() {
@@ -195,25 +221,26 @@ export default {
     /**
      * Save report config and clear form.
      * @param Boolean editing - true if editing a summary, otherwise saving a new summary
+     * @param Boolean saveAnother - true if the user wants to create another summary
      */
-    saveReportSummary(editing) {
+    saveReportSummary(editing, saveAnother = false) {
       if (!this.validForm()) {
         return;
       }
       const { dataService, model } = this;
       this.savePromise = dataService.saveReportSummary(model, editing)
-        .then(this.captureReportSummary)
-        .catch(this.handleConfigError)
-        .finally(this.clearForm);
+        .then(responseArray => this.emitSaveEvent(responseArray, saveAnother))
+        .then(this.clearForm)
+        .catch(this.handleConfigError);
     },
 
     /**
-     * Sets report summary from `fetchReportSummary` response. This response is
-     * emitted and processed by ConsortReport.
+     * Notifies the parent component that the form was saved by emitting an event.
      * @param {Promise->Object[]} responseArray - `dataService.fetchReportSummary` response
+     * @param {Boolean} saveAnother - true if the user wants to create another summary
      */
-    captureReportSummary(responseArray) {
-      this.$emit('reportSummarySaved', responseArray[0]);
+    emitSaveEvent(responseArray, saveAnother = false) {
+      this.$emit('reportSummarySaved', responseArray[0], saveAnother);
     },
 
     /**

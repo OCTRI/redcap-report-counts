@@ -93,19 +93,36 @@ describe('ReportSummaryForm.vue', () => {
   });
 
   it('saves report summary on submit', async () => {
-    wrapper.vm.model = new ReportSummaryConfig(null, 'Report 2', 2, STRATEGY.TOTAL);
+    const model = new ReportSummaryConfig(null, 'Report 2', 2, STRATEGY.TOTAL);
+    wrapper.vm.model = model;
     wrapper.find('.btn-primary').trigger('click');
 
     await wrapper.vm.savePromise;
 
-    const reportSummary = wrapper.emitted('reportSummarySaved');
-    expect(reportSummary[0].length).toEqual(1);
+    const reportSummaryEvent = wrapper.emitted('reportSummarySaved');
+    expect(reportSummaryEvent[0].length).toEqual(2);
 
-    const summaryObject = reportSummary[0][0];
-    expect(summaryObject.id).toMatch(uuidPattern);
-    expect(summaryObject.reportId).toEqual(2);
-    expect(summaryObject.title).toEqual('Report 2');
-    expect(summaryObject.strategy).toEqual(STRATEGY.TOTAL);
+    const [summaryObject, saveAnother] = reportSummaryEvent[0];
+    expect(summaryObject).toEqual(model);
+    expect(saveAnother).toBe(false);
+  });
+
+  it('saves report summary on Save & Create Another', async () => {
+    wrapper.setProps({ saveMultiple: true });
+
+    const model = new ReportSummaryConfig(null, 'Report 3', 3, STRATEGY.TOTAL);
+    wrapper.vm.model = model;
+    wrapper.find('button[data-toggle=dropdown]').trigger('click');
+    wrapper.find('button.dropdown-item').trigger('click');
+
+    await wrapper.vm.savePromise;
+
+    const reportSummaryEvent = wrapper.emitted('reportSummarySaved');
+    expect(reportSummaryEvent[0].length).toEqual(2);
+
+    const [summaryObject, saveAnother] = reportSummaryEvent[0];
+    expect(summaryObject).toEqual(model);
+    expect(saveAnother).toBe(true);
   });
 
   it('validates form', () => {
