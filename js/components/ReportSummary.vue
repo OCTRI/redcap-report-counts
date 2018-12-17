@@ -25,8 +25,8 @@
         <div v-if="editing && canEdit" class="edit-form container">
           <ReportSummaryForm :hideFormTitle=true
                              :initial-state="model.config"
-                             @reportSummary="forwardUpdatedSummary"
-                             @cancelForm="cancelEdit" />
+                             @reportSummarySaved="forwardUpdatedSummary"
+                             @formCanceled="cancelEdit" />
         </div>
         <ul class="summary-metadata lead list-unstyled mb-0">
           <li>Total Count: {{ model.totalRecords }}</li>
@@ -78,7 +78,7 @@ export default {
      */
     deleteSummary() {
       if (confirm('Permanently delete this summary?')) {
-        this.$emit('deleteSummary', this.model.id);
+        this.$emit('summaryDeleted', this.model.id);
       }
     },
 
@@ -88,7 +88,7 @@ export default {
      */
     forwardUpdatedSummary(reportSummary) {
       this.editing = false;
-      this.$emit('reportSummary', reportSummary);
+      this.$emit('reportSummaryUpdated', reportSummary);
     },
 
     /**

@@ -90,14 +90,14 @@ describe('ReportSummary.vue', () => {
     it('emits deleteSummary event', () => {
       spyOn(window, 'confirm').and.returnValue(true);
       wrapper.find('.delete').trigger('click');
-      expect(wrapper.emitted('deleteSummary')).toBeTruthy();
-      expect(wrapper.emitted('deleteSummary')[0]).toBeTruthy();
+      expect(wrapper.emitted('summaryDeleted')).toBeTruthy();
+      expect(wrapper.emitted('summaryDeleted')[0]).toBeTruthy();
     });
 
     it('does not emit deleteSummary event if canceled', () => {
       spyOn(window, 'confirm').and.returnValue(false);
       wrapper.find('.delete').trigger('click');
-      expect(wrapper.emitted('deleteSummary')).toBeFalsy();
+      expect(wrapper.emitted('summaryDeleted')).toBeFalsy();
     });
   });
 
@@ -219,9 +219,9 @@ describe('ReportSummary.vue', () => {
       // allow time for the form's save promise to resolve
       await Promise.resolve();
 
-      expect(wrapper.emitted('reportSummary')).toBeTruthy();
+      expect(wrapper.emitted('reportSummaryUpdated')).toBeTruthy();
 
-      const updatedModel = wrapper.emitted('reportSummary')[0][0];
+      const updatedModel = wrapper.emitted('reportSummaryUpdated')[0][0];
       expect(updatedModel).not.toEqual(model);
       expect(updatedModel.title).toEqual('New Title');
     });

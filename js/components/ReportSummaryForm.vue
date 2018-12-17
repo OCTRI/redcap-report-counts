@@ -168,7 +168,7 @@ export default {
      */
     cancelForm() {
       this.clearForm();
-      this.$emit('cancelForm');
+      this.$emit('formCanceled');
     },
 
     /**
@@ -213,7 +213,7 @@ export default {
      * @param {Promise->Object[]} responseArray - `dataService.fetchReportSummary` response
      */
     captureReportSummary(responseArray) {
-      this.$emit('reportSummary', responseArray[0]);
+      this.$emit('reportSummarySaved', responseArray[0]);
     },
 
     /**

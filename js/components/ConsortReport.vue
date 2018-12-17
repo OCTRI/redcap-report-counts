@@ -25,8 +25,8 @@
       <div v-if="showForm">
         <ReportSummaryForm :id="formId"
                            :key="formId"
-                           @cancelForm="handleFormCancel"
-                           @reportSummary="addReportSummary" />
+                           @formCanceled="handleFormCancel"
+                           @reportSummarySaved="addReportSummary" />
       </div>
 
       <div v-if="hasReportSummaries">
@@ -34,8 +34,8 @@
                        :key="summary.id"
                        :class="{ 'drag-chosen': isBeingDragged(summary.id) }"
                        :model="summary"
-                       @reportSummary="updateReportSummary"
-                       @deleteSummary="deleteReportSummary"
+                       @reportSummaryUpdated="updateReportSummary"
+                       @summaryDeleted="deleteReportSummary"
                        @reorder-start="startReorder"
                        @reorder-swap="swapWith"
                        @reorder-swap-reset="resetSwapItem"
