@@ -21,7 +21,7 @@
         <li>Itemized Counts Dependencies
           <ul>
             <li>The <span class="text-uppercase">Field to Group Results</span>
-              drop-down list is made up of all radio button and drop-down. fields that
+              drop-down list is made up of all radio button and drop-down fields that
               are included in the report.</li>
             <li>Itemized counts include a missing count, for records that do not have
               a recorded response for the <span class="text-uppercase">group by</span>
