@@ -1,7 +1,7 @@
 <template>
   <div class="card mb-3 report-summary-form">
     <div v-if="!hideFormTitle" class="card-header mb-0">
-      <strong>Add a Report Count</strong>
+      <strong>Create a Report Count</strong>
       <a href="#"
          class="cancel-form float-right"
          role="button"
@@ -16,13 +16,13 @@
       </ul>
       <div class="row form-group">
         <div class="col">
-          <label for="title">Title</label>
+          <label for="title">Report Count Title</label>
           <input id="title" name="title" v-model.trim="model.title" type="text" class="form-control">
         </div>
       </div>
       <div class="row form-group">
         <div class="col">
-          <label for="reportId">Report</label>
+          <label for="reportId">Select a Report</label>
           <select id="reportId" name="reportId" v-model="model.reportId" class="form-control" @change="loadReportFields()">
             <option v-for="report in reports" :key="report.reportId" :value="report.reportId">{{ report.title }}</option>
           </select>

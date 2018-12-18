@@ -61,3 +61,9 @@
   font-size: 140%;
   text-decoration: none;
 }
+
+/* override red alert border added by REDCap */
+
+.alert.alert-loading {
+  border: 1px solid transparent ! important;
+}

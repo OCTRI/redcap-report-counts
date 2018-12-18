@@ -1,10 +1,13 @@
 import { shallowMount, mount } from '@vue/test-utils';
 
 import ConsortReport from '@/components/ConsortReport';
+import ReportCountsHelp from '@/components/ReportCountsHelp';
 import ReportSummaryModel from '@/report-summary-model';
 import { STRATEGY } from '@/report-strategy';
 
 import { createProvideObject, waitForSelector } from '../test-utils';
+
+const aboutTextSelector = '#about-report-counts-module';
 
 describe('ConsortReport.vue', () => {
   let mockProvide, wrapper;
@@ -36,6 +39,12 @@ describe('ConsortReport.vue', () => {
       const { dataService } = mockProvide;
       expect(dataService.fetchReportSummary).toHaveBeenCalled();
       expect(wrapper.vm.hasReportSummaries).toEqual(true);
+    });
+
+    it('has help and instructions', () => {
+      expect(wrapper.find(ReportCountsHelp).exists()).toBe(true);
+      // about text should not display when there are summaries
+      expect(wrapper.find(aboutTextSelector).exists()).toBe(false);
     });
 
     it('deletes summary', () => {
@@ -89,6 +98,11 @@ describe('ConsortReport.vue', () => {
       });
 
       await wrapper.vm.configPromise;
+    });
+
+    it('has help and text describing the module', () => {
+      expect(wrapper.find(ReportCountsHelp).exists()).toBe(true);
+      expect(wrapper.find(aboutTextSelector).exists()).toBe(true);
     });
 
     it('shows create a report button', () => {

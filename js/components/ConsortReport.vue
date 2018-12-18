@@ -1,6 +1,6 @@
 <template>
   <div id="consort-report-container" class="container">
-    <h1>Consort Reports</h1>
+    <h1>Report Counts</h1>
 
     <div class="error" v-if="hasError">
       {{ errorMessage }}
@@ -9,21 +9,24 @@
       </ul>
     </div>
 
-    <div class="alert alert-info" role="alert" v-if="loading">
-      Loading consort report, please wait...
+    <div class="alert alert-info alert-loading" role="alert" v-if="loading">
+      Loading report counts, please wait <i class="fas fa-spinner fa-pulse"></i>
     </div>
-    <div v-if="!loading">
-      <div v-if="showCreateReportButton">
-        <button id="create-a-report"
-                type="button"
-                class="btn btn-primary mb-3"
-                @click="createReport">
-        Create a Report
-        </button>
-      </div>
 
-      <div v-if="showForm">
-        <ReportSummaryForm :id="formId"
+    <div v-if="!loading">
+      <ReportCountsHelp :show-about-text="noReportSummaries" class="mt-3 mb-3" />
+
+      <div class="mb-5">
+        <button v-if="showCreateReportButton"
+                id="create-a-report"
+                type="button"
+                class="btn btn-primary"
+                @click="createReport">
+        Create a Report Count
+        </button>
+
+        <ReportSummaryForm v-if="showForm"
+                           :id="formId"
                            :key="formId"
                            :save-multiple="true"
                            @formCanceled="handleFormCancel"
@@ -53,6 +56,7 @@ import ReportSummaryModel from '@/report-summary-model';
 
 import ReportSummary from './ReportSummary';
 import ReportSummaryForm from './ReportSummaryForm';
+import ReportCountsHelp from './ReportCountsHelp';
 
 const messages = {
   warnings: {
@@ -68,6 +72,7 @@ export default {
   inject: ['dataService'],
 
   components: {
+    ReportCountsHelp,
     ReportSummary,
     ReportSummaryForm
   },
@@ -333,11 +338,12 @@ export default {
       return Array.isArray(errorDetails) && errorDetails.length > 0;
     },
 
-    /**
-     * Checks if there are report summaries.
-     */
     hasReportSummaries() {
       return this.reportSummaries.length > 0;
+    },
+
+    noReportSummaries() {
+      return !this.hasReportSummaries;
     },
 
     /**
