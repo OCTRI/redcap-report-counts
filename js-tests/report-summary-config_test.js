@@ -9,7 +9,7 @@ describe('ReportSummaryConfig class', () => {
     expect(obj.id).toMatch(uuidPattern);
     expect(obj.title).toBe('');
     expect(obj.reportId).toBeNull();
-    expect(obj.strategy).toBeNull();
+    expect(obj.strategy).toEqual(STRATEGY.TOTAL);
     expect(obj.bucketBy).toBeNull();
   });
 
