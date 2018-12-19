@@ -302,12 +302,8 @@ export default {
      * Watch strategy and validate summary config on changes.
      */
     selectedStrategy() {
-      const { selectedStrategy, model } = this;
-
-      if (selectedStrategy === STRATEGY.TOTAL) {
-        model.bucketBy = null;
-      }
-
+      const { model } = this;
+      model.bucketBy = null;
       this.validateItemization();
     },
 
@@ -315,12 +311,8 @@ export default {
      * Watch reportFields and validate summary config on changes.
      */
     reportFields() {
-      const{ reportFields, model } = this;
-
-      if (reportFields.length === 0) {
-        model.bucketBy = null;
-      }
-
+      const { model } = this;
+      model.bucketBy = null;
       this.validateItemization();
     }
   },
