@@ -1,4 +1,5 @@
 import uuid from 'uuid/v4';
+import { STRATEGY } from './report-strategy';
 
 /**
  * Configuration for a report summary.
@@ -21,7 +22,7 @@ export default class ReportSummaryConfig {
    * @param {String} title - optional report summary title. Defaults to an empty string.
    * @param {Number} reportId - optional report ID. Defaults to null.
    * @param {String} strategy - optional report summary strategy. Should be one of the
-   *   constants from `report-strategy.js`. Defaults to null.
+   *   constants from `report-strategy.js`. Defaults to STRATEGY.TOTAL.
    * @param {String} bucketBy - field to bucket itemized counts by. Only valid when `strategy`
    *   is `STRATEGY.ITEMIZED`. Defaults to null.
    */
@@ -29,7 +30,7 @@ export default class ReportSummaryConfig {
     this.id = id || uuid();
     this.title = title || '';
     this.reportId = reportId || null;
-    this.strategy = strategy || null;
+    this.strategy = strategy || STRATEGY.TOTAL;
     this.bucketBy = bucketBy || null;
   }
 }

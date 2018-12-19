@@ -11,39 +11,50 @@
          @click="cancelForm">&times;</a>
     </div>
     <div class="card-body">
-      <ul v-if="hasErrors && !loadingReportFields">
-        <li v-for="error in errors" :key="error" class="text-danger font-weight-bold">{{ error }}</li>
+      <ul v-if="hasErrors && !loadingReportFields && errors.save">
+        <li class="text-danger font-weight-bold">{{ errors.save }}</li>
       </ul>
       <div class="row form-group">
         <div class="col">
           <label for="title">Report Count Title</label>
-          <input id="title" name="title" v-model.trim="model.title" type="text" class="form-control">
+          <input id="title" name="title" v-model.trim="model.title" type="text" class="form-control" :class="{ 'is-invalid': errors.title }">
+          <div class="invalid-feedback" v-if="errors.title">
+            {{ errors.title }}
+          </div>
         </div>
       </div>
       <div class="row form-group">
         <div class="col">
           <label for="reportId">Select a Report</label>
-          <select id="reportId" name="reportId" v-model="model.reportId" class="form-control" @change="loadReportFields()">
+          <select id="reportId" name="reportId" v-model="model.reportId" class="form-control" :class="{ 'is-invalid': errors.reportId }" @change="loadReportFields()">
             <option v-for="report in reports" :key="report.reportId" :value="report.reportId">{{ report.title }}</option>
           </select>
+          <div class="invalid-feedback" v-if="errors.reportId">
+            {{ errors.reportId }}
+          </div>
         </div>
       </div>
       <div class="row form-group">
-        <div class="col">
+        <div class="col strategy-controls">
           <label for="strategy">Summary Type</label>
           <div class="form-check" v-for="(strategyVal, i) in strategies" :key="strategyVal">
-            <input class="form-check-input" :id="'strategy' + i" name="strategy" v-model="model.strategy" :value="strategyVal" type="radio" :disabled="!reportSelected">
+            <input class="form-check-input" :class="{ 'is-invalid': errors.strategy }" :id="'strategy' + i" name="strategy" v-model="model.strategy" :value="strategyVal" type="radio" :disabled="!reportSelected">
             <label class="form-check-label" :for="'strategy' + i">{{ strategyVal }}</label>
+          </div>
+          <div class="invalid-feedback" v-if="errors.strategy">
+            {{ errors.strategy }}
           </div>
         </div>
       </div>
       <div class="row form-group" v-if="showBucketByFields">
         <div class="col">
-          <label>Field to Group Results
-            <select id="bucketBy" name="bucketBy" v-model="model.bucketBy" class="form-control">
-              <option v-for="field in reportFields" :key="field.field_name" :value="field.field_name">{{ field.field_name }} "{{ field.field_label }}"</option>
-            </select>
-          </label>
+          <label for="bucketBy">Field to Group Results</label>
+          <select id="bucketBy" name="bucketBy" v-model="model.bucketBy" class="form-control" :class="{ 'is-invalid': errors.bucketBy }">
+            <option v-for="field in reportFields" :key="field.field_name" :value="field.field_name">{{ field.field_name }} "{{ field.field_label }}"</option>
+          </select>
+          <div class="invalid-feedback" v-if="errors.bucketBy">
+            {{ errors.bucketBy }}
+          </div>
         </div>
       </div>
       <div class="row form-group mb-0">
@@ -86,7 +97,7 @@ export const messages = {
   reportRequired: 'You must select a report',
   strategyRequired: 'You must select a summary type',
   bucketByRequired: `You must select a field to group by when using the '${STRATEGY.ITEMIZED}' summary type`,
-  noBucketByFields: `There are no fields to group by for the selected report when the '${STRATEGY.ITEMIZED}' summary type is selected.`
+  noBucketByFields: `The selected report has no radio button or drop-down fields to group by`
 };
 
 /**
@@ -121,7 +132,13 @@ export default {
       isEditing: Boolean(initialState),
       strategies: Object.values(STRATEGY),
       reports: [],
-      errors: [],
+      errors: {
+        title: '',
+        reportId: '',
+        strategy: '',
+        bucketBy: '',
+        save: ''
+      },
       reportFields: [],
       loadingReportFields: false
     };
@@ -186,7 +203,8 @@ export default {
     },
 
     clearErrors() {
-      this.errors = [];
+      const { errors } = this;
+      Object.keys(errors).forEach(key => errors[key] = '');
     },
 
     /**
@@ -201,27 +219,47 @@ export default {
      * Validate form.
      */
     validForm() {
-      const { model } = this;
+      const { model, errors } = this;
       this.clearErrors();
       if (!model.title.length) {
-        this.errors.push(messages.titleRequired);
+        errors.title = messages.titleRequired;
       }
       if (model.reportId === null) {
-        this.errors.push(messages.reportRequired);
+        errors.reportId = messages.reportRequired;
       }
+      this.validateItemization();
+      return !this.hasErrors;
+    },
+
+    /**
+     * Validate configuration for itemization.
+     */
+    validateItemization() {
+      const {
+        model,
+        reportFields,
+        isItemizedStrategy,
+        errors
+      } = this;
+
+      errors.strategy = '';
+      errors.bucketBy = '';
+
       if (model.strategy === null) {
-        this.errors.push(messages.strategyRequired);
+        this.errors.strategy = messages.strategyRequired;
       }
-      if (model.strategy === STRATEGY.ITEMIZED && model.bucketBy === null) {
-        this.errors.push(messages.bucketByRequired);
+      if (isItemizedStrategy && reportFields.length === 0) {
+        this.errors.strategy = messages.noBucketByFields;
       }
-      return this.errors.length === 0;
+      if (isItemizedStrategy && reportFields.length > 0 && model.bucketBy === null) {
+        this.errors.bucketBy = messages.bucketByRequired;
+      }
     },
 
     /**
      * Save report config and clear form.
-     * @param Boolean editing - true if editing a summary, otherwise saving a new summary
-     * @param Boolean saveAnother - true if the user wants to create another summary
+     * @param {Boolean} editing - true if editing a summary, otherwise saving a new summary
+     * @param {Boolean} saveAnother - true if the user wants to create another summary
      */
     saveReportSummary(editing, saveAnother = false) {
       if (!this.validForm()) {
@@ -248,7 +286,7 @@ export default {
      * @param {Error} reason - the error that triggered rejection.
      */
     handleConfigError(reason) {
-      this.errors.push('An error occurred while trying to save this count.');
+      this.errors.save = 'An error occurred while trying to save this count.';
     },
 
     /**
@@ -261,24 +299,21 @@ export default {
 
   watch: {
     /**
-     * Watch strategy and if it is itemized and there are no fields to group by push an error.
+     * Watch strategy and validate summary config on changes.
      */
-    selectedStrategy: function() {
-      this.clearErrors();
-      if (this.selectedStrategy === STRATEGY.ITEMIZED && this.reportFields.length === 0) {
-        this.errors.push(messages.noBucketByFields);
-      }
+    selectedStrategy() {
+      const { model } = this;
+      model.bucketBy = null;
+      this.validateItemization();
     },
 
     /**
-     * Watch reportFields and if there are no fields and strategy is itemized push an error.
+     * Watch reportFields and validate summary config on changes.
      */
-    reportFields: function() {
-      this.clearErrors();
-      if (this.reportFields.length === 0 && this.selectedStrategy === STRATEGY.ITEMIZED) {
-        this.model.bucketBy = null;
-        this.errors.push(messages.noBucketByFields);
-      }
+    reportFields() {
+      const { model } = this;
+      model.bucketBy = null;
+      this.validateItemization();
     }
   },
 
@@ -290,11 +325,18 @@ export default {
       return this.model.strategy;
     },
 
+    errorCount() {
+      const { errors } = this;
+      return Object.values(errors)
+        .filter(errorString => errorString.length > 0)
+        .length;
+    },
+
     /**
      * @return true if there are errors
      */
     hasErrors() {
-      return this.errors.length > 0;
+      return this.errorCount > 0;
     },
 
     /**
