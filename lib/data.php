@@ -18,6 +18,7 @@ require_once(dirname(realpath(__FILE__)) . '/SummaryUIProcessor.php');
 /**
  * Queries the REDCap database directly to retrieve all the reports for the 
  * current project.
+ * @returns Array of associative arrays, each containing the report id and title of a report.
  */
 function getReports() {
     global $rc_connection, $project_id;
@@ -35,6 +36,11 @@ function getReports() {
     return $returnArray;
 }
 
+/**
+ * Checks if a report exists.
+ * @param Integer $reportId - The report id to check.
+ * @param Array $reportsArray - Array returned by `getReports()`.
+ */
 function reportExists($reportId, $reportsArray) {
    foreach ($reportsArray as $report) {
        if ($reportId === $report['reportId']) {
