@@ -145,11 +145,9 @@ export default {
   },
 
   mounted() {
-    const { model } = this;
-
     // capture the promise to synchronize tests
     this.reportPromise = this.fetchReports();
-    if (model.reportId) {
+    if (this.shouldLoadReportFields) {
       this.loadReportFields();
     }
   },
@@ -365,6 +363,11 @@ export default {
      */
     showBucketByFields() {
       return this.isItemizedStrategy && !this.loadingReportFields && this.hasReportFields;
+    },
+
+    shouldLoadReportFields() {
+      const { model } = this;
+      return model.reportId && model.reportExists;
     }
   }
 }

@@ -23,7 +23,8 @@ describe('ReportSummary.vue', () => {
         id: 'a51361a1-8d64-4348-a28a-fc6b5dcca663',
         title: 'Sample Report Name',
         totalRecords: 101,
-        strategy: STRATEGY.TOTAL
+        strategy: STRATEGY.TOTAL,
+        reportExists: true
       });
 
       wrapper = shallowMount(ReportSummary, {
@@ -52,6 +53,7 @@ describe('ReportSummary.vue', () => {
         totalRecords: 6,
         strategy: STRATEGY.ITEMIZED,
         bucketByLabel: 'Field Label',
+        reportExists: true,
         data: [
           'Patient follow-up',
           'Patient withdrew consent',
@@ -107,6 +109,7 @@ describe('ReportSummary.vue', () => {
       title: 'Test Report Summary',
       totalRecords: 8,
       strategy: STRATEGY.ITEMIZED,
+      reportExists: true,
       data: []
     });
 
@@ -186,7 +189,8 @@ describe('ReportSummary.vue', () => {
         title: 'Original Title',
         reportId: 3,
         strategy: STRATEGY.TOTAL,
-        totalRecords: 99
+        totalRecords: 99,
+        reportExists: true
       });
 
       wrapper = mount(ReportSummary, {
@@ -246,7 +250,8 @@ describe('ReportSummary.vue', () => {
         id: 'a51361a1-8d64-4348-a28a-fc6b5dcca663',
         title: 'Some Name',
         totalRecords: 10,
-        strategy: STRATEGY.TOTAL
+        strategy: STRATEGY.TOTAL,
+        reportExists: true
       });
 
       wrapper = shallowMount(ReportSummary, {
@@ -303,6 +308,36 @@ describe('ReportSummary.vue', () => {
       });
 
       expect(wrapper.emitted('reorder-cancel')).toBeTruthy();
+    });
+  });
+
+  describe('report does not exist', () => {
+    let wrapper, model;
+
+    beforeEach(() => {
+      model = ReportSummaryModel.fromObject({
+        id: '68d41098-f49a-4241-8014-ab519224fda7',
+        title: 'Original Title',
+        reportId: 3,
+        reportExists: false
+      });
+
+      wrapper = mount(ReportSummary, {
+        provide: createProvideObject(),
+        propsData: {
+          model
+        }
+      });
+    });
+
+    it('displays inline error message when report does not exist', () => {
+      expect(wrapper.findAll('[data-description="deleted-report-alert"]').length).toEqual(1);
+    });
+
+    it('displays title and summary controls when the report does not exist', () => {
+      expect(wrapper.findAll('.summary-controls').length).toEqual(1);
+      expect(wrapper.findAll('.card-title').length).toEqual(1);
+      expect(wrapper.find('.card-title').text()).toEqual('Original Title');
     });
   });
 });

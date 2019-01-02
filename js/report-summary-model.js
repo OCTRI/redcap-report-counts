@@ -16,7 +16,8 @@ export default class ReportSummaryModel {
       obj.bucketBy,
       obj.bucketByLabel,
       obj.data,
-      obj.totalRecords
+      obj.totalRecords,
+      obj.reportExists
     );
   }
 
@@ -35,9 +36,11 @@ export default class ReportSummaryModel {
    * @param {String} bucketByLabel - string label REDCap displays for the `bucketBy` field.
    * @param {String[]} data - array of `bucketBy` field values to aggregate.
    * @param {Number} totalRecords - total number of records.
+   * @param {Boolean} reportExists - `true` if the report exists, otherwise `false` indicating 
+   *   the report is inaccessible or deleted.
    * @return {ReportSummaryModel}
    */
-  constructor(id, title, reportId, strategy, bucketBy, bucketByLabel, data, totalRecords) {
+  constructor(id, title, reportId, strategy, bucketBy, bucketByLabel, data, totalRecords, reportExists) {
     this.id = id;
     this.title = title;
     this.reportId = reportId;
@@ -46,6 +49,7 @@ export default class ReportSummaryModel {
     this.bucketByLabel = bucketByLabel;
     this.data = data;
     this.totalRecords = totalRecords;
+    this.reportExists = reportExists;
   }
 
   /**

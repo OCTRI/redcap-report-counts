@@ -10,7 +10,8 @@ const exampleProps = {
   bucketBy: 'exampleField',
   bucketByLabel: 'Example field label',
   data: [],
-  totalRecords: 0
+  totalRecords: 0,
+  reportExists: true
 };
 
 describe('ReportSummaryModel class', ()  => {

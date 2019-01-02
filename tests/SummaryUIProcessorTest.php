@@ -72,8 +72,10 @@ final class SummaryUIProcessorTest extends TestCase {
     }
 
     public function testReportSummaryWithOnlyTotalCount() {
-        $expectedSummaryConfig = array_merge($this->mockTotalSummaryConfig,
-            array("totalRecords" => 6));
+        $expectedSummaryConfig = array_merge($this->mockTotalSummaryConfig, array(
+            "totalRecords" => 6,
+            "reportExists" => true
+        ));
 
         $reportProcessor = new SummaryUIProcessor($this->mockTotalSummaryConfig, $this->mockReport, $this->mockDataDictionary);
 
@@ -81,6 +83,7 @@ final class SummaryUIProcessorTest extends TestCase {
 
         $this->assertEquals($expectedSummaryConfig, $processedSummaryConfig, "The processed summary config should contain total number of records.");
         $this->assertEquals(6, $processedSummaryConfig['totalRecords'], "Processed summary config should include the total number of records.");
+        $this->assertEquals(true, $processedSummaryConfig['reportExists'], "Report should exist");
     }
 
     public function testItemizedReportSummary() {
@@ -94,7 +97,8 @@ final class SummaryUIProcessorTest extends TestCase {
         );
 
         $expectedSummaryConfig = array_merge($this->mockItemizedSummaryConfig, array(
-            "totalRecords" => 6
+            "totalRecords" => 6,
+            "reportExists" => true
         ));
 
         $reportProcessor = new SummaryUIProcessor($this->mockItemizedSummaryConfig, $this->mockReport, $this->mockDataDictionary);
@@ -103,6 +107,31 @@ final class SummaryUIProcessorTest extends TestCase {
 
         $this->assertEquals($expectedSummaryConfig, $processedSummaryConfig, "The processed summary config should contain bucket data and total number of records.");
         $this->assertEquals(6, $processedSummaryConfig['totalRecords'], "Processed summary config should include the total number of records.");
+        $this->assertEquals(true, $processedSummaryConfig['reportExists'], "Report should exist");
+    }
+
+    public function testForMissingReportWhenTotalStrategy() {
+        $expectedSummaryConfig = array_merge($this->mockTotalSummaryConfig, array(
+            "reportExists" => false
+        ));
+
+        $reportProcessor = new SummaryUIProcessor($this->mockTotalSummaryConfig, null, $this->mockDataDictionary);
+
+        $processedSummaryConfig = $reportProcessor->summaryConfig();
+
+        $this->assertEquals(false, $processedSummaryConfig['reportExists'], "Report should exist");
+    }
+
+    public function testForMissingReportWhenItemizedStrategy() {
+        $expectedSummaryConfig = array_merge($this->mockItemizedSummaryConfig, array(
+            "reportExists" => false
+        ));
+
+        $reportProcessor = new SummaryUIProcessor($this->mockItemizedSummaryConfig, null, $this->mockDataDictionary);
+
+        $processedSummaryConfig = $reportProcessor->summaryConfig();
+
+        $this->assertEquals(false, $processedSummaryConfig['reportExists'], "Report should exist");
     }
 
 }
