@@ -28,13 +28,20 @@
                              @reportSummarySaved="forwardUpdatedSummary"
                              @formCanceled="cancelEdit" />
         </div>
-        <ul class="summary-metadata lead list-unstyled mb-0">
-          <li>Total Count: {{ model.totalRecords }}</li>
-          <li v-if="isItemized" class="mt-0">Grouped By: {{ model.bucketByLabel }}</li>
-        </ul>
-        <ul v-if="isItemized" class="list-unstyled mt-3 mb-0" data-description="itemized-counts">
-          <li v-for="summary in sortedSummaryCounts" :key="summary.label">{{ summary.count }} - {{ summary.label }}</li>
-        </ul>
+        <div v-if="model.reportExists">
+          <ul class="summary-metadata lead list-unstyled mb-0">
+            <li>Total Count: {{ model.totalRecords }}</li>
+            <li v-if="isItemized" class="mt-0">Grouped By: {{ model.bucketByLabel }}</li>
+          </ul>
+          <ul v-if="isItemized" class="list-unstyled mt-3 mb-0" data-description="itemized-counts">
+            <li v-for="summary in sortedSummaryCounts" :key="summary.label">{{ summary.count }} - {{ summary.label }}</li>
+          </ul>
+        </div>
+        <div v-else>
+          <div class="alert alert-danger">
+            This report does not exist.
+          </div>
+        </div>
       </div>
     </div>
   </div>

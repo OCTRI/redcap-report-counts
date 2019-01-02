@@ -149,7 +149,7 @@ export default {
 
     // capture the promise to synchronize tests
     this.reportPromise = this.fetchReports();
-    if (model.reportId) {
+    if (model.reportId && model.reportExists) {
       this.loadReportFields();
     }
   },

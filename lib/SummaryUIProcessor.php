@@ -21,10 +21,9 @@ class SummaryUIProcessor {
      */
     public function __construct($summaryConfig, $report, $dataDictionary) {
         assert(isset($summaryConfig), '$summaryConfig is required.');
-        assert(isset($report), '$report is required.');
         assert(isset($dataDictionary), '$dataDictionary is required.');
         $this->summaryConfig = $summaryConfig;
-        $this->report = $report;
+        $this->report = isset($report) ? $report : null;
         $this->dataDictionary = $dataDictionary;
     }
 
@@ -58,12 +57,17 @@ class SummaryUIProcessor {
      * @return Summary config for rendering in the UI.
      */
     public function summaryConfig() {
-        $this->summaryConfig['totalRecords'] = $this->totalRecords();
-        if ($this->summaryConfig['strategy'] === ReportStrategy::ITEMIZED) {
-            $bucketBy = $this->summaryConfig['bucketBy'];
-            $bucketByLabel = $this->dataDictionary->getFieldLabel($bucketBy);
-            $this->summaryConfig['bucketByLabel'] = $bucketByLabel;
-            $this->summaryConfig['data'] = $this->mapBucketData();
+        if ($this->report === null) {
+            $this->summaryConfig['reportExists'] = false;
+        } else {
+            $this->summaryConfig['reportExists'] = true;
+            $this->summaryConfig['totalRecords'] = $this->totalRecords();
+            if ($this->summaryConfig['strategy'] === ReportStrategy::ITEMIZED) {
+                $bucketBy = $this->summaryConfig['bucketBy'];
+                $bucketByLabel = $this->dataDictionary->getFieldLabel($bucketBy);
+                $this->summaryConfig['bucketByLabel'] = $bucketByLabel;
+                $this->summaryConfig['data'] = $this->mapBucketData();
+            }
         }
         return $this->summaryConfig;
     }
