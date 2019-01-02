@@ -331,7 +331,7 @@ describe('ReportSummary.vue', () => {
     });
 
     it('displays inline error message when report does not exist', () => {
-      expect(wrapper.find('.alert-danger').text()).toEqual('This report does not exist.');
+      expect(wrapper.findAll('[data-description="deleted-report-alert"]').length).toEqual(1);
     });
 
     it('displays title and summary controls when the report does not exist', () => {

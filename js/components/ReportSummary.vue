@@ -37,9 +37,9 @@
             <li v-for="summary in sortedSummaryCounts" :key="summary.label">{{ summary.count }} - {{ summary.label }}</li>
           </ul>
         </div>
-        <div v-else>
-          <div class="alert alert-danger">
-            This report does not exist.
+        <div v-else class="mt-3">
+          <div class="alert alert-danger" data-description="deleted-report-alert">
+            The report used for this summary no longer exists.
           </div>
         </div>
       </div>
