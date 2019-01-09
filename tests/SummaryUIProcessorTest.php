@@ -3,6 +3,8 @@ use Octri\ConsortReport\SummaryUIProcessor,
     Octri\ConsortReport\DataDictionary,
     PHPUnit\Framework\TestCase;
 
+require_once('lib/ReportStrategy.php');
+
 /**
  * @covers SummaryUIProcessor
  */
@@ -27,7 +29,7 @@ final class SummaryUIProcessorTest extends TestCase {
     private $mockItemizedSummaryConfig = array(
         'reportId' => 42,
         'title' => 'Test Report Summary',
-        'strategy' => 'itemized',
+        'strategy' => \Octri\ConsortReport\ReportStrategy::ITEMIZED,
         'bucketBy' => 'dsp_stop_reason'
     );
 
@@ -38,7 +40,7 @@ final class SummaryUIProcessorTest extends TestCase {
     private $mockTotalSummaryConfig = array(
         'reportId' => 43,
         'title' => 'Test Report Summary with Total',
-        'strategy' => 'total'
+        'strategy' => \Octri\ConsortReport\ReportStrategy::TOTAL,
     );
 
     /**
@@ -73,65 +75,73 @@ final class SummaryUIProcessorTest extends TestCase {
 
     public function testReportSummaryWithOnlyTotalCount() {
         $expectedSummaryConfig = array_merge($this->mockTotalSummaryConfig, array(
-            "totalRecords" => 6,
-            "reportExists" => true
+            'totalRecords' => 6,
+            'reportExists' => true
         ));
 
         $reportProcessor = new SummaryUIProcessor($this->mockTotalSummaryConfig, $this->mockReport, $this->mockDataDictionary);
 
         $processedSummaryConfig = $reportProcessor->summaryConfig();
 
-        $this->assertEquals($expectedSummaryConfig, $processedSummaryConfig, "The processed summary config should contain total number of records.");
-        $this->assertEquals(6, $processedSummaryConfig['totalRecords'], "Processed summary config should include the total number of records.");
-        $this->assertEquals(true, $processedSummaryConfig['reportExists'], "Report should exist");
+        $this->assertEquals($expectedSummaryConfig, $processedSummaryConfig, 'The processed summary config should contain total number of records.');
+        $this->assertEquals(6, $processedSummaryConfig['totalRecords'], 'Processed summary config should include the total number of records.');
+        $this->assertEquals(true, $processedSummaryConfig['reportExists'], 'Report should exist');
     }
 
     public function testItemizedReportSummary() {
-        $expectedBucketData = array(
-            'Patient follow-up',
-            'Patient withdrew consent',
-            'Patient follow-up',
-            'Patient follow-up',
-            'Patient withdrew consent',
-            'Perceived drug side effects'
-        );
-
         $expectedSummaryConfig = array_merge($this->mockItemizedSummaryConfig, array(
-            "totalRecords" => 6,
-            "reportExists" => true
+            'totalRecords' => 6,
+            'reportExists' => true,
+            'bucketByLabel' => 'Stop Reason',
+            'bucketByFieldExists' => true,
+            'data' => array(
+                'Patient follow-up',
+                'Patient withdrew consent',
+                'Patient follow-up',
+                'Patient follow-up',
+                'Patient withdrew consent',
+                'Perceived drug side effects'
+            )
         ));
 
         $reportProcessor = new SummaryUIProcessor($this->mockItemizedSummaryConfig, $this->mockReport, $this->mockDataDictionary);
 
         $processedSummaryConfig = $reportProcessor->summaryConfig();
 
-        $this->assertEquals($expectedSummaryConfig, $processedSummaryConfig, "The processed summary config should contain bucket data and total number of records.");
-        $this->assertEquals(6, $processedSummaryConfig['totalRecords'], "Processed summary config should include the total number of records.");
-        $this->assertEquals(true, $processedSummaryConfig['reportExists'], "Report should exist");
+        $this->assertEquals($expectedSummaryConfig, $processedSummaryConfig, 'The processed summary config should contain bucket data and total number of records.');
+        $this->assertEquals(6, $processedSummaryConfig['totalRecords'], 'Processed summary config should include the total number of records.');
+        $this->assertEquals(true, $processedSummaryConfig['reportExists'], 'Report should exist');
     }
 
     public function testForMissingReportWhenTotalStrategy() {
-        $expectedSummaryConfig = array_merge($this->mockTotalSummaryConfig, array(
-            "reportExists" => false
-        ));
-
         $reportProcessor = new SummaryUIProcessor($this->mockTotalSummaryConfig, null, $this->mockDataDictionary);
 
         $processedSummaryConfig = $reportProcessor->summaryConfig();
 
-        $this->assertEquals(false, $processedSummaryConfig['reportExists'], "Report should exist");
+        $this->assertEquals(false, $processedSummaryConfig['reportExists'], 'Report should not exist');
     }
 
     public function testForMissingReportWhenItemizedStrategy() {
-        $expectedSummaryConfig = array_merge($this->mockItemizedSummaryConfig, array(
-            "reportExists" => false
-        ));
-
         $reportProcessor = new SummaryUIProcessor($this->mockItemizedSummaryConfig, null, $this->mockDataDictionary);
 
         $processedSummaryConfig = $reportProcessor->summaryConfig();
 
-        $this->assertEquals(false, $processedSummaryConfig['reportExists'], "Report should exist");
+        $this->assertEquals(false, $processedSummaryConfig['reportExists'], 'Report should not exist');
+    }
+
+    public function testForMissingBucketByField() {
+        $mockItemizedSummaryConfig = array(
+            'reportId' => 42,
+            'title' => 'Test Report Summary',
+            'strategy' => \Octri\ConsortReport\ReportStrategy::ITEMIZED,
+            'bucketBy' => 'dsp_stop_reason_old_name'
+        );
+
+        $reportProcessor = new SummaryUIProcessor($mockItemizedSummaryConfig, $this->mockReport, $this->mockDataDictionary);
+
+        $processedSummaryConfig = $reportProcessor->summaryConfig();
+
+        $this->assertEquals(false, $processedSummaryConfig['bucketByFieldExists'], 'Bucket by field should not exist');
     }
 
 }
