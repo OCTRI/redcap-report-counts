@@ -6,6 +6,7 @@ import ReportSummaryModel from '@/report-summary-model';
 import { STRATEGY } from '@/report-strategy';
 import { MISSING } from '@/constants';
 import shuffle from 'lodash/shuffle';
+import { messages } from '@/components/ReportSummary';
 
 import { createProvideObject } from '../test-utils';
 
@@ -53,6 +54,7 @@ describe('ReportSummary.vue', () => {
         totalRecords: 6,
         strategy: STRATEGY.ITEMIZED,
         bucketByLabel: 'Field Label',
+        bucketByFieldExists: true,
         reportExists: true,
         data: [
           'Patient follow-up',
@@ -109,6 +111,7 @@ describe('ReportSummary.vue', () => {
       title: 'Test Report Summary',
       totalRecords: 8,
       strategy: STRATEGY.ITEMIZED,
+      bucketByFieldExists: true,
       reportExists: true,
       data: []
     });
@@ -331,10 +334,46 @@ describe('ReportSummary.vue', () => {
     });
 
     it('displays inline error message when report does not exist', () => {
-      expect(wrapper.findAll('[data-description="deleted-report-alert"]').length).toEqual(1);
+      expect(wrapper.findAll('[data-description="report-alert"]').length).toEqual(1);
+      expect(wrapper.find('[data-description="report-alert"]').text()).toEqual(messages.missingReport);
     });
 
     it('displays title and summary controls when the report does not exist', () => {
+      expect(wrapper.findAll('.summary-controls').length).toEqual(1);
+      expect(wrapper.findAll('.card-title').length).toEqual(1);
+      expect(wrapper.find('.card-title').text()).toEqual('Original Title');
+    });
+  });
+
+  describe('bucketBy field does not exist or has been renamed', () => {
+    let wrapper, model;
+
+    beforeEach(() => {
+      model = ReportSummaryModel.fromObject({
+        id: '68d41098-f49a-4241-8014-ab519224fda7',
+        title: 'Original Title',
+        reportId: 3,
+        totalRecords: 8,
+        strategy: STRATEGY.ITEMIZED,
+        bucketByFieldExists: false,
+        reportExists: true,
+        data: []
+      });
+
+      wrapper = mount(ReportSummary, {
+        provide: createProvideObject(),
+        propsData: {
+          model
+        }
+      });
+    });
+
+    it('displays inline error message', () => {
+      expect(wrapper.findAll('[data-description="report-alert"]').length).toEqual(1);
+      expect(wrapper.find('[data-description="report-alert"]').text()).toEqual(messages.missingBucketByField);
+    });
+
+    it('displays title and summary controls', () => {
       expect(wrapper.findAll('.summary-controls').length).toEqual(1);
       expect(wrapper.findAll('.card-title').length).toEqual(1);
       expect(wrapper.find('.card-title').text()).toEqual('Original Title');

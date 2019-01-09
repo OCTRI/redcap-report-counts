@@ -54,6 +54,7 @@ class SummaryUIProcessor {
      * summary (count). If an itemized count is required, include the field
      * label for the field grouped on as well as data used to render itemized
      * counts. The UI handles grouping the data.
+     *
      * @return Summary config for rendering in the UI.
      */
     public function summaryConfig() {
@@ -64,9 +65,14 @@ class SummaryUIProcessor {
             $this->summaryConfig['totalRecords'] = $this->totalRecords();
             if ($this->summaryConfig['strategy'] === ReportStrategy::ITEMIZED) {
                 $bucketBy = $this->summaryConfig['bucketBy'];
-                $bucketByLabel = $this->dataDictionary->getFieldLabel($bucketBy);
-                $this->summaryConfig['bucketByLabel'] = $bucketByLabel;
-                $this->summaryConfig['data'] = $this->mapBucketData();
+                if ($this->dataDictionary->fieldExists($bucketBy)) {
+                    $bucketByLabel = $this->dataDictionary->getFieldLabel($bucketBy);
+                    $this->summaryConfig['bucketByFieldExists'] = true;
+                    $this->summaryConfig['bucketByLabel'] = $bucketByLabel;
+                    $this->summaryConfig['data'] = $this->mapBucketData();
+                } else {
+                    $this->summaryConfig['bucketByFieldExists'] = false;
+                }
             }
         }
         return $this->summaryConfig;

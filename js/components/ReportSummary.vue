@@ -28,7 +28,7 @@
                              @reportSummarySaved="forwardUpdatedSummary"
                              @formCanceled="cancelEdit" />
         </div>
-        <div v-if="model.reportExists">
+        <div v-if="showCounts">
           <ul class="summary-metadata lead list-unstyled mb-0">
             <li>Total Count: {{ model.totalRecords }}</li>
             <li v-if="isItemized" class="mt-0">Grouped By: {{ model.bucketByLabel }}</li>
@@ -38,8 +38,8 @@
           </ul>
         </div>
         <div v-else class="mt-3">
-          <div class="alert alert-danger" data-description="deleted-report-alert">
-            The report used for this summary no longer exists.
+          <div class="alert alert-danger" data-description="report-alert">
+            {{ errorMessage }}
           </div>
         </div>
       </div>
@@ -57,6 +57,11 @@ import { MISSING } from '@/constants';
 import { STRATEGY } from '@/report-strategy';
 
 import ReportSummaryForm from './ReportSummaryForm';
+
+export const messages = {
+  missingReport: 'The report used for this summary no longer exists.',
+  missingBucketByField: 'The field used to group counts by no longer exists or has been renamed.'
+};
 
 /**
  * Renders report summary.
@@ -217,6 +222,14 @@ export default {
     },
 
     /**
+     * @return true if the count is itemized and the bucket by field exists.
+     */
+    canItemize() {
+      const { model } = this;
+      return this.isItemized && model.bucketByFieldExists;
+    },
+
+    /**
      * @return true if the summary is being dragged.
      */
     isDragging() {
@@ -272,6 +285,47 @@ export default {
         ordered.push(missing[0]);
       }
       return ordered;
+    },
+
+    /**
+     * @return true if itemized counts should be shown
+     */
+    showItemizedCounts() {
+      const { model } = this;
+      return this.isItemized && model.bucketByFieldExists;
+    },
+
+    /**
+     * @return true if the configured report exists
+     */
+    reportExists() {
+      const { model } = this;
+      return model.reportExists;
+    },
+
+    /**
+     * @return true if the configuration for bucketing is valid - the field has not been renamed or deleted
+     */
+    validBucketByConfig() {
+      return !this.isItemized || this.canItemize;
+    },
+
+    /**
+     * @return true if counts can be displayed
+     */
+    showCounts() {
+      return this.reportExists && this.validBucketByConfig;
+    },
+
+    /**
+     * @return error message string
+     */
+    errorMessage() {
+      if (!this.reportExists) {
+        return messages.missingReport;
+      } else if (!this.validBucketByConfig) {
+        return messages.missingBucketByField;
+      }
     }
   }
 }
