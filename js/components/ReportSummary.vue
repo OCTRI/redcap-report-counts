@@ -291,8 +291,7 @@ export default {
      * @return true if itemized counts should be shown
      */
     showItemizedCounts() {
-      const { model } = this;
-      return this.isItemized && model.bucketByFieldExists;
+      return this.canItemize;
     },
 
     /**

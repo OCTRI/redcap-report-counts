@@ -16,7 +16,7 @@ class SummaryUIProcessor {
     /**
      * @param Array summaryConfig An entry in the array of report config
      *   persisted to the database.
-     * @param String report The report data as returned by `REDCap::getReport`.
+     * @param String report The report data as returned by `REDCap::getReport`. Pass `null` to indicate the report does not exist.
      * @param Number dataDictionary An instance of `DataDictionary`.
      */
     public function __construct($summaryConfig, $report, $dataDictionary) {
@@ -43,10 +43,44 @@ class SummaryUIProcessor {
 
     /**
      * Get the total record count for the report.
-     * @return The total number of records in the report.
+     * @return int The total number of records in the report.
      */
     private function totalRecords() {
         return count($this->report);
+    }
+
+    /**
+     * @return Boolean true if the report exists.
+     */
+    private function reportExists() {
+        return $this->report !== null;
+    }
+
+    /**
+     * @return Boolean true if the summary is itemized.
+     */
+    private function isItemized() {
+        return $this->summaryConfig['strategy'] === ReportStrategy::ITEMIZED;
+    }
+
+    /**
+     * Adds bucket-by properties to `$this->summaryConfig`. The summary must
+     * be itemized otherwise throws an exception.
+     * @return void
+     */
+    private function addItemizedConfig() {
+        assert($this->isItemized(), 'The count must be itemized');
+
+        $bucketBy = $this->summaryConfig['bucketBy'];
+
+        if ($this->dataDictionary->fieldExists($bucketBy)) {
+            $bucketByLabel = $this->dataDictionary->getFieldLabel($bucketBy);
+            $this->summaryConfig['bucketByFieldExists'] = true;
+            $this->summaryConfig['bucketByLabel'] = $bucketByLabel;
+            $this->summaryConfig['data'] = $this->mapBucketData();
+        } else {
+            $this->summaryConfig['bucketByFieldExists'] = false;
+        }
     }
 
     /**
@@ -55,26 +89,22 @@ class SummaryUIProcessor {
      * label for the field grouped on as well as data used to render itemized
      * counts. The UI handles grouping the data.
      *
-     * @return Summary config for rendering in the UI.
+     * @return Array Summary config for rendering in the UI.
      */
     public function summaryConfig() {
-        if ($this->report === null) {
-            $this->summaryConfig['reportExists'] = false;
-        } else {
-            $this->summaryConfig['reportExists'] = true;
-            $this->summaryConfig['totalRecords'] = $this->totalRecords();
-            if ($this->summaryConfig['strategy'] === ReportStrategy::ITEMIZED) {
-                $bucketBy = $this->summaryConfig['bucketBy'];
-                if ($this->dataDictionary->fieldExists($bucketBy)) {
-                    $bucketByLabel = $this->dataDictionary->getFieldLabel($bucketBy);
-                    $this->summaryConfig['bucketByFieldExists'] = true;
-                    $this->summaryConfig['bucketByLabel'] = $bucketByLabel;
-                    $this->summaryConfig['data'] = $this->mapBucketData();
-                } else {
-                    $this->summaryConfig['bucketByFieldExists'] = false;
-                }
-            }
+        $reportExists = $this->reportExists();
+        $this->summaryConfig['reportExists'] = $reportExists;
+
+        if (!$reportExists) {
+            return $this->summaryConfig;
         }
+
+        $this->summaryConfig['totalRecords'] = $this->totalRecords();
+
+        if ($this->isItemized()) {
+            $this->addItemizedConfig();
+        }
+
         return $this->summaryConfig;
     }
 
