@@ -31,7 +31,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'assets/bundle.[chunkhash].js',
-    library: 'ConsortReport'
+    library: 'ReportCounts'
   },
   module: {
     rules: [
@@ -64,15 +64,15 @@ module.exports = {
   plugins: [
     new DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(buildEnv),
-      CONSORT_REPORT_VERSION: JSON.stringify(packageJson.version),
-      CONSORT_REPORT_GIT_HASH: JSON.stringify(repoInfo.abbreviatedSha)
+      REPORT_COUNTS_VERSION: JSON.stringify(packageJson.version),
+      REPORT_COUNTS_GIT_HASH: JSON.stringify(repoInfo.abbreviatedSha)
     }),
     new VueLoaderPlugin(),
     new CopyWebpackPlugin([
       '*.md',
       'LICENSE',
       'index.php',
-      'ConsortReport.php',
+      'ReportCounts.php',
       'config.json',
       'lib/**/*.php',
       'lib/**/*.json'
@@ -84,7 +84,7 @@ module.exports = {
       inject: false
     }),
     new MiniCssExtractPlugin({
-      filename: devMode ? 'assets/consort-report.css' : 'assets/consort-report.[contenthash].css',
+      filename: devMode ? 'assets/report-counts.css' : 'assets/report-counts.[contenthash].css',
       chunkFilename: devMode ? '[id].css' : '[id].[hash].css'
     })
   ]

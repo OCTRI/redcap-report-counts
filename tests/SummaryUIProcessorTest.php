@@ -1,6 +1,6 @@
 <?php
-use Octri\ConsortReport\SummaryUIProcessor,
-    Octri\ConsortReport\DataDictionary,
+use Octri\ReportCounts\SummaryUIProcessor,
+    Octri\ReportCounts\DataDictionary,
     PHPUnit\Framework\TestCase;
 
 require_once('lib/ReportStrategy.php');
@@ -29,7 +29,7 @@ final class SummaryUIProcessorTest extends TestCase {
     private $mockItemizedSummaryConfig = array(
         'reportId' => 42,
         'title' => 'Test Report Summary',
-        'strategy' => \Octri\ConsortReport\ReportStrategy::ITEMIZED,
+        'strategy' => \Octri\ReportCounts\ReportStrategy::ITEMIZED,
         'bucketBy' => 'dsp_stop_reason'
     );
 
@@ -40,7 +40,7 @@ final class SummaryUIProcessorTest extends TestCase {
     private $mockTotalSummaryConfig = array(
         'reportId' => 43,
         'title' => 'Test Report Summary with Total',
-        'strategy' => \Octri\ConsortReport\ReportStrategy::TOTAL,
+        'strategy' => \Octri\ReportCounts\ReportStrategy::TOTAL,
     );
 
     /**
@@ -133,7 +133,7 @@ final class SummaryUIProcessorTest extends TestCase {
         $mockItemizedSummaryConfig = array(
             'reportId' => 42,
             'title' => 'Test Report Summary',
-            'strategy' => \Octri\ConsortReport\ReportStrategy::ITEMIZED,
+            'strategy' => \Octri\ReportCounts\ReportStrategy::ITEMIZED,
             'bucketBy' => 'dsp_stop_reason_old_name'
         );
 

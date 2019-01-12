@@ -1,11 +1,11 @@
 <?php
 /**
- * MODULE: REDCap Consort Report
+ * MODULE: REDCap Report Counts
  * DESCRIPTION: Returns a report in the requested format.
  * RETURNS: Returns report count in JSON format.
  * Example: { "count": 42 }
  */
-namespace Octri\ConsortReport;
+namespace Octri\ReportCounts;
 
 header('Content-Type: application/json');
 

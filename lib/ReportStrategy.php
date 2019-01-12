@@ -1,5 +1,5 @@
 <?php
-namespace Octri\ConsortReport;
+namespace Octri\ReportCounts;
 
 abstract class ReportStrategy {
     const TOTAL = 'Total count';

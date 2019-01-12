@@ -1,10 +1,10 @@
 <?php
 /**
- * MODULE: REDCap Consort Report
+ * MODULE: REDCap Report Counts
  * DESCRIPTION: Get project settings.
  * RETURNS: Returns project settings in JSON format.
  */
-namespace Octri\ConsortReport;
+namespace Octri\ReportCounts;
 
 header('Content-Type: application/json');
 

@@ -14,7 +14,7 @@ export const ENDPOINTS = {
  *
  * @param {Object} assetUrls - key/value pairs where the key is a relative file path
  *   like `lib/data.php`, and the value is the corresponding external module URL
- *   like `http://localhost/redcap/api/?type=module&prefix=consort-report&page=lib%2Fdata&pid=42`
+ *   like `http://localhost/redcap/api/?type=module&prefix=report-counts&page=lib%2Fdata&pid=42`
  * @return {Object} an object encapsulating REDCap HTTP requests
  */
 export default function createDataService(assetUrls) {

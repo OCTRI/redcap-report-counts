@@ -1,5 +1,5 @@
 <template>
-  <div id="consort-report-container" class="container">
+  <div id="report-counts-container" class="container">
     <h1>Report Counts</h1>
 
     <div class="error" v-if="hasError">
@@ -65,10 +65,10 @@ const messages = {
 };
 
 /**
- * ConsortReport root component.
+ * ReportCounts root component.
  */
 export default {
-  name: 'ConsortReport',
+  name: 'ReportCounts',
   inject: ['dataService'],
 
   components: {

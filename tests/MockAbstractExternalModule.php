@@ -4,8 +4,8 @@ require_once("lib/ReportStrategy.php");
 
 class MockAbstractExternalModule {
 
-  public static $total = \Octri\ConsortReport\ReportStrategy::TOTAL;
-  public static $itemized = \Octri\ConsortReport\ReportStrategy::ITEMIZED;
+  public static $total = \Octri\ReportCounts\ReportStrategy::TOTAL;
+  public static $itemized = \Octri\ReportCounts\ReportStrategy::ITEMIZED;
 
   // This property follows the format: $settings[project_id][settings_key]
   public static $settings = array(

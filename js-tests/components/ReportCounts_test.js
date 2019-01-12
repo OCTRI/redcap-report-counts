@@ -1,6 +1,6 @@
 import { shallowMount, mount } from '@vue/test-utils';
 
-import ConsortReport from '@/components/ConsortReport';
+import ReportCounts from '@/components/ReportCounts';
 import ReportCountsHelp from '@/components/ReportCountsHelp';
 import ReportSummaryModel from '@/report-summary-model';
 import { STRATEGY } from '@/report-strategy';
@@ -9,7 +9,7 @@ import { createProvideObject, waitForSelector } from '../test-utils';
 
 const aboutTextSelector = '#about-report-counts-module';
 
-describe('ConsortReport.vue', () => {
+describe('ReportCounts.vue', () => {
   let mockProvide, wrapper;
 
   describe('With report summaries', () => {
@@ -28,7 +28,7 @@ describe('ConsortReport.vue', () => {
       spyOn(mockProvide.dataService, 'fetchReportSummary')
         .and.returnValue(Promise.resolve([mockExistingSummary]))
 
-      wrapper = shallowMount(ConsortReport, {
+      wrapper = shallowMount(ReportCounts, {
         provide: mockProvide
       });
 
@@ -93,7 +93,7 @@ describe('ConsortReport.vue', () => {
       mockProvide = createProvideObject();
       spyOn(mockProvide.dataService, 'saveReportSummary').and.callThrough();
 
-      wrapper = mount(ConsortReport, {
+      wrapper = mount(ReportCounts, {
         provide: mockProvide
       });
 
@@ -211,7 +211,7 @@ describe('ConsortReport.vue', () => {
         }
       };
 
-      wrapper = shallowMount(ConsortReport, {
+      wrapper = shallowMount(ReportCounts, {
         provide: mockProvide
       });
 
