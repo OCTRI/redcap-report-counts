@@ -1,6 +1,6 @@
 {
-    "name": "octri/consort-report",
-    "description": "External module for the Consort Report REDCap project",
+    "name": "octri/report-counts",
+    "description": "External module for generating report counts.",
     "type": "project",
     "scripts": {
       "test": "phpunit --colors=always",

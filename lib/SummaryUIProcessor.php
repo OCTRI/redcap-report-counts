@@ -1,5 +1,5 @@
 <?php
-namespace Octri\ConsortReport;
+namespace Octri\ReportCounts;
 
 require_once(dirname(realpath(__FILE__)) . '/ReportStrategy.php');
 

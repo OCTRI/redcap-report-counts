@@ -1,6 +1,6 @@
-# REDCap Consort Report External Module
+# REDCap Report Counts External Module
 
-A REDCap external module for generating consort diagrams.
+A REDCap external module for generating report counts.
 
 ## Install Dependencies
 
@@ -45,10 +45,10 @@ npm run start
 External modules live in the `modules` directory under the REDCap root directory. After building the project copy the `dist` directory there and rename it as follows,
 
 ```
-redcap/modules/consort_report_vx.y.z
+redcap/modules/report_counts_vx.y.z
 ```
 
-where `consort_report` is the module prefix, and `x.y.z` is the version.
+where `report_counts` is the module prefix, and `x.y.z` is the version.
 
 #### Running under Docker
 
@@ -56,7 +56,7 @@ If you are running REDCap under Docker, you may want to bind mount the `dist` di
 
 ```
 volumes:
-  - /path/to/redcap-consort-report/dist:/var/www/html/redcap/modules/consort_report_v0.0.0
+  - /path/to/report-counts/dist:/var/www/html/redcap/modules/report_counts_v0.0.0
 ```
 
 Now changes are published instantly when running `npm run start`.
@@ -71,7 +71,7 @@ $indexUrl = $module->getUrl('index');
 
 The URL will look something like the following,
 
-http://localhost/redcap/external_modules/?prefix=consort_report&id=5&page=index&pid=782
+http://localhost/redcap/external_modules/?prefix=report_counts&id=5&page=index&pid=782
 
 with these parameters: `prefix`, `id`, `page`, and `pid`.
 
@@ -89,9 +89,9 @@ Once your module directory is in place we need to tell REDCap about it.
 
 1. Navigate to *Control Center > External Modules*.
 2. Click *Enable a module*.
-3. You should see consort report with a version drop-down. Select the version you want to enable and click *Enable*.
+3. You should see report counts with a version drop-down. Select the version you want to enable and click *Enable*.
 4. Next go to your project and on the left navigation bar click *External Modules*.
-5. Click *Enable a module* and find the consort report module.
+5. Click *Enable a module* and find the report counts module.
 6. Click *Enable* to enable for your project.
 
 Now you should see a link under the "External Modules" section on the left navigation bar.

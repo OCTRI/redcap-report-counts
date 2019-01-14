@@ -1,5 +1,5 @@
 <?php
-use Octri\ConsortReport\DataDictionary,
+use Octri\ReportCounts\DataDictionary,
     PHPUnit\Framework\TestCase;
 
 /**

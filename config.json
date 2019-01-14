@@ -1,7 +1,7 @@
 {
-  "name": "Consort Report",
-  "namespace": "Octri\\ConsortReport",
-  "description": "A REDCap module for generating consort diagrams.",
+  "name": "Report Counts",
+  "namespace": "Octri\\ReportCounts",
+  "description": "A REDCap module for generating report counts.",
   "authors": [
     {
       "name": "Weldon Sams",
@@ -19,7 +19,7 @@
   "links": {
     "project": [
       {
-        "name": "Consort Report",
+        "name": "Report Counts",
         "icon": "brick",
         "url": "index.php"
       }

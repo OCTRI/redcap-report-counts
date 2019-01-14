@@ -1,7 +1,7 @@
 {
-  "name": "redcap-consort-report",
+  "name": "report-counts",
   "version": "0.1.2",
-  "description": "Plugin for generating consort diagrams in REDCap",
+  "description": "Plugin for generating report counts.",
   "main": "./dist/bundle.js",
   "scripts": {
     "analyze": "webpack --optimize-minimize; webpack --profile --json > bundle-stats.json; webpack-bundle-analyzer bundle-stats.json dist",
@@ -19,7 +19,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://octriinternal.ohsu.edu/stash/scm/reddev/consort-report.git"
+    "url": "https://octriinternal.ohsu.edu/stash/scm/reddev/report-counts.git"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",

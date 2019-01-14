@@ -1,5 +1,5 @@
 <?php
-namespace Octri\ConsortReport;
+namespace Octri\ReportCounts;
 
 /**
  * A class for working with a project's data dictionary.

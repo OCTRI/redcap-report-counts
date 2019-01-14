@@ -1,6 +1,6 @@
 <?php
 /**
- * EXTERNAL MODULE: REDCap Consort Report
+ * EXTERNAL MODULE: REDCap Report Counts
  * DESCRIPTION:
  */
 
@@ -18,7 +18,7 @@ $useApiEndpoint = true;
 require_once dirname(realpath(__FILE__)) . '/../../../redcap_connect.php';
 
 require_once dirname(realpath(__FILE__)) . '/ReportConfig.php';
-use Octri\ConsortReport\ReportConfig;
+use Octri\ReportCounts\ReportConfig;
 
 // Display the project header
 require_once APP_PATH_DOCROOT . 'ProjectGeneral/header.php';
@@ -73,7 +73,7 @@ foreach ($imageFilePaths as $imageFilePath) {
 $jsonAssetUrls = json_encode($assetUrls);
 ?>
 
-<div class="consort-report-container"></div>
+<div class="report-counts-container"></div>
 
 <?php
 echo(implode("\n", array_map(function($jsUrl) {
@@ -89,7 +89,7 @@ $(document).ready(function(){
   }, $cssUrls)));
   ?>
 
-  ConsortReport.run('<?php echo $jsonAssetUrls ?>');
+  ReportCounts.run('<?php echo $jsonAssetUrls ?>');
 });
 </script>
 
