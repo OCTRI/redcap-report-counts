@@ -12,8 +12,8 @@ export default class ReportSummaryConfig {
    * @return {ReportSummaryConfig} a new object with the same property values
    */
   static fromObject(other) {
-    const { id, title, reportId, strategy, bucketBy } = other;
-    return new ReportSummaryConfig(id, title, reportId, strategy, bucketBy);
+    const { id, title, reportId, strategy, bucketBy, reportExists } = other;
+    return new ReportSummaryConfig(id, title, reportId, strategy, bucketBy, reportExists);
   }
 
   /**
@@ -25,12 +25,15 @@ export default class ReportSummaryConfig {
    *   constants from `report-strategy.js`. Defaults to STRATEGY.TOTAL.
    * @param {String} bucketBy - field to bucket itemized counts by. Only valid when `strategy`
    *   is `STRATEGY.ITEMIZED`. Defaults to null.
+   * @param {Boolean} reportExists - `true` if the report exists, otherwise `false` indicating
+   *   the report is inaccessible or deleted.
    */
-  constructor(id, title, reportId, strategy, bucketBy) {
+  constructor(id, title, reportId, strategy, bucketBy, reportExists) {
     this.id = id || uuid();
     this.title = title || '';
     this.reportId = reportId || null;
     this.strategy = strategy || STRATEGY.TOTAL;
     this.bucketBy = bucketBy || null;
+    this.reportExists = reportExists || false;
   }
 }

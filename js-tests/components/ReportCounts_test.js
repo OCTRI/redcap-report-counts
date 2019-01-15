@@ -85,7 +85,7 @@ describe('ReportCounts.vue', () => {
     const fillForm = async (wrapper) => {
       wrapper.find('input[name=title]').setValue('Title');
       wrapper.findAll('select[name=reportId] option').at(1).setSelected();
-      await waitForSelector(wrapper, '#strategy0:enabled');
+      await waitForSelector(wrapper, '[name="strategy"]:first-child:enabled');
       wrapper.findAll('input[name=strategy]').at(0).setChecked();
     };
 

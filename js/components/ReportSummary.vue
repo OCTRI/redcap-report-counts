@@ -23,7 +23,8 @@
           <a class="delete" v-if="canDelete" @click="deleteSummary">Delete <i class="far fa-trash-alt"></i></a>
         </div>
         <div v-if="editing && canEdit" class="edit-form container">
-          <ReportSummaryForm :hideFormTitle=true
+          <ReportSummaryForm :key="model.id"
+                             :hideFormTitle=true
                              :initial-state="model.config"
                              @reportSummarySaved="forwardUpdatedSummary"
                              @formCanceled="cancelEdit" />
