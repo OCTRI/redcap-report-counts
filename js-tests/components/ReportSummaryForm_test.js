@@ -62,7 +62,7 @@ describe('ReportSummaryForm.vue', () => {
     });
 
     it('renders radio buttons for the strategy values', () => {
-      const strategy = wrapper.findAll('input[name="strategy"]');
+      const strategy = wrapper.findAll(`input[data-description="strategy-input"]`);
       expect(strategy.length).toEqual(2);
       const radio1 = strategy.at(0);
       const radio2 = strategy.at(1);
@@ -233,7 +233,7 @@ describe('ReportSummaryForm.vue', () => {
   it('disables strategy radio buttons unless a report is selected', () => {
     wrapper.vm.model.title = 'Report Title';
 
-    const radios = wrapper.findAll('input[name="strategy"]');
+    const radios = wrapper.findAll(`input[data-description="strategy-input"]`);
     expect(radios.at(0).attributes().disabled).toBeTruthy();
     expect(radios.at(1).attributes().disabled).toBeTruthy();
 
@@ -291,5 +291,12 @@ describe('ReportSummaryForm.vue', () => {
     });
     await wrapper.vm.reportPromise;
     expect(wrapper.findAll('.card-header').length).toEqual(1);
+  });
+
+  it('builds a field id', () => {
+    const fieldName = 'title';
+    const fieldId = wrapper.vm.fieldId(fieldName);
+    const expectedFieldId = `${fieldName}${wrapper.vm.model.id}`;
+    expect(fieldId).toEqual(expectedFieldId);
   });
 });
