@@ -59,7 +59,7 @@ export default class ReportSummaryModel {
    * @property {ReportSummaryConfig} config - configuration for this summary
    */
   get config() {
-    const { id, title, reportId, strategy, bucketBy } = this;
-    return new ReportSummaryConfig(id, title, reportId, strategy, bucketBy);
+    const { id, title, reportId, strategy, bucketBy, reportExists } = this;
+    return new ReportSummaryConfig(id, title, reportId, strategy, bucketBy, reportExists);
   }
 }

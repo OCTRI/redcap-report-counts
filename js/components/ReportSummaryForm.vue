@@ -16,8 +16,8 @@
       </ul>
       <div class="row form-group">
         <div class="col">
-          <label for="title">Report Count Title</label>
-          <input id="title" name="title" v-model.trim="model.title" type="text" class="form-control" :class="{ 'is-invalid': errors.title }">
+          <label :for="fieldId('title')">Report Count Title</label>
+          <input :id="fieldId('title')" name="title" v-model.trim="model.title" type="text" class="form-control" :class="{ 'is-invalid': errors.title }">
           <div class="invalid-feedback" v-if="errors.title">
             {{ errors.title }}
           </div>
@@ -25,8 +25,8 @@
       </div>
       <div class="row form-group">
         <div class="col">
-          <label for="reportId">Select a Report</label>
-          <select id="reportId" name="reportId" v-model="model.reportId" class="form-control" :class="{ 'is-invalid': errors.reportId }" @change="loadReportFields()">
+          <label :for="fieldId('reportId')">Select a Report</label>
+          <select :id="fieldId('reportId')" name="reportId" v-model="model.reportId" class="form-control" :class="{ 'is-invalid': errors.reportId }" @change="loadReportFields()">
             <option v-for="report in reports" :key="report.reportId" :value="report.reportId">{{ report.title }}</option>
           </select>
           <div class="invalid-feedback" v-if="errors.reportId">
@@ -36,10 +36,10 @@
       </div>
       <div class="row form-group">
         <div class="col strategy-controls">
-          <label for="strategy">Summary Type</label>
+          <label>Summary Type</label>
           <div class="form-check" v-for="(strategyVal, i) in strategies" :key="strategyVal">
-            <input class="form-check-input" :class="{ 'is-invalid': errors.strategy }" :id="'strategy' + i" name="strategy" v-model="model.strategy" :value="strategyVal" type="radio" :disabled="!reportSelected">
-            <label class="form-check-label" :for="'strategy' + i">{{ strategyVal }}</label>
+            <input class="form-check-input" :class="{ 'is-invalid': errors.strategy }" :id="fieldId('strategy' + i)" :name="fieldId('strategy' + i)" data-description="strategy-input" v-model="model.strategy" :value="strategyVal" type="radio" :disabled="!reportSelected">
+            <label class="form-check-label" :for="fieldId('strategy' + i)">{{ strategyVal }}</label>
           </div>
           <div class="invalid-feedback" v-if="errors.strategy">
             {{ errors.strategy }}
@@ -48,8 +48,8 @@
       </div>
       <div class="row form-group" v-if="showBucketByFields">
         <div class="col">
-          <label for="bucketBy">Field to Group Results</label>
-          <select id="bucketBy" name="bucketBy" v-model="model.bucketBy" class="form-control" :class="{ 'is-invalid': errors.bucketBy }">
+          <label>Field to Group Results</label>
+          <select :id="fieldId('bucketBy')" name="bucketBy" v-model="model.bucketBy" class="form-control" :class="{ 'is-invalid': errors.bucketBy }">
             <option v-for="field in reportFields" :key="field.field_name" :value="field.field_name">{{ field.field_name }} "{{ field.field_label }}"</option>
           </select>
           <div class="invalid-feedback" v-if="errors.bucketBy">
@@ -292,6 +292,18 @@ export default {
      */
     loadReportFields() {
       this.reportFieldsPromise = this.fetchReportFields();
+    },
+
+    /**
+     * There can be multiple instances of the `ReportSummaryForm` on a page.
+     * This function takes a field name and appends the `model.id` to ensure
+     * the value will be unique across all forms.
+     * @param {String} name - The field name.
+     * @return {String} The field id for the given name.
+     */
+    fieldId(name) {
+      const { model } = this;
+      return `${name}${model.id}`;
     }
   },
 
@@ -310,7 +322,7 @@ export default {
      */
     reportFields() {
       const { model } = this;
-      model.bucketBy = null;
+      model.bucketBy = model.bucketBy || null;
       this.validateItemization();
     }
   },

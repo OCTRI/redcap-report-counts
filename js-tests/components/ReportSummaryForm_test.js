@@ -12,7 +12,7 @@ import {
 } from '../test-utils';
 
 describe('ReportSummaryForm.vue', () => {
-  let mockProvide, wrapper;
+  let mockProvide, wrapper, id;
 
   beforeEach(async () => {
     mockProvide = createProvideObject();
@@ -23,6 +23,8 @@ describe('ReportSummaryForm.vue', () => {
     wrapper = shallowMount(ReportSummaryForm, {
       provide: mockProvide
     });
+
+    id = wrapper.vm.model.id;
 
     await wrapper.vm.reportPromise;
   });
@@ -48,25 +50,25 @@ describe('ReportSummaryForm.vue', () => {
 
     it('renders form and title field', () => {
       expect(wrapper.findAll('.report-summary-form').length).toEqual(1);
-      expect(wrapper.findAll('#title').length).toEqual(1);
+      expect(wrapper.findAll(`#title${id}`).length).toEqual(1);
     });
 
     it('renders report drop-down', () => {
-      expect(wrapper.findAll('#reportId').length).toEqual(1);
-      const options = wrapper.findAll('#reportId option');
+      expect(wrapper.findAll(`#reportId${id}`).length).toEqual(1);
+      const options = wrapper.findAll(`#reportId${id} option`);
       expect(options.length).toEqual(3);
       expect(options.at(1).attributes().value).toEqual('2');
       expect(options.at(1).text()).toEqual('Report 2');
     });
 
     it('renders radio buttons for the strategy values', () => {
-      const strategy = wrapper.findAll('input[name="strategy"]');
+      const strategy = wrapper.findAll(`input[data-description="strategy-input"]`);
       expect(strategy.length).toEqual(2);
       const radio1 = strategy.at(0);
       const radio2 = strategy.at(1);
-      expect(radio1.attributes().id).toEqual('strategy0');
+      expect(radio1.attributes().id).toEqual(`strategy0${id}`);
       expect(radio1.attributes().value).toEqual(STRATEGY.TOTAL);
-      expect(radio2.attributes().id).toEqual('strategy1');
+      expect(radio2.attributes().id).toEqual(`strategy1${id}`);
       expect(radio2.attributes().value).toEqual(STRATEGY.ITEMIZED);
     });
 
@@ -79,9 +81,9 @@ describe('ReportSummaryForm.vue', () => {
         reportFields: mockReportFields
       });
 
-      expect(wrapper.findAll('#bucketBy').length).toEqual(1);
+      expect(wrapper.findAll(`#bucketBy${id}`).length).toEqual(1);
 
-      const options = wrapper.findAll('#bucketBy option');
+      const options = wrapper.findAll(`#bucketBy${id} option`);
       expect(options.length).toEqual(3);
 
       expect(options.at(0).text()).toEqual('field_1 "Field 1"');
@@ -147,7 +149,7 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errorCount).toEqual(1);
     expect(wrapper.vm.errors.reportId).toEqual(messages.reportRequired);
-    expect(wrapper.findAll('#bucketBy').length).toEqual(0);
+    expect(wrapper.findAll(`#bucketBy${id}`).length).toEqual(0);
 
     // Require a bucketBy field on strategy='itemized'
     wrapper.vm.model.title = 'Itemized Results';
@@ -157,8 +159,8 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.find('.btn-primary').trigger('click');
     expect(wrapper.vm.errorCount).toEqual(1);
     expect(wrapper.vm.errors.bucketBy).toEqual(messages.bucketByRequired);
-    expect(wrapper.findAll('#bucketBy').length).toEqual(1);
-    expect(wrapper.findAll('#bucketBy').isVisible()).toEqual(true);
+    expect(wrapper.findAll(`#bucketBy${id}`).length).toEqual(1);
+    expect(wrapper.findAll(`#bucketBy${id}`).isVisible()).toEqual(true);
   });
 
   it('checks for fields to group by and displays error message accordingly', () => {
@@ -231,7 +233,7 @@ describe('ReportSummaryForm.vue', () => {
   it('disables strategy radio buttons unless a report is selected', () => {
     wrapper.vm.model.title = 'Report Title';
 
-    const radios = wrapper.findAll('input[name="strategy"]');
+    const radios = wrapper.findAll(`input[data-description="strategy-input"]`);
     expect(radios.at(0).attributes().disabled).toBeTruthy();
     expect(radios.at(1).attributes().disabled).toBeTruthy();
 
@@ -249,7 +251,7 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.reportFields = mockReportFields;
 
     // Select one of the bucketBy options
-    wrapper.findAll('#bucketBy option').at(0).setSelected();
+    wrapper.findAll(`#bucketBy${id} option`).at(0).setSelected();
 
     // Switch to a report that does not have reportFields
     wrapper.vm.model.reportId = 11;
@@ -259,7 +261,6 @@ describe('ReportSummaryForm.vue', () => {
     expect(wrapper.vm.errors.strategy).toEqual(messages.noBucketByFields);
 
     // The bucketBy field should be reset
-    expect(wrapper.vm.model.bucketBy).toBeNull();
     expect(wrapper.vm.errors.bucketBy).not.toEqual(messages.bucketByRequired);
 
     // Try to submit the form
@@ -268,7 +269,6 @@ describe('ReportSummaryForm.vue', () => {
     // Ensure that the previously selected bucketBy field is not selected which
     // prevents the form from being submitted with an invalid bucketBy value.
     expect(wrapper.vm.errors.strategy).toEqual(messages.noBucketByFields);
-    expect(wrapper.vm.model.bucketBy).toBeNull();
   });
 
   it('hides form title', async () => {
@@ -291,5 +291,12 @@ describe('ReportSummaryForm.vue', () => {
     });
     await wrapper.vm.reportPromise;
     expect(wrapper.findAll('.card-header').length).toEqual(1);
+  });
+
+  it('builds a field id', () => {
+    const fieldName = 'title';
+    const fieldId = wrapper.vm.fieldId(fieldName);
+    const expectedFieldId = `${fieldName}${wrapper.vm.model.id}`;
+    expect(fieldId).toEqual(expectedFieldId);
   });
 });
