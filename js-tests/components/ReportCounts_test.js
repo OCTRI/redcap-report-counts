@@ -5,7 +5,7 @@ import ReportCountsHelp from '@/components/ReportCountsHelp';
 import ReportSummaryModel from '@/report-summary-model';
 import { STRATEGY } from '@/report-strategy';
 
-import { createProvideObject, waitForSelector } from '../test-utils';
+import { createProvideObject, waitForSelector, buildMockSecurityConfig } from '../test-utils';
 
 const aboutTextSelector = '#about-report-counts-module';
 
@@ -27,6 +27,7 @@ describe('ReportCounts.vue', () => {
       spyOn(mockProvide.dataService, 'saveReportSummaries').and.callThrough();
       spyOn(mockProvide.dataService, 'fetchReportSummary')
         .and.returnValue(Promise.resolve([mockExistingSummary]))
+      spyOn(mockProvide.dataService, 'fetchSecurityConfig').and.callThrough();
 
       wrapper = shallowMount(ReportCounts, {
         provide: mockProvide
@@ -207,6 +208,9 @@ describe('ReportCounts.vue', () => {
           },
           saveReportSummaries(reportSummaries) {
             return Promise.resolve([]);
+          },
+          fetchSecurityConfig() {
+            return Promise.resolve(buildMockSecurityConfig(true));
           }
         }
       };
@@ -315,6 +319,44 @@ describe('ReportCounts.vue', () => {
       wrapper.vm.endReorder();
 
       expect(dataService.saveReportSummaries).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe('security configuration', () => {
+    describe('basic user - does not have access to modify counts', () => {
+      beforeEach(async () => {
+        mockProvide = createProvideObject();
+        spyOn(mockProvide.dataService, 'fetchSecurityConfig')
+          .and.returnValue(Promise.resolve(buildMockSecurityConfig(false)));
+
+        wrapper = mount(ReportCounts, {
+          provide: mockProvide
+        });
+
+        await wrapper.vm.securityPromise;
+      });
+
+      it('hides form button', () => {
+        expect(wrapper.findAll('#create-a-report').length).toEqual(0);
+      });
+    });
+
+    describe('admin user - has access to modify counts', () => {
+      beforeEach(async () => {
+        mockProvide = createProvideObject();
+        spyOn(mockProvide.dataService, 'fetchSecurityConfig')
+          .and.returnValue(Promise.resolve(buildMockSecurityConfig(true)));
+
+        wrapper = mount(ReportCounts, {
+          provide: mockProvide
+        });
+
+        await wrapper.vm.securityPromise;
+      });
+
+      it('shows form button', () => {
+        expect(wrapper.findAll('#create-a-report').length).toEqual(1);
+      });
     });
   });
 

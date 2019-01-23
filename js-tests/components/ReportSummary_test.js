@@ -8,7 +8,7 @@ import { MISSING } from '@/constants';
 import shuffle from 'lodash/shuffle';
 import { messages } from '@/components/ReportSummary';
 
-import { createProvideObject } from '../test-utils';
+import { createProvideObject, buildMockSecurityConfig } from '../test-utils';
 
 const selectors = {
   metadata: '.summary-metadata li',
@@ -16,6 +16,8 @@ const selectors = {
 };
 
 describe('ReportSummary.vue', () => {
+  const securityConfig = buildMockSecurityConfig(true);
+
   describe('For total strategy', () => {
     let wrapper;
 
@@ -30,7 +32,8 @@ describe('ReportSummary.vue', () => {
 
       wrapper = shallowMount(ReportSummary, {
         propsData: {
-          model
+          model,
+          securityConfig
         }
       });
     });
@@ -68,7 +71,8 @@ describe('ReportSummary.vue', () => {
 
       wrapper = shallowMount(ReportSummary, {
         propsData: {
-          model
+          model,
+          securityConfig
         }
       });
     });
@@ -135,7 +139,8 @@ describe('ReportSummary.vue', () => {
 
       const wrapper = shallowMount(ReportSummary, {
         propsData: {
-          model
+          model,
+          securityConfig
         }
       });
       expect(wrapper.vm.hasMissingValue).toEqual(true);
@@ -160,7 +165,8 @@ describe('ReportSummary.vue', () => {
 
       const wrapper = shallowMount(ReportSummary, {
         propsData: {
-          model
+          model,
+          securityConfig
         }
       });
 
@@ -199,7 +205,8 @@ describe('ReportSummary.vue', () => {
       wrapper = mount(ReportSummary, {
         provide: createProvideObject(),
         propsData: {
-          model
+          model,
+          securityConfig
         }
       });
     });
@@ -259,7 +266,8 @@ describe('ReportSummary.vue', () => {
 
       wrapper = shallowMount(ReportSummary, {
         propsData: {
-          model
+          model,
+          securityConfig
         }
       });
     });
@@ -328,7 +336,8 @@ describe('ReportSummary.vue', () => {
       wrapper = mount(ReportSummary, {
         provide: createProvideObject(),
         propsData: {
-          model
+          model,
+          securityConfig
         }
       });
     });
@@ -363,7 +372,8 @@ describe('ReportSummary.vue', () => {
       wrapper = mount(ReportSummary, {
         provide: createProvideObject(),
         propsData: {
-          model
+          model,
+          securityConfig
         }
       });
     });
@@ -377,6 +387,56 @@ describe('ReportSummary.vue', () => {
       expect(wrapper.findAll('.summary-controls').length).toEqual(1);
       expect(wrapper.findAll('.card-title').length).toEqual(1);
       expect(wrapper.find('.card-title').text()).toEqual('Original Title');
+    });
+  });
+
+  describe('security configuration', () => {
+    let wrapper, model;
+
+    beforeEach(() => {
+      model = ReportSummaryModel.fromObject({
+        id: '68d41098-f49a-4241-8014-ab519224fda7',
+        title: 'Original Title',
+        reportId: 3,
+        totalRecords: 8,
+        strategy: STRATEGY.TOTAL,
+        bucketByFieldExists: false,
+        reportExists: true
+      });
+    });
+
+    describe('basic user - does not have access to modify counts', () => {
+      beforeEach(() => {
+        wrapper = mount(ReportSummary, {
+          provide: createProvideObject(),
+          propsData: {
+            model,
+            securityConfig: buildMockSecurityConfig(false)
+          }
+        });
+      });
+
+      it('hides summary controls and drag handle', () => {
+        expect(wrapper.findAll('.summary-controls').length).toEqual(0);
+        expect(wrapper.findAll('.drag-handle').length).toEqual(0);
+      });
+    });
+
+    describe('admin user - has access to modify counts', () => {
+      beforeEach(() => {
+        wrapper = mount(ReportSummary, {
+          provide: createProvideObject(),
+          propsData: {
+            model,
+            securityConfig: buildMockSecurityConfig(true)
+          }
+        });
+      });
+
+      it('shows summary controls and drag handle', () => {
+        expect(wrapper.findAll('.summary-controls').length).toEqual(1);
+        expect(wrapper.findAll('.drag-handle').length).toEqual(1);
+      });
     });
   });
 });

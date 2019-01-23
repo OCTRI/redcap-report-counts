@@ -3,10 +3,9 @@
     <h1>Report Counts</h1>
 
     <div class="error" v-if="hasError">
-      {{ errorMessage }}
-      <ul v-if="hasErrorDetails">
-        <li v-for="message in errorDetails" :key="message">{{ message }}</li>
-      </ul>
+      <div class="alert alert-danger" role="alert">
+        {{ errorMessage }}
+      </div>
     </div>
 
     <div class="alert alert-info alert-loading" role="alert" v-if="loading">
@@ -16,8 +15,8 @@
     <div v-if="!loading">
       <ReportCountsHelp :show-about-text="noReportSummaries" class="mt-3 mb-3" />
 
-      <div class="mb-5">
-        <button v-if="showCreateReportButton"
+      <div class="mb-5" v-if="securityConfig.hasReportsRights">
+        <button v-if="showCreateReportButton && !hasError"
                 id="create-a-report"
                 type="button"
                 class="btn btn-primary"
@@ -38,6 +37,7 @@
                        :key="summary.id"
                        :class="{ 'drag-chosen': isBeingDragged(summary.id) }"
                        :model="summary"
+                       :securityConfig="securityConfig"
                        @reportSummaryUpdated="updateReportSummary"
                        @summaryDeleted="deleteReportSummary"
                        @reorder-start="startReorder"
@@ -60,7 +60,9 @@ import ReportCountsHelp from './ReportCountsHelp';
 
 const messages = {
   warnings: {
-    configError: 'Report configuration could not be loaded due to an error: '
+    fetchReportSummaryError: 'There was an error loading report counts. It is possible you do not have access to one of the reports used in generating counts.',
+    saveError: 'There was an error while trying to save configuration.',
+    loadError: 'There was an error while trying to load this module.'
   }
 };
 
@@ -84,6 +86,8 @@ export default {
       loading: true,
       showForm: false,
       reports: [],
+      errorMessage: null,
+      securityConfig: null,
       dndState: {
         dragItemId: null,
         dropItemId: null,
@@ -96,9 +100,35 @@ export default {
   mounted() {
     // capture the promise to synchronize tests
     this.configPromise = this.fetchReportSummary();
+    this.securityPromise = this.fetchSecurityConfig();
   },
 
   methods: {
+    /**
+     * Get security configuration.
+     */
+    fetchSecurityConfig() {
+      const { dataService } = this;
+      return dataService.fetchSecurityConfig()
+        .then(this.captureSecurityConfig)
+        .catch(this.handleSecurityConfigError);
+    },
+
+    /**
+     * Sets `securityConfig` from `fetchSecurityConfig` response.
+     * @param {Promise->Object} response - `dataService.fetchSecurityConfig` response
+     */
+    captureSecurityConfig(response) {
+      this.securityConfig = response;
+    },
+
+    /**
+     * Handles rejection of the `fetchSecurityConfig` request.
+     */
+    handleSecurityConfigError() {
+      this.errorMessage = messages.warnings.loadError;
+    },
+
     /**
      * Get a report summary.
      */
@@ -106,7 +136,7 @@ export default {
       const { dataService } = this;
       return dataService.fetchReportSummary()
         .then(this.captureReportSummaries)
-        .catch(this.handleConfigError)
+        .catch(this.handleFetchReportSummaryError)
         .finally(() => {
           this.loading = false;
         });
@@ -174,16 +204,21 @@ export default {
       const { dataService, reportSummaries } = this;
       this.saveSummariesPromise = dataService
         .saveReportSummaries(reportSummaries.map(summary => summary.config))
-        .catch(this.handleConfigError);
+        .catch(this.handleSaveError);
     },
 
     /**
-     * Handles rejection of the `fetchReportConfig` request.
-     * @param {Error} reason - the error that triggered rejection.
+     * Handles rejection of the `fetchReportSummary` request.
      */
-    handleConfigError(reason) {
-      this.errorMessage = messages.warnings.configError;
-      this.errorDetails = [ reason.message ];
+    handleFetchReportSummaryError() {
+      this.errorMessage = messages.warnings.fetchReportSummaryError;
+    },
+
+    /**
+     * Handles rejection of the `saveReportSummaries` request.
+     */
+    handleSaveError() {
+      this.errorMessage = messages.warnings.saveError;
     },
 
     /**
@@ -331,11 +366,6 @@ export default {
     hasError() {
       const { errorMessage } = this;
       return Boolean(errorMessage);
-    },
-
-    hasErrorDetails() {
-      const { errorDetails } = this;
-      return Array.isArray(errorDetails) && errorDetails.length > 0;
     },
 
     hasReportSummaries() {
