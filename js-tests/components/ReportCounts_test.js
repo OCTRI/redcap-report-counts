@@ -5,7 +5,7 @@ import ReportCountsHelp from '@/components/ReportCountsHelp';
 import ReportSummaryModel from '@/report-summary-model';
 import { STRATEGY } from '@/report-strategy';
 
-import { createProvideObject, waitForSelector, buildMockSecurityConfig } from '../test-utils';
+import { createProvideObject, waitForSelector, mockSecurityConfig } from '../test-utils';
 
 const aboutTextSelector = '#about-report-counts-module';
 
@@ -210,7 +210,7 @@ describe('ReportCounts.vue', () => {
             return Promise.resolve([]);
           },
           fetchSecurityConfig() {
-            return Promise.resolve(buildMockSecurityConfig(true));
+            return Promise.resolve(mockSecurityConfig(true));
           }
         }
       };
@@ -327,7 +327,7 @@ describe('ReportCounts.vue', () => {
       beforeEach(async () => {
         mockProvide = createProvideObject();
         spyOn(mockProvide.dataService, 'fetchSecurityConfig')
-          .and.returnValue(Promise.resolve(buildMockSecurityConfig(false)));
+          .and.returnValue(Promise.resolve(mockSecurityConfig(false)));
 
         wrapper = mount(ReportCounts, {
           provide: mockProvide
@@ -345,7 +345,7 @@ describe('ReportCounts.vue', () => {
       beforeEach(async () => {
         mockProvide = createProvideObject();
         spyOn(mockProvide.dataService, 'fetchSecurityConfig')
-          .and.returnValue(Promise.resolve(buildMockSecurityConfig(true)));
+          .and.returnValue(Promise.resolve(mockSecurityConfig(true)));
 
         wrapper = mount(ReportCounts, {
           provide: mockProvide

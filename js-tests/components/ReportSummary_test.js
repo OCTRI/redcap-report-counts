@@ -8,7 +8,7 @@ import { MISSING } from '@/constants';
 import shuffle from 'lodash/shuffle';
 import { messages } from '@/components/ReportSummary';
 
-import { createProvideObject, buildMockSecurityConfig } from '../test-utils';
+import { createProvideObject, mockSecurityConfig } from '../test-utils';
 
 const selectors = {
   metadata: '.summary-metadata li',
@@ -16,7 +16,7 @@ const selectors = {
 };
 
 describe('ReportSummary.vue', () => {
-  const securityConfig = buildMockSecurityConfig(true);
+  const securityConfig = mockSecurityConfig(true);
 
   describe('For total strategy', () => {
     let wrapper;
@@ -411,7 +411,7 @@ describe('ReportSummary.vue', () => {
           provide: createProvideObject(),
           propsData: {
             model,
-            securityConfig: buildMockSecurityConfig(false)
+            securityConfig: mockSecurityConfig(false)
           }
         });
       });
@@ -428,7 +428,7 @@ describe('ReportSummary.vue', () => {
           provide: createProvideObject(),
           propsData: {
             model,
-            securityConfig: buildMockSecurityConfig(true)
+            securityConfig: mockSecurityConfig(true)
           }
         });
       });
