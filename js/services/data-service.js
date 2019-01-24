@@ -6,7 +6,8 @@ import ReportSummaryModel from '@/report-summary-model';
 
 export const ENDPOINTS = {
   REPORT_DATA: 'lib/data.php',
-  REPORT_CONFIG: 'lib/settings.php'
+  REPORT_CONFIG: 'lib/settings.php',
+  SECURITY_CONFIG: 'lib/security.php'
 };
 
 /**
@@ -27,6 +28,7 @@ export default function createDataService(assetUrls) {
   return {
     reportDataUrl: assetUrls[ENDPOINTS.REPORT_DATA],
     reportConfigUrl: assetUrls[ENDPOINTS.REPORT_CONFIG],
+    securityConfigUrl: assetUrls[ENDPOINTS.SECURITY_CONFIG],
 
     /**
      * Extracts data returned by the request.
@@ -115,6 +117,16 @@ export default function createDataService(assetUrls) {
      */
     getReportFields(reportId) {
       return this._makeRequest(`${this.reportDataUrl}&action=getReportFields&reportId=${reportId}`);
-    }
+    },
+
+    /**
+     * Fetch security configuration.
+     *
+     * @return {Promise} A promise that resolves to an object with the following keys:
+     *   - hasReportsRights: Boolean indicating whether or not the authenticated user has reports rights.
+     */
+    fetchSecurityConfig() {
+      return this._makeRequest(this.securityConfigUrl);
+    },
   };
 }

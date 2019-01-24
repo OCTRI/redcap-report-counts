@@ -13,16 +13,17 @@
           <h3 class="card-title mb-1 float-left">{{ model.title }}</h3>
           <div class="drag-handle float-right text-muted"
                title="Drag to Reorder"
+               v-if="securityConfig.hasReportsRights"
                @mousedown="enableDrag"
                @mouseup="disableDrag">
             <i class="fa fa-arrows-alt"></i>
           </div>
         </div>
-        <div class="summary-controls mb-1">
-          <a class="edit" v-if="canEdit" @click="editSummary">Edit <i class="fa fa-edit"></i></a>
-          <a class="delete" v-if="canDelete" @click="deleteSummary">Delete <i class="far fa-trash-alt"></i></a>
+        <div class="summary-controls mb-1" v-if="securityConfig.hasReportsRights">
+          <a class="edit" @click="editSummary">Edit <i class="fa fa-edit"></i></a>
+          <a class="delete" @click="deleteSummary">Delete <i class="far fa-trash-alt"></i></a>
         </div>
-        <div v-if="editing && canEdit" class="edit-form container">
+        <div v-if="editing && securityConfig.hasReportsRights" class="edit-form container">
           <ReportSummaryForm :hideFormTitle=true
                              :initial-state="model.config"
                              @reportSummarySaved="forwardUpdatedSummary"
@@ -74,7 +75,8 @@ export default {
   },
 
   props: {
-    model: ReportSummaryModel
+    model: ReportSummaryModel,
+    securityConfig: Object
   },
 
   data() {
@@ -111,29 +113,11 @@ export default {
     },
 
     /**
-     * Checks if the user has permission to delete a report summary.
-     * @return true if the user has permission to delete a report summary.
-     */
-    canDelete() {
-      // TODO: implement REDDEV-595
-      return true;
-    },
-
-    /**
      * Emit editSummary event.
      */
     editSummary() {
       this.editing = true;
       // this.$emit('editSummary', this.id);
-    },
-
-    /**
-     * Checks if the user has permission to edit a report summary.
-     * @return true if the user has permission to edit a report summary.
-     */
-    canEdit() {
-      // TODO: implement REDDEV-595
-      return true;
     },
 
     /**

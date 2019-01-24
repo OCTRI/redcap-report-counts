@@ -19,6 +19,16 @@ export const mockReportFields = [
 ];
 
 /**
+ * Function to build response from the data service's `fetchSecurityConfig` method.
+ * @param {Boolean} hasReportsRights - true to indicate the user has reports rights
+ */
+export function mockSecurityConfig(hasReportsRights=false) {
+  return {
+    hasReportsRights: hasReportsRights
+  };
+}
+
+/**
  * Constructs an object that mocks dependencies injected into components. For use with
  * the `mount` and `shallowMount` test renderers.
  *
@@ -48,6 +58,10 @@ export function createProvideObject() {
 
       getReportFields() {
         return Promise.resolve(mockReportFields);
+      },
+
+      fetchSecurityConfig() {
+        return Promise.resolve(mockSecurityConfig(true));
       }
     }
   };

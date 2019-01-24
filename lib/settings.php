@@ -13,12 +13,23 @@ require_once(dirname(realpath(__FILE__)) . '/../../../redcap_connect.php');
 require_once(dirname(realpath(__FILE__)) . '/ReportConfig.php');
 require_once(dirname(realpath(__FILE__)) . '/SummaryUIProcessor.php');
 require_once(dirname(realpath(__FILE__)) . '/DataDictionary.php');
+require_once(dirname(realpath(__FILE__)) . '/SecurityUtils.php');
 
 if (isset($_GET['action'])) {
     $requestBody = trim(file_get_contents('php://input'));
 
     if (!empty($requestBody)) {
         $data = json_decode($requestBody, true);
+
+        // This allows any user of the module to save settings. This is further restricted
+        // by user rights to determine who can modify counts. Those with "reports" rights
+        // can modify counts.
+        $module->disableUserBasedSettingPermissions();
+
+        if (!SecurityUtils::hasReportsRights()) {
+            http_response_code(403);
+            exit();
+        }
 
         if ($_GET['action'] === 'saveReportSummary') {
             $reportSummaryArray = json_decode($data['reportSummary'], true);
@@ -43,7 +54,6 @@ if (isset($_GET['action'])) {
 
         } else if ($_GET['action'] === 'saveReportSummaries') {
             $reportSummaries = json_decode($data['reportSummaries'], true);
-            var_dump('reportSummaries', $reportSummaries);
 
             $reportConfig = new ReportConfig($project_id, $module);
             $result = $reportConfig->saveReportSummaries($reportSummaries['reportSummaries']);

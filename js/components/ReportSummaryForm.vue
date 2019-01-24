@@ -281,9 +281,8 @@ export default {
 
     /**
      * Handles rejection of the `saveReportSummary` request.
-     * @param {Error} reason - the error that triggered rejection.
      */
-    handleConfigError(reason) {
+    handleConfigError() {
       this.errors.save = 'An error occurred while trying to save this count.';
     },
 
