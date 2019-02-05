@@ -94,6 +94,7 @@ final class SummaryUIProcessorTest extends TestCase {
             'reportExists' => true,
             'bucketByLabel' => 'Stop Reason',
             'bucketByFieldExists' => true,
+            'bucketByExistsOnReport' => true,
             'data' => array(
                 'Patient follow-up',
                 'Patient withdrew consent',
@@ -142,6 +143,24 @@ final class SummaryUIProcessorTest extends TestCase {
         $processedSummaryConfig = $reportProcessor->summaryConfig();
 
         $this->assertEquals(false, $processedSummaryConfig['bucketByFieldExists'], 'Bucket by field should not exist');
+    }
+
+    public function testGetReportFields() {
+        $reportProcessor = new SummaryUIProcessor($this->mockItemizedSummaryConfig, $this->mockReport, $this->mockDataDictionary);
+
+        $expectedFields = array('screen_id', 'dsp_stop_reason');
+        $this->assertEquals($expectedFields, $reportProcessor->getReportFields(), 'Report contains the correct fields');
+    }
+
+    public function testReportHasBucketByField() {
+        $reportProcessor = new SummaryUIProcessor($this->mockItemizedSummaryConfig, $this->mockReport, $this->mockDataDictionary);
+        $this->assertTrue($reportProcessor->reportHasBucketByField(), 'Report should contain the bucketBy field');
+    }
+
+    public function testReportIsMissingBucketByField() {
+        $this->mockItemizedSummaryConfig['bucketBy'] = 'this_field_no_present_on_report';
+        $reportProcessor = new SummaryUIProcessor($this->mockItemizedSummaryConfig, $this->mockReport, $this->mockDataDictionary);
+        $this->assertFalse($reportProcessor->reportHasBucketByField(), 'The bucketBy field should not be present on the report');
     }
 
 }
