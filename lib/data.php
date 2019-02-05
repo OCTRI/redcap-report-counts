@@ -14,7 +14,6 @@ require_once dirname(realpath(__FILE__)) . '/../../../redcap_connect.php';
 require_once(dirname(realpath(__FILE__)) . '/ReportConfig.php');
 require_once(dirname(realpath(__FILE__)) . '/DataDictionary.php');
 require_once(dirname(realpath(__FILE__)) . '/SummaryUIProcessor.php');
-require_once(dirname(realpath(__FILE__)) . '/ReportStrategy.php');
 
 /**
  * Queries the REDCap database directly to retrieve all the reports for the 
