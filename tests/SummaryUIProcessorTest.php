@@ -50,17 +50,20 @@ final class SummaryUIProcessorTest extends TestCase {
       'screen_id' => array(
         'field_name' => 'screen_id',
         'form_name' => 'screening_id',
-        'field_label' => 'Screening Id'
+        'field_label' => 'Screening Id',
+        'field_type' => 'radio'
       ),
       'dsp_stop_reason' => array(
         'field_name' => 'dsp_stop_reason',
         'form_name' => 'subject_data',
-        'field_label' => 'Stop Reason'
+        'field_label' => 'Stop Reason',
+        'field_type' => 'dropdown'
       ),
       'another_field' => array(
         'field_name' => 'another_field',
         'form_name' => 'another_form',
-        'field_label' => 'Another Field'
+        'field_label' => 'Another Field',
+        'field_type' => 'yesno'
       )
     );
 
@@ -145,11 +148,24 @@ final class SummaryUIProcessorTest extends TestCase {
         $this->assertEquals(false, $processedSummaryConfig['bucketByFieldExists'], 'Bucket by field should not exist');
     }
 
-    public function testGetReportFields() {
+    public function testGetReportFieldNames() {
         $reportProcessor = new SummaryUIProcessor($this->mockItemizedSummaryConfig, $this->mockReport, $this->mockDataDictionary);
 
         $expectedFields = array('screen_id', 'dsp_stop_reason');
         $this->assertEquals($expectedFields, $reportProcessor->getReportFieldNames(), 'Report contains the correct fields');
+    }
+
+    public function testGetReportFields() {
+        $reportProcessor = new SummaryUIProcessor($this->mockItemizedSummaryConfig, $this->mockReport, $this->mockDataDictionary);
+
+        $expectedFields = array(
+            array('field_name' => 'screen_id',
+                  'field_label' => 'Screening Id'),
+            array('field_name' => 'dsp_stop_reason',
+                  'field_label' => 'Stop Reason')
+        );
+
+        $this->assertEquals($expectedFields, $reportProcessor->getReportFields(), 'Returns the correct field names and labels');
     }
 
     public function testReportHasBucketByField() {

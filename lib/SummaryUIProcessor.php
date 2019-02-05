@@ -84,12 +84,40 @@ class SummaryUIProcessor {
     }
 
     /**
-     * Get list of fields for a report.
+     * Get list of raw field names for a report.
      */
     public function getReportFieldNames() {
         assert(is_array($this->report), 'Must provide valid report data.');
         assert(count($this->report) > 0, 'The report is empty - must contain records.');
         return array_keys($this->report[0]);
+    }
+
+    /**
+     * Get list of field names including the label. If you only need the raw `field_name` 
+     * values use `$this->getReportFieldNames`.
+     * @return Array A list of associative arrays, each with keys: `field_name` and `field_label`.
+     */
+    public function getReportFields() {
+        if (count($this->report) > 0) {
+            $reportFields = $this->getReportFieldNames();
+
+            $fields = array();
+            foreach ($reportFields as $key=>$field) {
+                foreach ($this->dataDictionary->getDictionary() as $dictField) {
+                    if ($field === $dictField['field_name']
+                            && in_array($dictField['field_type'], array('radio', 'dropdown', 'truefalse', 'yesno'))) {
+                        $fields[] = array(
+                            'field_name' => $dictField['field_name'],
+                            'field_label' => $dictField['field_label']
+                        );
+                    }
+                }
+            }
+
+            return $fields;
+        } else {
+            return array();
+        }
     }
 
     /**
