@@ -50,36 +50,9 @@ function reportExists($reportId, $reportsArray) {
    return false;
 }
 
-/**
- * Get fields for a given report.
- * @param Integer $reportId The report id
- * @return Array A list of associative arrays, each with keys: field_name and field_label.
- */
-function getReportFields($reportId) {
-    $report = json_decode(\REDCap::getReport($reportId, 'json'), true);
-    if (count($report) > 0) {
-        $reportFields = array_keys($report[0]);
-
-        $dictionary = json_decode(\REDCap::getDataDictionary('json'), true);
-
-        $fields = array();
-        foreach ($reportFields as $key=>$field) {
-            foreach ($dictionary as $dictField) {
-                if ($field === $dictField['field_name']
-                        && in_array($dictField['field_type'], array('radio', 'dropdown', 'truefalse', 'yesno'))) {
-                    $fields[] = array(
-                        'field_name' => $dictField['field_name'],
-                        'field_label' => $dictField['field_label']
-                    );
-                }
-            }
-        }
-
-        return $fields;
-    } else {
-        return array();
-    }
-}
+$reportConfigInstance = new ReportConfig($project_id, $module);
+$config = $reportConfigInstance->getReportConfig();
+$dataDictionary = new DataDictionary(\REDCap::getDataDictionary('array'));
 
 if (isset($_GET['action'])) {
     if ($_GET['action'] === 'getReports') {
@@ -88,9 +61,12 @@ if (isset($_GET['action'])) {
     } else if ($_GET['action'] === 'getReportFields') {
         $reportId = intval($_GET['reportId']);
         $report = json_decode(\REDCap::getReport($reportId, 'json'), true);
+        $summaryConfig['reportId'] = $reportId;
+        $reportProcessor = new SummaryUIProcessor($summaryConfig, $report, $dataDictionary);
+
         if (count($report) > 0) {
-            $fields = getReportFields($reportId);
-            exit(json_encode($fields));
+            $reportFields = $reportProcessor->getReportFields();
+            exit(json_encode($reportFields));
         } else {
             exit(json_encode(array()));
         }
@@ -98,14 +74,9 @@ if (isset($_GET['action'])) {
 } else {
     $reportsArray = getReports();
 
-    $reportConfigInstance = new ReportConfig($project_id, $module);
-    $config = $reportConfigInstance->getReportConfig();
-
     if (!$config) {
         exit(json_encode(array()));
     }
-
-    $dataDictionary = new DataDictionary(\REDCap::getDataDictionary('array'));
 
     // Default action, get report config
     $returnArray = array();
