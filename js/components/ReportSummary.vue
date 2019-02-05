@@ -61,7 +61,7 @@ import ReportSummaryForm from './ReportSummaryForm';
 
 export const messages = {
   missingReport: 'The report used for this summary no longer exists.',
-  missingBucketByField: 'The field used to group counts by no longer exists or has been renamed.'
+  missingBucketByField: 'The field used to group counts by no longer exists, has been renamed, or is not present on the report.'
 };
 
 /**
@@ -210,7 +210,7 @@ export default {
      */
     canItemize() {
       const { model } = this;
-      return this.isItemized && model.bucketByFieldExists;
+      return this.isItemized && model.bucketByFieldExists && model.bucketByExistsOnReport;
     },
 
     /**

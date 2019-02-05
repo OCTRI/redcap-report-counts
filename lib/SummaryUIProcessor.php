@@ -84,6 +84,23 @@ class SummaryUIProcessor {
     }
 
     /**
+     * Get list of fields for a report.
+     */
+    public function getReportFieldNames() {
+        assert(is_array($this->report), 'Must provide valid report data.');
+        assert(count($this->report) > 0, 'The report is empty - must contain records.');
+        return array_keys($this->report[0]);
+    }
+
+    /**
+     * Check if the report has the bucketBy field.
+     */
+    public function reportHasBucketByField() {
+        $reportFields = $this->getReportFieldNames();
+        return in_array($this->summaryConfig['bucketBy'], $reportFields);
+    }
+
+    /**
      * Gets summary config used by the UI for rendering each report 
      * summary (count). If an itemized count is required, include the field
      * label for the field grouped on as well as data used to render itemized
@@ -103,6 +120,7 @@ class SummaryUIProcessor {
 
         if ($this->isItemized()) {
             $this->addItemizedConfig();
+            $this->summaryConfig['bucketByExistsOnReport'] = $this->reportHasBucketByField();
         }
 
         return $this->summaryConfig;
