@@ -58,6 +58,7 @@ describe('ReportSummary.vue', () => {
         strategy: STRATEGY.ITEMIZED,
         bucketByLabel: 'Field Label',
         bucketByFieldExists: true,
+        bucketByExistsOnReport: true,
         reportExists: true,
         data: [
           'Patient follow-up',
@@ -116,6 +117,7 @@ describe('ReportSummary.vue', () => {
       totalRecords: 8,
       strategy: STRATEGY.ITEMIZED,
       bucketByFieldExists: true,
+      bucketByExistsOnReport: true,
       reportExists: true,
       data: []
     });
@@ -354,7 +356,7 @@ describe('ReportSummary.vue', () => {
     });
   });
 
-  describe('bucketBy field does not exist or has been renamed', () => {
+  describe('bucketBy field error handling', () => {
     let wrapper, model;
 
     beforeEach(() => {
@@ -364,29 +366,59 @@ describe('ReportSummary.vue', () => {
         reportId: 3,
         totalRecords: 8,
         strategy: STRATEGY.ITEMIZED,
-        bucketByFieldExists: false,
         reportExists: true,
         data: []
       });
+    });
 
-      wrapper = mount(ReportSummary, {
-        provide: createProvideObject(),
-        propsData: {
-          model,
-          securityConfig
-        }
+    describe('bucketBy field does not exist', () => {
+      beforeEach(() => {
+        model.bucketByFieldExists = false;
+        model.bucketByExistsOnReport = false;
+        wrapper = mount(ReportSummary, {
+          provide: createProvideObject(),
+          propsData: {
+            model,
+            securityConfig
+          }
+        });
+      });
+
+      it('displays inline error message', () => {
+        expect(wrapper.findAll('[data-description="report-alert"]').length).toEqual(1);
+        expect(wrapper.find('[data-description="report-alert"]').text()).toEqual(messages.missingBucketByField);
+      });
+
+      it('displays title and summary controls', () => {
+        expect(wrapper.findAll('.summary-controls').length).toEqual(1);
+        expect(wrapper.findAll('.card-title').length).toEqual(1);
+        expect(wrapper.find('.card-title').text()).toEqual('Original Title');
       });
     });
 
-    it('displays inline error message', () => {
-      expect(wrapper.findAll('[data-description="report-alert"]').length).toEqual(1);
-      expect(wrapper.find('[data-description="report-alert"]').text()).toEqual(messages.missingBucketByField);
-    });
+    describe('bucketBy field missing from report', () => {
+      beforeEach(() => {
+        model.bucketByFieldExists = true;
+        model.bucketByExistsOnReport = false;
+        wrapper = mount(ReportSummary, {
+          provide: createProvideObject(),
+          propsData: {
+            model,
+            securityConfig
+          }
+        });
+      });
 
-    it('displays title and summary controls', () => {
-      expect(wrapper.findAll('.summary-controls').length).toEqual(1);
-      expect(wrapper.findAll('.card-title').length).toEqual(1);
-      expect(wrapper.find('.card-title').text()).toEqual('Original Title');
+      it('displays inline error message', () => {
+        expect(wrapper.findAll('[data-description="report-alert"]').length).toEqual(1);
+        expect(wrapper.find('[data-description="report-alert"]').text()).toEqual(messages.missingBucketByField);
+      });
+
+      it('displays title and summary controls', () => {
+        expect(wrapper.findAll('.summary-controls').length).toEqual(1);
+        expect(wrapper.findAll('.card-title').length).toEqual(1);
+        expect(wrapper.find('.card-title').text()).toEqual('Original Title');
+      });
     });
   });
 

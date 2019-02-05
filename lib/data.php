@@ -50,6 +50,37 @@ function reportExists($reportId, $reportsArray) {
    return false;
 }
 
+/**
+ * Get fields for a given report.
+ * @param Integer $reportId The report id
+ * @return Array A list of associative arrays, each with keys: field_name and field_label.
+ */
+function getReportFields($reportId) {
+    $report = json_decode(\REDCap::getReport($reportId, 'json'), true);
+    if (count($report) > 0) {
+        $reportFields = array_keys($report[0]);
+
+        $dictionary = json_decode(\REDCap::getDataDictionary('json'), true);
+
+        $fields = array();
+        foreach ($reportFields as $key=>$field) {
+            foreach ($dictionary as $dictField) {
+                if ($field === $dictField['field_name']
+                        && in_array($dictField['field_type'], array('radio', 'dropdown', 'truefalse', 'yesno'))) {
+                    $fields[] = array(
+                        'field_name' => $dictField['field_name'],
+                        'field_label' => $dictField['field_label']
+                    );
+                }
+            }
+        }
+
+        return $fields;
+    } else {
+        return array();
+    }
+}
+
 if (isset($_GET['action'])) {
     if ($_GET['action'] === 'getReports') {
         $returnArray = getReports();
@@ -58,23 +89,7 @@ if (isset($_GET['action'])) {
         $reportId = intval($_GET['reportId']);
         $report = json_decode(\REDCap::getReport($reportId, 'json'), true);
         if (count($report) > 0) {
-            $reportFields = array_keys($report[0]);
-
-            $dictionary = json_decode(\REDCap::getDataDictionary('json'), true);
-
-            $fields = array();
-            foreach ($reportFields as $key=>$field) {
-                foreach ($dictionary as $dictField) {
-                    if ($field === $dictField['field_name']
-                            && in_array($dictField['field_type'], array('radio', 'dropdown', 'truefalse', 'yesno'))) {
-                        $fields[] = array(
-                            'field_name' => $dictField['field_name'],
-                            'field_label' => $dictField['field_label']
-                        );
-                    }
-                }
-            }
-
+            $fields = getReportFields($reportId);
             exit(json_encode($fields));
         } else {
             exit(json_encode(array()));
@@ -95,8 +110,9 @@ if (isset($_GET['action'])) {
     // Default action, get report config
     $returnArray = array();
     foreach ($config as $summaryConfig) {
-        $report = reportExists($summaryConfig['reportId'], $reportsArray)
-            ? json_decode(\REDCap::getReport($summaryConfig['reportId'], 'json', true /* export labels */), true)
+        $reportId = $summaryConfig['reportId'];
+        $report = reportExists($reportId, $reportsArray)
+            ? json_decode(\REDCap::getReport($reportId, 'json', true /* export labels */), true)
             : null;
         $reportProcessor = new SummaryUIProcessor($summaryConfig, $report, $dataDictionary);
         $returnArray[] = $reportProcessor->summaryConfig();

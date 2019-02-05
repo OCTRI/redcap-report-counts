@@ -18,7 +18,8 @@ export default class ReportSummaryModel {
       obj.data,
       obj.totalRecords,
       obj.reportExists,
-      obj.bucketByFieldExists
+      obj.bucketByFieldExists,
+      obj.bucketByExistsOnReport
     );
   }
 
@@ -40,9 +41,10 @@ export default class ReportSummaryModel {
    * @param {Boolean} reportExists - `true` if the report exists, otherwise `false` indicating 
    *   the report is inaccessible or deleted.
    * @param {Boolean} bucketByFieldExists = `true` if the field exists, otherwise `false`.
+   * @param {Boolean} bucketByExistsOnReport = `true` if the field is present on the report, otherwise `false`.
    * @return {ReportSummaryModel}
    */
-  constructor(id, title, reportId, strategy, bucketBy, bucketByLabel, data, totalRecords, reportExists, bucketByFieldExists) {
+  constructor(id, title, reportId, strategy, bucketBy, bucketByLabel, data, totalRecords, reportExists, bucketByFieldExists, bucketByExistsOnReport) {
     this.id = id;
     this.title = title;
     this.reportId = reportId;
@@ -53,6 +55,7 @@ export default class ReportSummaryModel {
     this.totalRecords = totalRecords;
     this.reportExists = reportExists;
     this.bucketByFieldExists = bucketByFieldExists;
+    this.bucketByExistsOnReport = bucketByExistsOnReport;
   }
 
   /**
