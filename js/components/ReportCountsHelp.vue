@@ -40,6 +40,18 @@
               <i class="fa fa-arrows-alt"></i> to drag and drop the Count into place.</li>
           </ul>
         </li>
+        <li>User Permissions
+          <ul>
+            <li>To view the Report Counts page (with all report counts) an individual user will need one of the following permissions:
+              <ul>
+                <li>The <em>Add/Edit/Organize Reports</em> User Right.</li>
+                <li>User Access to each report that is used as the basis for each report count (on the page) via any of the individual Report User Access options, including selecting individual users, user roles, or DAGs.</li>
+                <li>If a user does does not have access to even one report that a report count is based on, the user will receive an error and none of the report counts will load.</li>
+              </ul>
+            </li>
+            <li>For a user to create, edit and delete a report count an individual user will need the <em>Add/Edit/Organize Reports</em> User Right.</li>
+          </ul>
+        </li>
       </ul>
     </details>
   </div>
