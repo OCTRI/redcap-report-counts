@@ -368,10 +368,28 @@ describe('ReportSummary.vue', () => {
         id: '68d41098-f49a-4241-8014-ab519224fda7',
         title: 'Original Title',
         reportId: 3,
+        reportTitle: 'Title of Report',
         totalRecords: 8,
         strategy: STRATEGY.ITEMIZED,
         reportExists: true,
         data: []
+      });
+    });
+
+    describe('error helper', () => {
+      beforeEach(() => {
+        wrapper = mount(ReportSummary, {
+          provide: createProvideObject(),
+          propsData: {
+            model,
+            securityConfig
+          }
+        });
+      });
+
+      it('builds the correct error message', () => {
+        const expectedMessage = `${messages.missingBucketByField} "Foo".`;
+        expect(wrapper.vm.missingBucketByFieldError('Foo')).toEqual(expectedMessage);
       });
     });
 
@@ -390,7 +408,7 @@ describe('ReportSummary.vue', () => {
 
       it('displays inline error message', () => {
         expect(wrapper.findAll('[data-description="report-alert"]').length).toEqual(1);
-        expect(wrapper.find('[data-description="report-alert"]').text()).toEqual(messages.missingBucketByField);
+        expect(wrapper.find('[data-description="report-alert"]').text()).toEqual(wrapper.vm.missingBucketByFieldError('Title of Report'));
       });
 
       it('displays title and summary controls', () => {
@@ -415,7 +433,7 @@ describe('ReportSummary.vue', () => {
 
       it('displays inline error message', () => {
         expect(wrapper.findAll('[data-description="report-alert"]').length).toEqual(1);
-        expect(wrapper.find('[data-description="report-alert"]').text()).toEqual(messages.missingBucketByField);
+        expect(wrapper.find('[data-description="report-alert"]').text()).toEqual(wrapper.vm.missingBucketByFieldError('Title of Report'));
       });
 
       it('displays title and summary controls', () => {

@@ -62,7 +62,7 @@ import ReportSummaryForm from './ReportSummaryForm';
 
 export const messages = {
   missingReport: 'The report used for this summary no longer exists.',
-  missingBucketByField: 'The field used to group counts by no longer exists, has been renamed, or was removed from the report.'
+  missingBucketByField: 'The field used to group counts by no longer exists, has been renamed, or was removed from the report ', // append report title to this message
 };
 
 /**
@@ -195,6 +195,14 @@ export default {
       if (dataTransfer.dropEffect === 'none') {
         this.$emit('reorder-cancel');
       }
+    },
+
+    /**
+     * Builds error message for when the group-by field is renamed, removed from the 
+     * project, or removed from the report. 
+     */
+    missingBucketByFieldError(reportTitle) {
+      return `${messages.missingBucketByField} "${reportTitle}".`;
     }
   },
 
@@ -305,10 +313,11 @@ export default {
      * @return error message string
      */
     errorMessage() {
+      const { model } = this;
       if (!this.reportExists) {
         return messages.missingReport;
       } else if (!this.validBucketByConfig) {
-        return messages.missingBucketByField;
+        return this.missingBucketByFieldError(model.reportTitle);
       }
     }
   }
