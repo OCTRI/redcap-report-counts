@@ -33,11 +33,11 @@ function reportExists($reportId, $reportsArray) {
 $reportConfigInstance = new ReportConfig($project_id, $module);
 $config = $reportConfigInstance->getReportConfig();
 $dataDictionary = new DataDictionary(\REDCap::getDataDictionary('array'));
-$db = new Database($rc_connection /* $rc_connection is globabl */);
+$db = new Database($rc_connection /* $rc_connection is global */);
 
 if (isset($_GET['action'])) {
     if ($_GET['action'] === 'getReports') {
-        $returnArray = $db->getReports($project_id /* $project_id is gloabl */);
+        $returnArray = $db->getReports($project_id /* $project_id is global */);
         exit(json_encode($returnArray));
     } else if ($_GET['action'] === 'getReportFields') {
         $reportId = intval($_GET['reportId']);
@@ -54,7 +54,7 @@ if (isset($_GET['action'])) {
         }
     }
 } else {
-    $reportsArray = $db->getReports($project_id /* $project_id is gloabl */);
+    $reportsArray = $db->getReports($project_id /* $project_id is global */);
 
     if (!$config) {
         exit(json_encode(array()));

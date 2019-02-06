@@ -32,7 +32,7 @@ if (isset($_GET['action'])) {
             exit();
         }
 
-        $db = new Database($rc_connection /* $rc_connection is globabl */);
+        $db = new Database($rc_connection /* $rc_connection is global */);
 
         if ($_GET['action'] === 'saveReportSummary') {
             $reportSummaryArray = json_decode($data['reportSummary'], true);
