@@ -45,7 +45,7 @@ describe('ReportSummary.vue', () => {
       const metadata = wrapper.findAll(selectors.metadata);
       expect(metadata.length).toEqual(2);
       expect(metadata.at(0).text()).toEqual('Total Count: 101');
-      expect(metadata.at(1).text()).toEqual('For Report: Report Title');
+      expect(metadata.at(1).text()).toEqual('Report Name: Report Title');
     });
   });
 
@@ -96,7 +96,7 @@ describe('ReportSummary.vue', () => {
       const metadata = wrapper.findAll(selectors.metadata);
       expect(metadata.length).toEqual(3);
       expect(metadata.at(0).text()).toEqual('Total Count: 6');
-      expect(metadata.at(1).text()).toEqual('For Report: Sample Report Title');
+      expect(metadata.at(1).text()).toEqual('Report Name: Sample Report Title');
       expect(metadata.at(2).text()).toEqual('Grouped By: Field Label');
     });
 
