@@ -38,7 +38,7 @@ class Database {
     }
 
     /**
-     * Queries the REDCap database directory to retrieve the title for the give report id.
+     * Queries the REDCap database directory to retrieve the title for the given report id.
      * @param Integer $projectId The project id.
      * @param Integer $reportId The report id.
      * @return Array - Array  
