@@ -14,27 +14,7 @@ require_once dirname(realpath(__FILE__)) . '/../../../redcap_connect.php';
 require_once(dirname(realpath(__FILE__)) . '/ReportConfig.php');
 require_once(dirname(realpath(__FILE__)) . '/DataDictionary.php');
 require_once(dirname(realpath(__FILE__)) . '/SummaryUIProcessor.php');
-
-/**
- * Queries the REDCap database directly to retrieve all the reports for the 
- * current project.
- * @returns Array of associative arrays, each containing the report id and title of a report.
- */
-function getReports() {
-    global $rc_connection, $project_id;
-    $stmt = mysqli_stmt_init($rc_connection);
-    $query = 'select report_id, title from redcap_reports where project_id = ? order by title asc';
-    mysqli_stmt_prepare($stmt, $query);
-    mysqli_stmt_bind_param($stmt, 'i', $project_id);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_bind_result($stmt, $report_id, $title);
-    $returnArray = array();
-    while (mysqli_stmt_fetch($stmt)) {
-        $returnArray[] = array('reportId' => $report_id, 'title' => $title);
-    }
-    mysqli_stmt_close($stmt);
-    return $returnArray;
-}
+require_once(dirname(realpath(__FILE__)) . '/Database.php');
 
 /**
  * Checks if a report exists.
@@ -53,16 +33,18 @@ function reportExists($reportId, $reportsArray) {
 $reportConfigInstance = new ReportConfig($project_id, $module);
 $config = $reportConfigInstance->getReportConfig();
 $dataDictionary = new DataDictionary(\REDCap::getDataDictionary('array'));
+$db = new Database($rc_connection /* $rc_connection is globabl */);
 
 if (isset($_GET['action'])) {
     if ($_GET['action'] === 'getReports') {
-        $returnArray = getReports();
+        $returnArray = $db->getReports($project_id /* $project_id is gloabl */);
         exit(json_encode($returnArray));
     } else if ($_GET['action'] === 'getReportFields') {
         $reportId = intval($_GET['reportId']);
+        $reportTitle = $db->getReportTitle($project_id /* $project_id is global */, $reportId);
         $report = json_decode(\REDCap::getReport($reportId, 'json'), true);
         $summaryConfig['reportId'] = $reportId;
-        $reportProcessor = new SummaryUIProcessor($summaryConfig, $report, $dataDictionary);
+        $reportProcessor = new SummaryUIProcessor($summaryConfig, $reportTitle, $report, $dataDictionary);
 
         if (count($report) > 0) {
             $reportFields = $reportProcessor->getReportFields();
@@ -72,7 +54,7 @@ if (isset($_GET['action'])) {
         }
     }
 } else {
-    $reportsArray = getReports();
+    $reportsArray = $db->getReports($project_id /* $project_id is gloabl */);
 
     if (!$config) {
         exit(json_encode(array()));
@@ -85,7 +67,8 @@ if (isset($_GET['action'])) {
         $report = reportExists($reportId, $reportsArray)
             ? json_decode(\REDCap::getReport($reportId, 'json', true /* export labels */), true)
             : null;
-        $reportProcessor = new SummaryUIProcessor($summaryConfig, $report, $dataDictionary);
+        $reportTitle = $db->getReportTitle($project_id /* $project_id is global */, $reportId);
+        $reportProcessor = new SummaryUIProcessor($summaryConfig, $reportTitle, $report, $dataDictionary);
         $returnArray[] = $reportProcessor->summaryConfig();
     }
 

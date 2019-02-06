@@ -12,6 +12,7 @@ export default class ReportSummaryModel {
       obj.id,
       obj.title,
       obj.reportId,
+      obj.reportTitle,
       obj.strategy,
       obj.bucketBy,
       obj.bucketByLabel,
@@ -44,10 +45,11 @@ export default class ReportSummaryModel {
    * @param {Boolean} bucketByExistsOnReport = `true` if the field is present on the report, otherwise `false`.
    * @return {ReportSummaryModel}
    */
-  constructor(id, title, reportId, strategy, bucketBy, bucketByLabel, data, totalRecords, reportExists, bucketByFieldExists, bucketByExistsOnReport) {
+  constructor(id, title, reportId, reportTitle, strategy, bucketBy, bucketByLabel, data, totalRecords, reportExists, bucketByFieldExists, bucketByExistsOnReport) {
     this.id = id;
     this.title = title;
     this.reportId = reportId;
+    this.reportTitle = reportTitle;
     this.strategy = strategy;
     this.bucketBy = bucketBy;
     this.bucketByLabel = bucketByLabel;
