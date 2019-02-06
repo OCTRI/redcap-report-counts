@@ -16,13 +16,15 @@ class SummaryUIProcessor {
     /**
      * @param Array summaryConfig An entry in the array of report config
      *   persisted to the database.
-     * @param String report The report data as returned by `REDCap::getReport`. Pass `null` to indicate the report does not exist.
-     * @param Number dataDictionary An instance of `DataDictionary`.
+     * @param String reportTitle The report title. Pass `null` to indicate the report does not exist.
+     * @param Array report The report data as returned by `REDCap::getReport`. Pass `null` to indicate the report does not exist.
+     * @param Object dataDictionary An instance of `DataDictionary`.
      */
-    public function __construct($summaryConfig, $report, $dataDictionary) {
+    public function __construct($summaryConfig, $reportTitle, $report, $dataDictionary) {
         assert(isset($summaryConfig), '$summaryConfig is required.');
         assert(isset($dataDictionary), '$dataDictionary is required.');
         $this->summaryConfig = $summaryConfig;
+        $this->reportTitle = isset($reportTitle) ? $reportTitle : null;
         $this->report = isset($report) ? $report : null;
         $this->dataDictionary = $dataDictionary;
     }
@@ -144,6 +146,7 @@ class SummaryUIProcessor {
             return $this->summaryConfig;
         }
 
+        $this->summaryConfig['reportTitle'] = $this->reportTitle;
         $this->summaryConfig['totalRecords'] = $this->totalRecords();
 
         if ($this->isItemized()) {

@@ -6,6 +6,7 @@ const exampleProps = {
   id: 'abc',
   title: 'title',
   reportId: 42,
+  reportTitle: 'Some Report Title',
   strategy: STRATEGY.ITEMIZED,
   bucketBy: 'exampleField',
   bucketByLabel: 'Example field label',
@@ -20,6 +21,7 @@ describe('ReportSummaryModel class', ()  => {
       exampleProps.id,
       exampleProps.title,
       exampleProps.reportId,
+      exampleProps.reportTitle,
       exampleProps.strategy,
       exampleProps.bucketBy,
       exampleProps.bucketByLabel,
@@ -30,6 +32,7 @@ describe('ReportSummaryModel class', ()  => {
     expect(model.id).toEqual('abc');
     expect(model.title).toEqual('title');
     expect(model.reportId).toEqual(42);
+    expect(model.reportTitle).toEqual('Some Report Title');
     expect(model.strategy).toEqual(STRATEGY.ITEMIZED);
     expect(model.bucketBy).toEqual('exampleField');
     expect(model.bucketByLabel).toEqual('Example field label');

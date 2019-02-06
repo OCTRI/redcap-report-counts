@@ -32,6 +32,7 @@
         <div v-if="showCounts">
           <ul class="summary-metadata lead list-unstyled mb-0">
             <li>Total Count: {{ model.totalRecords }}</li>
+            <li :title="'Report id: ' + model.reportId">For Report: {{ model.reportTitle }}</li>
             <li v-if="isItemized" class="mt-0">Grouped By: {{ model.bucketByLabel }}</li>
           </ul>
           <ul v-if="isItemized" class="list-unstyled mt-3 mb-0" data-description="itemized-counts">

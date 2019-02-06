@@ -14,6 +14,7 @@ require_once(dirname(realpath(__FILE__)) . '/ReportConfig.php');
 require_once(dirname(realpath(__FILE__)) . '/SummaryUIProcessor.php');
 require_once(dirname(realpath(__FILE__)) . '/DataDictionary.php');
 require_once(dirname(realpath(__FILE__)) . '/SecurityUtils.php');
+require_once(dirname(realpath(__FILE__)) . '/Database.php');
 
 if (isset($_GET['action'])) {
     $requestBody = trim(file_get_contents('php://input'));
@@ -31,6 +32,8 @@ if (isset($_GET['action'])) {
             exit();
         }
 
+        $db = new Database($rc_connection /* $rc_connection is global */);
+
         if ($_GET['action'] === 'saveReportSummary') {
             $reportSummaryArray = json_decode($data['reportSummary'], true);
             $reportSummary = $reportSummaryArray['reportSummary'];
@@ -45,9 +48,10 @@ if (isset($_GET['action'])) {
             }
 
             if ($result === true) {
+                $reportTitle = $db->getReportTitle($project_id /* $project_id is global */, $reportSummary['reportId']);
                 $report = json_decode(\REDCap::getReport($reportSummary['reportId'], 'json', true /* export labels */), true);
                 $dataDictionary = new DataDictionary(\REDCap::getDataDictionary('array'));
-                $reportProcessor = new SummaryUIProcessor($reportSummary, $report, $dataDictionary);
+                $reportProcessor = new SummaryUIProcessor($reportSummary, $reportTitle, $report, $dataDictionary);
                 $summaryConfig = $reportProcessor->summaryConfig();
                 exit(json_encode(array($summaryConfig)));
             }

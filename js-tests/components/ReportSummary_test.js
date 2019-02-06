@@ -25,6 +25,7 @@ describe('ReportSummary.vue', () => {
       const model = ReportSummaryModel.fromObject({
         id: 'a51361a1-8d64-4348-a28a-fc6b5dcca663',
         title: 'Sample Report Name',
+        reportTitle: 'Report Title',
         totalRecords: 101,
         strategy: STRATEGY.TOTAL,
         reportExists: true
@@ -42,8 +43,9 @@ describe('ReportSummary.vue', () => {
       const reportName = wrapper.find('h3');
       expect(reportName.text()).toEqual('Sample Report Name');
       const metadata = wrapper.findAll(selectors.metadata);
-      expect(metadata.length).toEqual(1);
+      expect(metadata.length).toEqual(2);
       expect(metadata.at(0).text()).toEqual('Total Count: 101');
+      expect(metadata.at(1).text()).toEqual('For Report: Report Title');
     });
   });
 
@@ -54,6 +56,7 @@ describe('ReportSummary.vue', () => {
       const model = ReportSummaryModel.fromObject({
         id: 'a48bc291-951f-4ef6-9ec3-fff6291d7cd1',
         title: 'Sample Itemized Report Name',
+        reportTitle: 'Sample Report Title',
         totalRecords: 6,
         strategy: STRATEGY.ITEMIZED,
         bucketByLabel: 'Field Label',
@@ -91,9 +94,10 @@ describe('ReportSummary.vue', () => {
 
     it('renders a metadata section', () => {
       const metadata = wrapper.findAll(selectors.metadata);
-      expect(metadata.length).toEqual(2);
+      expect(metadata.length).toEqual(3);
       expect(metadata.at(0).text()).toEqual('Total Count: 6');
-      expect(metadata.at(1).text()).toEqual('Grouped By: Field Label');
+      expect(metadata.at(1).text()).toEqual('For Report: Sample Report Title');
+      expect(metadata.at(2).text()).toEqual('Grouped By: Field Label');
     });
 
     it('emits deleteSummary event', () => {
