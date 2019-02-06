@@ -17,8 +17,8 @@ class SummaryUIProcessor {
      * @param Array summaryConfig An entry in the array of report config
      *   persisted to the database.
      * @param String reportTitle The report title. Pass `null` to indicate the report does not exist.
-     * @param String report The report data as returned by `REDCap::getReport`. Pass `null` to indicate the report does not exist.
-     * @param Number dataDictionary An instance of `DataDictionary`.
+     * @param Array report The report data as returned by `REDCap::getReport`. Pass `null` to indicate the report does not exist.
+     * @param Object dataDictionary An instance of `DataDictionary`.
      */
     public function __construct($summaryConfig, $reportTitle, $report, $dataDictionary) {
         assert(isset($summaryConfig), '$summaryConfig is required.');
