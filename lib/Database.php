@@ -19,6 +19,7 @@ class Database {
     /**
      * Queries the REDCap database directly to retrieve all the reports for the 
      * current project.
+     * @param Integer $projectId The project id.
      * @returns Array of associative arrays, each containing the report id and title of a report.
      */
     public function getReports($projectId) {
@@ -38,6 +39,8 @@ class Database {
 
     /**
      * Queries the REDCap database directory to retrieve the title for the give report id.
+     * @param Integer $projectId The project id.
+     * @param Integer $reportId The report id.
      * @return Array - Array  
      */
     public function getReportTitle($projectId, $reportId) {
