@@ -6,7 +6,7 @@
   "scripts": {
     "analyze": "webpack --optimize-minimize; webpack --profile --json > bundle-stats.json; webpack-bundle-analyzer bundle-stats.json dist",
     "clean": "rm -rf dist junit bundle-stats.json",
-    "lint:js": "eslint ./*.js js/**/*.{js,vue} js-tests",
+    "lint:js": "eslint ./*.js js js/**/*.{js,vue} js-tests",
     "prebuild": "npm install",
     "build": "webpack --mode=production",
     "build-dev": "webpack --mode=development",
@@ -30,7 +30,7 @@
     "babel-loader": "^8.0.0",
     "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^1.0.1",
-    "eslint": "~4.15.0",
+    "eslint": "~5.16.0",
     "eslint-plugin-vue": "^4.7.1",
     "file-loader": "~2.0.0",
     "git-repo-info": "^1.4.1",
