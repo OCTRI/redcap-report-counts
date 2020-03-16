@@ -6,7 +6,7 @@
   "scripts": {
     "analyze": "webpack --optimize-minimize; webpack --profile --json > bundle-stats.json; webpack-bundle-analyzer bundle-stats.json dist",
     "clean": "rm -rf dist junit bundle-stats.json",
-    "lint:js": "eslint ./*.js js js/**/*.{js,vue} js-tests",
+    "lint:js": "eslint --ext .js --ext .vue ./*.js js js-tests",
     "prebuild": "npm install",
     "build": "webpack --mode=production",
     "build-dev": "webpack --mode=development",
