@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import { shallowMount, mount } from '@vue/test-utils';
 
 import ReportCounts from '@/components/ReportCounts';
@@ -111,25 +112,30 @@ describe('ReportCounts.vue', () => {
       expect(wrapper.findAll('.report-summary-form').length).toEqual(0);
     });
 
-    it('shows form when button pressed', () => {
+    it('shows form when button pressed', async () => {
       expect(wrapper.findAll('.report-summary-form').length).toEqual(0);
       wrapper.find('#create-a-report').trigger('click');
+      await Vue.nextTick();
       expect(wrapper.findAll('.report-summary-form').length).toEqual(1);
     });
 
-    it('hides form when X is pressed', () => {
+    it('hides form when X is pressed', async () => {
       wrapper.find('#create-a-report').trigger('click');
+      await Vue.nextTick();
       expect(wrapper.findAll('.report-summary-form').length).toEqual(1);
 
       wrapper.find('.cancel-form').trigger('click');
+      await Vue.nextTick();
       expect(wrapper.findAll('.report-summary-form').length).toEqual(0);
     });
 
-    it('hides form when cancel button is pressed', () => {
+    it('hides form when cancel button is pressed', async () => {
       wrapper.find('#create-a-report').trigger('click');
+      await Vue.nextTick();
       expect(wrapper.findAll('.report-summary-form').length).toEqual(1);
 
       wrapper.find('button[type=cancel]').trigger('click');
+      await Vue.nextTick();
       expect(wrapper.findAll('.report-summary-form').length).toEqual(0);
     });
 
@@ -142,6 +148,7 @@ describe('ReportCounts.vue', () => {
 
       await fillForm(wrapper);
       wrapper.find('button[type=submit]').trigger('click');
+      await Vue.nextTick();
 
       await Promise.resolve();
       expect(dataService.saveReportSummary).toHaveBeenCalled();

@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import { mount, shallowMount } from '@vue/test-utils';
 
 import ReportSummary from '@/components/ReportSummary';
@@ -217,24 +218,30 @@ describe('ReportSummary.vue', () => {
       });
     });
 
-    it('reveals the form when the edit link is clicked', () => {
+    it('reveals the form when the edit link is clicked', async () => {
       expect(wrapper.find(ReportSummaryForm).exists()).toBe(false);
       wrapper.find('.edit').trigger('click');
+      await Vue.nextTick();
       expect(wrapper.find(ReportSummaryForm).exists()).toBe(true);
     });
 
-    it('closes the form on cancel', () => {
+    it('closes the form on cancel', async () => {
       wrapper.find('.edit').trigger('click');
+      await Vue.nextTick();
       expect(wrapper.find(ReportSummaryForm).exists()).toBe(true);
 
       wrapper.find('button[type="cancel"]').trigger('click');
+      await Vue.nextTick();
       expect(wrapper.find(ReportSummaryForm).exists()).toBe(false);
     });
 
     it('emits an event when updated config is saved', async () => {
       wrapper.find('.edit').trigger('click');
+      await Vue.nextTick();
       wrapper.find('input[name="title"]').setValue('New Title');
+      await Vue.nextTick();
       wrapper.find('button[type="submit"]').trigger('click');
+      await Vue.nextTick();
 
       // allow time for the form's save promise to resolve
       await Promise.resolve();
@@ -248,8 +255,11 @@ describe('ReportSummary.vue', () => {
 
     it('closes the form after saving', async () => {
       wrapper.find('.edit').trigger('click');
+      await Vue.nextTick();
       wrapper.find('input[name="title"]').setValue('New Title');
+      await Vue.nextTick();
       wrapper.find('button[type="submit"]').trigger('click');
+      await Vue.nextTick();
 
       // allow time for the form's save promise to resolve
       await Promise.resolve();
@@ -282,9 +292,10 @@ describe('ReportSummary.vue', () => {
       expect(wrapper.attributes('draggable')).toEqual('false');
     });
 
-    it('is enabled when the drag handle is grabbed', () => {
+    it('is enabled when the drag handle is grabbed', async () => {
       expect(wrapper.attributes('draggable')).toEqual('false');
       wrapper.find('.drag-handle').trigger('mousedown');
+      await Vue.nextTick();
       expect(wrapper.attributes('draggable')).toEqual('true');
     });
 

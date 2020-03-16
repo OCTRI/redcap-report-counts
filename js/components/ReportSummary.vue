@@ -318,6 +318,8 @@ export default {
         return messages.missingReport;
       } else if (!this.validBucketByConfig) {
         return this.missingBucketByFieldError(model.reportTitle);
+      } else {
+        return '';
       }
     }
   }
