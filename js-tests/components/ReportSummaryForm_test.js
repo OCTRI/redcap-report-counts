@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import { shallowMount } from '@vue/test-utils';
 
 import ReportSummaryForm from '@/components/ReportSummaryForm';
@@ -72,7 +73,7 @@ describe('ReportSummaryForm.vue', () => {
       expect(radio2.attributes().value).toEqual(STRATEGY.ITEMIZED);
     });
 
-    it('makes drop-down with group by values visible when itemized strategy selected', () => {
+    it('makes drop-down with group by values visible when itemized strategy selected', async () => {
       const modelWithStrategy = ReportSummaryConfig.fromObject(wrapper.vm.model);
       modelWithStrategy.strategy = STRATEGY.ITEMIZED;
 
@@ -80,6 +81,7 @@ describe('ReportSummaryForm.vue', () => {
         model: modelWithStrategy,
         reportFields: mockReportFields
       });
+      await Vue.nextTick();
 
       expect(wrapper.findAll(`#bucketBy${id}`).length).toEqual(1);
 
@@ -98,6 +100,7 @@ describe('ReportSummaryForm.vue', () => {
     const model = new ReportSummaryConfig(null, 'Report 2', 2, STRATEGY.TOTAL);
     wrapper.vm.model = model;
     wrapper.find('.btn-primary').trigger('click');
+    await Vue.nextTick();
 
     await wrapper.vm.savePromise;
 
@@ -111,11 +114,15 @@ describe('ReportSummaryForm.vue', () => {
 
   it('saves report summary on Save & Create Another', async () => {
     wrapper.setProps({ saveMultiple: true });
+    await Vue.nextTick();
 
     const model = new ReportSummaryConfig(null, 'Report 3', 3, STRATEGY.TOTAL);
     wrapper.vm.model = model;
+    await Vue.nextTick();
     wrapper.find('button[data-toggle=dropdown]').trigger('click');
+    await Vue.nextTick();
     wrapper.find('button.dropdown-item').trigger('click');
+    await Vue.nextTick();
 
     await wrapper.vm.savePromise;
 
@@ -127,9 +134,10 @@ describe('ReportSummaryForm.vue', () => {
     expect(saveAnother).toBe(true);
   });
 
-  it('validates form', () => {
+  it('validates form', async () => {
     // Form rendered - no input
     wrapper.find('.btn-primary').trigger('click');
+    await Vue.nextTick();
     expect(wrapper.vm.errorCount).toEqual(2);
     expect(wrapper.vm.errors.title).toEqual(messages.titleRequired);
     expect(wrapper.vm.errors.reportId).toEqual(messages.reportRequired);
@@ -138,6 +146,7 @@ describe('ReportSummaryForm.vue', () => {
     // Only a report selected
     wrapper.vm.model.reportId = 42;
     wrapper.find('.btn-primary').trigger('click');
+    await Vue.nextTick();
     expect(wrapper.vm.errorCount).toEqual(1);
     expect(wrapper.vm.errors.title).toEqual(messages.titleRequired);
     expect(wrapper.findAll('#bucketBy').length).toEqual(0);
@@ -147,6 +156,7 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.model.reportId = null;
     wrapper.vm.model.strategy = STRATEGY.TOTAL;
     wrapper.find('.btn-primary').trigger('click');
+    await Vue.nextTick();
     expect(wrapper.vm.errorCount).toEqual(1);
     expect(wrapper.vm.errors.reportId).toEqual(messages.reportRequired);
     expect(wrapper.findAll(`#bucketBy${id}`).length).toEqual(0);
@@ -157,17 +167,19 @@ describe('ReportSummaryForm.vue', () => {
     wrapper.vm.model.strategy = STRATEGY.ITEMIZED;
     wrapper.vm.reportFields = mockReportFields;
     wrapper.find('.btn-primary').trigger('click');
+    await Vue.nextTick();
     expect(wrapper.vm.errorCount).toEqual(1);
     expect(wrapper.vm.errors.bucketBy).toEqual(messages.bucketByRequired);
     expect(wrapper.findAll(`#bucketBy${id}`).length).toEqual(1);
     expect(wrapper.findAll(`#bucketBy${id}`).isVisible()).toEqual(true);
   });
 
-  it('checks for fields to group by and displays error message accordingly', () => {
+  it('checks for fields to group by and displays error message accordingly', async () => {
     wrapper.vm.model.title = 'No fields to group by test';
     wrapper.vm.model.reportId = 42;
     wrapper.vm.model.strategy = STRATEGY.ITEMIZED;
     wrapper.vm.reportFields = [];
+    await Vue.nextTick();
 
     // Show error message, no fields to group by
     expect(wrapper.vm.errorCount).toEqual(1);
@@ -175,15 +187,18 @@ describe('ReportSummaryForm.vue', () => {
 
     // Strategy changed to total, remove error message
     wrapper.vm.model.strategy = STRATEGY.TOTAL;
+    await Vue.nextTick();
     expect(wrapper.vm.errorCount).toEqual(0);
 
     // Strategy changed back to itemized, display error message
     wrapper.vm.model.strategy = STRATEGY.ITEMIZED;
+    await Vue.nextTick();
     expect(wrapper.vm.errorCount).toEqual(1);
     expect(wrapper.vm.errors.strategy).toEqual(messages.noBucketByFields);
 
     // Fields to group by are loaded, remove error message
     wrapper.vm.reportFields = mockReportFields;
+    await Vue.nextTick();
     expect(wrapper.vm.errorCount).toEqual(1);
     expect(wrapper.vm.errors.bucketBy).toEqual(messages.bucketByRequired);
   });
@@ -204,7 +219,7 @@ describe('ReportSummaryForm.vue', () => {
     expect(wrapper.vm.model.bucketBy).toEqual(null);
   });
 
-  it('resets the form to the initial state on cancel when editing', () => {
+  it('resets the form to the initial state on cancel when editing', async () => {
     const initialState = new ReportSummaryConfig(null, 'Initial', 3, STRATEGY.TOTAL);
     const wrapper = shallowMount(ReportSummaryForm, {
       provide: mockProvide,
@@ -222,33 +237,38 @@ describe('ReportSummaryForm.vue', () => {
 
     // cancel resets the model to the initial state
     wrapper.find('button[type=cancel]').trigger('click');
+    await Vue.nextTick();
     expect(wrapper.vm.model).toEqual(initialState);
   });
 
-  it('emits an event when on cancel', () => {
+  it('emits an event when on cancel', async () => {
     wrapper.find('button[type="cancel"]').trigger('click');
+    await Vue.nextTick();
     expect(wrapper.emitted('formCanceled')).toBeTruthy();
   })
 
-  it('disables strategy radio buttons unless a report is selected', () => {
+  it('disables strategy radio buttons unless a report is selected', async () => {
     wrapper.vm.model.title = 'Report Title';
+    await Vue.nextTick();
 
     const radios = wrapper.findAll(`input[data-description="strategy-input"]`);
     expect(radios.at(0).attributes().disabled).toBeTruthy();
     expect(radios.at(1).attributes().disabled).toBeTruthy();
 
     wrapper.vm.model.reportId = 42;
+    await Vue.nextTick();
 
     expect(radios.at(0).attributes().disabled).toBeFalsy()
     expect(radios.at(1).attributes().disabled).toBeFalsy();
   });
 
-  it('prevents form submission if changing report to one that does not have fields to bucket by', () => {
+  it('prevents form submission if changing report to one that does not have fields to bucket by', async () => {
     // Choose a report that has reportFields
     wrapper.vm.model.title = 'Prevent Submission';
     wrapper.vm.model.reportId = 10;
     wrapper.vm.model.strategy = STRATEGY.ITEMIZED;
     wrapper.vm.reportFields = mockReportFields;
+    await Vue.nextTick();
 
     // Select one of the bucketBy options
     wrapper.findAll(`#bucketBy${id} option`).at(0).setSelected();
@@ -256,6 +276,7 @@ describe('ReportSummaryForm.vue', () => {
     // Switch to a report that does not have reportFields
     wrapper.vm.model.reportId = 11;
     wrapper.vm.reportFields = [];
+    await Vue.nextTick();
 
     // There should now be a message saying there are no fields to group by
     expect(wrapper.vm.errors.strategy).toEqual(messages.noBucketByFields);
@@ -265,6 +286,7 @@ describe('ReportSummaryForm.vue', () => {
 
     // Try to submit the form
     wrapper.find('.btn-primary').trigger('click');
+    await Vue.nextTick();
 
     // Ensure that the previously selected bucketBy field is not selected which
     // prevents the form from being submitted with an invalid bucketBy value.
