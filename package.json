@@ -1,6 +1,6 @@
 {
   "name": "report-counts",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Plugin for generating report counts.",
   "main": "./dist/bundle.js",
   "scripts": {
