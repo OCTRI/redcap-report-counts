@@ -3,12 +3,13 @@
     "description": "External module for generating report counts.",
     "type": "project",
     "scripts": {
-      "test": "phpunit --colors=always",
-      "test-jenkins": "phpunit --colors=never --log-junit junit/phpunit.xml"
+      "test": "vendor/bin/phpunit --colors=always",
+      "test-jenkins": "vendor/bin/phpunit --colors=never --log-junit junit/phpunit.xml"
     },
     "require": {},
     "require-dev": {
-        "phpunit/phpunit": "^4"
+        "phpunit/phpunit": "^9",
+        "phpspec/prophecy-phpunit": "^2.0"
     },
     "authors": [
         {

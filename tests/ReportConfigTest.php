@@ -1,6 +1,7 @@
 <?php
 use Octri\ReportCounts\ReportConfig,
-    PHPUnit\Framework\TestCase;
+    PHPUnit\Framework\TestCase,
+    Prophecy\PhpUnit\ProphecyTrait;
 
 require_once('MockAbstractExternalModule.php');
 require_once('lib/constants.php');
@@ -11,12 +12,13 @@ require_once('lib/ReportStrategy.php');
  */
 final class ReportConfigTest extends TestCase {
 
+  use ProphecyTrait;
+
   private $projectIdWithConfigSet = '42';
   private $projectIdWithConfigNotSet = '99';
   private $reportConfigKey = \Octri\ReportCounts\REPORT_CONFIG_KEY;
 
   public function testGetReportConfig() {
-    $mockConfig = MockAbstractExternalModule::$settings[$this->projectIdWithConfigNotSet][$this->reportConfigKey];
     $mockModule = $this->getMockBuilder(get_class(new MockAbstractExternalModule()))
                        ->setMethods([
                          'getProjectSetting',

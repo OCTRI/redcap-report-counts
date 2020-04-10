@@ -74,7 +74,7 @@ final class SummaryUIProcessorTest extends TestCase {
      */
     private $mockDataDictionary;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->mockDataDictionary = new DataDictionary($this->mockDictionaryData);
     }
 
