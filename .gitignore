@@ -5,3 +5,4 @@ npm-debug.log
 junit/
 bundle-stats.json
 vendor/
+.phpunit.result.cache

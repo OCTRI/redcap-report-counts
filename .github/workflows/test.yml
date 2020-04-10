@@ -4,7 +4,21 @@ on:
     branches:
     - '**'
 jobs:
-  test:
+  test-php:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+    - name: Install dependencies
+      run: composer install --prefer-dist
+    - name: Run tests
+      run: composer run-script test
+
+  test-js:
     runs-on: ubuntu-latest
 
     steps:
@@ -13,11 +27,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 12.x
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '7.0'
-    - run: npm install
-    - run: npm run test-ci
-    - run: composer install
-    - run: composer run-script test
+    - name: Install dependencies
+      run: npm install
+    - name: Run tests
+      run: npm run test-ci
