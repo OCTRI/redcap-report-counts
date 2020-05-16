@@ -68,15 +68,16 @@ module.exports = {
       REPORT_COUNTS_GIT_HASH: JSON.stringify(repoInfo.abbreviatedSha)
     }),
     new VueLoaderPlugin(),
-    new CopyWebpackPlugin([
-      '*.md',
-      'LICENSE',
-      'index.php',
-      'ReportCounts.php',
-      'config.json',
-      'lib/**/*.php',
-      'lib/**/*.json'
-    ]),
+    new CopyWebpackPlugin({
+      patterns: [
+        '*.md',
+        'LICENSE',
+        'index.php',
+        'ReportCounts.php',
+        'config.json',
+        'lib/**/*.php'
+      ]
+    }),
     new HtmlWebpackPlugin({
       template: 'lib/main.tmpl',
       filename: 'lib/main.php',
