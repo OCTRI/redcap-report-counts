@@ -171,7 +171,7 @@ describe('ReportSummaryForm.vue', () => {
     expect(wrapper.vm.errorCount).toEqual(1);
     expect(wrapper.vm.errors.bucketBy).toEqual(messages.bucketByRequired);
     expect(wrapper.findAll(`#bucketBy${id}`).length).toEqual(1);
-    expect(wrapper.findAll(`#bucketBy${id}`).isVisible()).toEqual(true);
+    expect(wrapper.findAll(`#bucketBy${id}`).exists()).toEqual(true);
   });
 
   it('checks for fields to group by and displays error message accordingly', async () => {

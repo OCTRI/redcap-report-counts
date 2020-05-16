@@ -44,7 +44,7 @@ describe('ReportCounts.vue', () => {
     });
 
     it('has help and instructions', () => {
-      expect(wrapper.find(ReportCountsHelp).exists()).toBe(true);
+      expect(wrapper.findComponent(ReportCountsHelp).exists()).toBe(true);
       // about text should not display when there are summaries
       expect(wrapper.find(aboutTextSelector).exists()).toBe(false);
     });
@@ -103,7 +103,7 @@ describe('ReportCounts.vue', () => {
     });
 
     it('has help and text describing the module', () => {
-      expect(wrapper.find(ReportCountsHelp).exists()).toBe(true);
+      expect(wrapper.findComponent(ReportCountsHelp).exists()).toBe(true);
       expect(wrapper.find(aboutTextSelector).exists()).toBe(true);
     });
 

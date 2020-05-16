@@ -219,20 +219,20 @@ describe('ReportSummary.vue', () => {
     });
 
     it('reveals the form when the edit link is clicked', async () => {
-      expect(wrapper.find(ReportSummaryForm).exists()).toBe(false);
+      expect(wrapper.findComponent(ReportSummaryForm).exists()).toBe(false);
       wrapper.find('.edit').trigger('click');
       await Vue.nextTick();
-      expect(wrapper.find(ReportSummaryForm).exists()).toBe(true);
+      expect(wrapper.findComponent(ReportSummaryForm).exists()).toBe(true);
     });
 
     it('closes the form on cancel', async () => {
       wrapper.find('.edit').trigger('click');
       await Vue.nextTick();
-      expect(wrapper.find(ReportSummaryForm).exists()).toBe(true);
+      expect(wrapper.findComponent(ReportSummaryForm).exists()).toBe(true);
 
       wrapper.find('button[type="cancel"]').trigger('click');
       await Vue.nextTick();
-      expect(wrapper.find(ReportSummaryForm).exists()).toBe(false);
+      expect(wrapper.findComponent(ReportSummaryForm).exists()).toBe(false);
     });
 
     it('emits an event when updated config is saved', async () => {
@@ -264,7 +264,7 @@ describe('ReportSummary.vue', () => {
       // allow time for the form's save promise to resolve
       await Promise.resolve();
 
-      expect(wrapper.find(ReportSummaryForm).exists()).toBe(false);
+      expect(wrapper.findComponent(ReportSummaryForm).exists()).toBe(false);
     });
   });
 
