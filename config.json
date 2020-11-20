@@ -4,8 +4,8 @@
   "description": "A REDCap module for generating report counts.",
   "authors": [
     {
-      "name": "Weldon Sams",
-      "email": "sams@ohsu.edu",
+      "name": "Erik Benton",
+      "email": "benton@ohsu.edu",
       "institution": "OHSU"
     }
   ],
