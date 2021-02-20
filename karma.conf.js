@@ -4,6 +4,8 @@
 const webpackConfig = require('./webpack.config.js');
 
 webpackConfig.mode = 'development';
+delete webpackConfig.entry;
+delete webpackConfig.output;
 
 module.exports = function(config) {
   config.set({
@@ -14,14 +16,14 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'webpack'],
 
 
     // list of files / patterns to load in the browser
     files: [
       'node_modules/jquery/dist/jquery.js',
       'node_modules/@babel/polyfill/dist/polyfill.js',
-      'js-tests/**/*.js'
+      { pattern: 'js-tests/**/*.js', watched: false }
     ],
 
 
@@ -57,7 +59,7 @@ module.exports = function(config) {
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: true,
+    autoWatch: false,
 
 
     // start these browsers
