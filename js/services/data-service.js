@@ -1,4 +1,3 @@
-import assert from 'assert';
 import axios from 'axios';
 import { v4 as uuid } from 'uuid';
 
@@ -19,10 +18,15 @@ export const ENDPOINTS = {
  * @return {Object} an object encapsulating REDCap HTTP requests
  */
 export default function createDataService(assetUrls) {
-  assert(assetUrls, 'Asset URL object is required');
+  if (!assetUrls) {
+    throw new Error('Asset URL object is required');
+  }
+
   Object.keys(ENDPOINTS).forEach(key => {
     const endpoint = ENDPOINTS[key];
-    assert(assetUrls[endpoint], `A URL for ${endpoint} is required`)
+    if (!assetUrls[endpoint]) {
+      throw new Error(`A URL for ${endpoint} is required`);
+    }
   });
 
   return {
