@@ -48,7 +48,7 @@
     "karma-webpack": "^5.0.0",
     "mini-css-extract-plugin": "^1.6.0",
     "moment": "^2.29.1",
-    "postcss": "^8.3.5",
+    "postcss": "^8.3.6",
     "style-loader": "^3.1.0",
     "vue-loader": "^15.9.8",
     "vue-template-compiler": "^2.6.14",
