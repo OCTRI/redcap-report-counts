@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   parserOptions: {
-    parser: 'babel-eslint'
+    parser: '@babel/eslint-parser'
   },
   extends: [
     'eslint:recommended',
@@ -29,6 +29,7 @@ module.exports = {
     // node files
     {
       files: [
+        '.eslintrc.js',
         'karma.conf.js',
         'webpack.config.js'
       ],
