@@ -29,7 +29,7 @@
     "@babel/preset-env": "^7.16.0",
     "@vue/test-utils": "^1.2.2",
     "babel-loader": "^8.2.3",
-    "copy-webpack-plugin": "^9.0.1",
+    "copy-webpack-plugin": "^9.1.0",
     "css-loader": "^6.5.1",
     "eslint": "^8.1.0",
     "eslint-plugin-vue": "^7.20.0",
