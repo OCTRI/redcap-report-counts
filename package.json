@@ -31,7 +31,7 @@
     "babel-loader": "^8.2.3",
     "copy-webpack-plugin": "^9.1.0",
     "css-loader": "^6.5.1",
-    "eslint": "^8.6.0",
+    "eslint": "^8.7.0",
     "eslint-plugin-vue": "^7.20.0",
     "file-loader": "^6.2.0",
     "git-repo-info": "^2.1.1",
