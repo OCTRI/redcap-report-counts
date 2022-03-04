@@ -23,7 +23,7 @@
     "url": "https://octriinternal.ohsu.edu/stash/scm/reddev/report-counts.git"
   },
   "devDependencies": {
-    "@babel/core": "^7.16.12",
+    "@babel/core": "^7.17.5",
     "@babel/eslint-parser": "^7.16.5",
     "@babel/plugin-transform-runtime": "^7.16.10",
     "@babel/preset-env": "^7.16.11",
@@ -39,7 +39,7 @@
     "jasmine-ajax": "^4.0.0",
     "jasmine-core": "^3.10.1",
     "jquery": "^3.6.0",
-    "karma": "^6.3.11",
+    "karma": "^6.3.17",
     "karma-chrome-launcher": "^3.1.0",
     "karma-cli": "^2.0.0",
     "karma-jasmine": "^4.0.1",
