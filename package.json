@@ -32,7 +32,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.4",
     "eslint": "^8.38.0",
-    "eslint-plugin-vue": "^9.11.0",
+    "eslint-plugin-vue": "^9.14.0",
     "file-loader": "^6.2.0",
     "git-repo-info": "^2.1.1",
     "html-webpack-plugin": "^5.5.1",
