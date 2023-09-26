@@ -59,7 +59,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "@babel/runtime": "^7.22.10",
-    "axios": "^0.24.0",
+    "axios": "^1.5.1",
     "lodash": "^4.17.21",
     "qs": "^6.11.2",
     "uuid": "^9.0.0",
