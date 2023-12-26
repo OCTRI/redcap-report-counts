@@ -47,7 +47,7 @@
     "karma-spec-reporter": "0.0.36",
     "karma-webpack": "^5.0.0",
     "mini-css-extract-plugin": "^2.7.6",
-    "moment": "^2.29.4",
+    "moment": "^2.30.0",
     "postcss": "^8.4.32",
     "style-loader": "^3.3.3",
     "vue-loader": "^15.11.1",
